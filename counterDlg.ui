@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Counter</class>
+ <widget class="QWidget" name="Counter">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>400</height>   <!-- Aumentamos la altura para acomodar nuevos widgets -->
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Counter</string>
+  </property>
+  <widget class="QPushButton" name="button">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>180</y>
+     <width>251</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>STOP</string>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="lcdNumber">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>301</width>
+     <height>91</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="resetButton">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>260</y>   <!-- Debajo del botón STOP -->
+     <width>251</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>RESET</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="periodSlider">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>340</y>
+     <width>301</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="minimum">
+    <number>100</number>   <!-- 100 ms -->
+   </property>
+   <property name="maximum">
+    <number>5000</number>  <!-- 5000 ms -->
+   </property>
+   <property name="value">
+    <number>1000</number>  <!-- Valor inicial: 1 segundo -->
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>370</y>
+     <width>301</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Period: 1000 ms</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
