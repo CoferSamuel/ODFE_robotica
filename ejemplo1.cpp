@@ -1,122 +1,120 @@
-#include "ejemplo1.h"
-#include <QDebug>
-#include <QSlider>
-#include <QPushButton>
-#include <QLabel>
-#include <QVBoxLayout>
+#include "ejemplo1.h"                     // include the header file for this class
+#include <QDebug>                         // for printing debug messages to console
+#include <QSlider>                        // for the QSlider widget
+#include <QPushButton>                    // for QPushButton widget
+#include <QLabel>                         // for QLabel widget
+#include <QVBoxLayout>                    // for layout management (though not used here directly)
 
-ejemplo1::ejemplo1(): Ui_Counter()
+ejemplo1::ejemplo1(): Ui_Counter()        // constructor for the class ejemplo1, inheriting from Ui_Counter
 {
+    // setupUi(this) is generated from the .ui file
+    // it creates all widgets (buttons, labels, lcdNumber, etc.)
+    // and attaches them to 'this' object so we can access them
     setupUi(this);
 
-    // Configuración inicial
-    counterValue = 0;
-    countUp = true; // Empezamos con cuenta progresiva
-    initialCountdownValue = 100; // Valor inicial para cuenta regresiva
+    // initial configuration
+    counterValue = 0;                     // start counter at 0
+    countUp = true;                       // by default we count upwards
+    initialCountdownValue = 100;          // default value if counting down
 
-    lcdNumber->display(counterValue);
+    lcdNumber->display(counterValue);     // show initial counter value on LCD widget
 
-    // Configurar el temporizador
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateCounter()));
-    timer->start(1000); // 1 segundo inicial
+    // configure timer
+    timer = new QTimer(this);             // create a QTimer, parented to this widget
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateCounter()));  // call updateCounter() every timeout
+    timer->start(1000);                   // start timer with 1000ms (1 second) interval
 
-    // Conectar el botón STOP/START original
+    // connect the original STOP/START button (from .ui)
     connect(button, SIGNAL(clicked()), this, SLOT(doButton()));
 
-    // --- CREAR WIDGETS ADICIONALES ---
+    // --- CREATE ADDITIONAL WIDGETS ---
 
-    // Botón de RESET
+    // create RESET button
     QPushButton *resetButton = new QPushButton("RESET", this);
-    resetButton->setGeometry(80, 260, 251, 40);
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetCounter()));
+    resetButton->setGeometry(80, 260, 251, 40);                   // set position and size
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(resetCounter()));  // link to resetCounter()
 
-    // Slider para cambiar período
-    QSlider *periodSlider = new QSlider(Qt::Horizontal, this);
-    periodSlider->setGeometry(80, 310, 251, 30);
-    periodSlider->setRange(100, 5000); // de 100ms a 5 segundos
-    periodSlider->setValue(1000); // valor inicial 1 segundo
-    connect(periodSlider, SIGNAL(valueChanged(int)), this, SLOT(changePeriod(int)));
+    // create slider to change timer period
+    QSlider *periodSlider = new QSlider(Qt::Horizontal, this);    // horizontal slider
+    periodSlider->setGeometry(80, 310, 251, 30);                  // set position and size
+    periodSlider->setRange(100, 5000);                            // min 100ms, max 5000ms
+    periodSlider->setValue(1000);                                 // default = 1000ms (1 second)
+    connect(periodSlider, SIGNAL(valueChanged(int)), this, SLOT(changePeriod(int))); // link slider to changePeriod()
 
-    // Etiqueta para mostrar el período
+    // create label to show current period
     QLabel *periodLabel = new QLabel("Período: 1000 ms", this);
     periodLabel->setGeometry(80, 340, 251, 20);
 
-    // Botón para cambiar entre cuenta progresiva/regresiva
+    // create button to switch between up/down counting
     QPushButton *directionButton = new QPushButton("MODO: PROGRESIVA", this);
-    directionButton->setGeometry(80, 370, 251, 40);
-    connect(directionButton, SIGNAL(clicked()), this, SLOT(toggleCountDirection()));
+    directionButton->setGeometry(80, 370, 251, 40);  // position and size
+    connect(directionButton, SIGNAL(clicked()), this, SLOT(toggleCountDirection())); // toggle mode when clicked
 
-    show();
+    show();    // display the main widget
 }
 
 void ejemplo1::doButton()
 {
-    if (timer->isActive()) {
-        timer->stop();
-        button->setText("START");
-        qDebug() << "Timer stopped";
-    } else {
-        timer->start();
-        button->setText("STOP");
-        qDebug() << "Timer started";
+    if (timer->isActive()) {               // if the timer is running
+        timer->stop();                     // stop it
+        button->setText("START");          // change button text to START
+        qDebug() << "Timer stopped";       // log message
+    } else {                               // if the timer is stopped
+        timer->start();                    // start it again (uses last interval)
+        button->setText("STOP");           // change button text to STOP
+        qDebug() << "Timer started";       // log message
     }
 }
 
 void ejemplo1::updateCounter()
 {
-    if (countUp) {
-        // Cuenta progresiva
-        counterValue++;
-    } else {
-        // Cuenta regresiva
-        if (counterValue > 0) {
-            counterValue--;
-        } else {
-            // Si llega a 0, opcional: detener el timer o resetear
-            timer->stop();
-            button->setText("START");
-            qDebug() << "Countdown finished!";
+    if (countUp) {                         // if counting up
+        counterValue++;                    // increase counter
+    } else {                               // if counting down
+        if (counterValue > 0) {            // while counter > 0
+            counterValue--;                // decrease counter
+        } else {                           // if reached 0
+            timer->stop();                 // stop the timer
+            button->setText("START");      // reset button text
+            qDebug() << "Countdown finished!"; // log message
         }
     }
 
-    lcdNumber->display(counterValue);
-    qDebug() << "Counter:" << counterValue;
+    lcdNumber->display(counterValue);      // update LCD display
+    qDebug() << "Counter:" << counterValue;// log current value
 }
 
 void ejemplo1::resetCounter()
 {
-    if (countUp) {
-        counterValue = 0;
-    } else {
-        counterValue = initialCountdownValue;
+    if (countUp) {                         // if counting up
+        counterValue = 0;                  // reset to 0
+    } else {                               // if counting down
+        counterValue = initialCountdownValue; // reset to initial countdown value (100)
     }
-    lcdNumber->display(counterValue);
-    qDebug() << "Counter reset to:" << counterValue;
+    lcdNumber->display(counterValue);      // update LCD display
+    qDebug() << "Counter reset to:" << counterValue; // log message
 }
 
 void ejemplo1::changePeriod(int value)
 {
-    timer->setInterval(value);
+    timer->setInterval(value);             // set new interval from slider
     qDebug() << "Period changed to:" << value << "ms";
 
-    // Actualizar etiqueta del período (necesitaríamos una variable para la QLabel)
+    // update label text (but currently commented out because label isn't stored as a member)
     // periodLabel->setText(QString("Período: %1 ms").arg(value));
 }
 
 void ejemplo1::toggleCountDirection()
 {
-    countUp = !countUp;
+    countUp = !countUp;                    // invert direction flag
 
-    // Actualizar el texto del botón
+    // find the direction button dynamically (not the best approach — ideally store it as a member)
     QPushButton *directionButton = findChild<QPushButton*>();
-    if (directionButton) {
-        directionButton->setText(countUp ? "MODO: PROGRESIVA" : "MODO: REGRESIVA");
+    if (directionButton) {                 // if found
+        directionButton->setText(countUp ? "MODO: PROGRESIVA" : "MODO: REGRESIVA"); // update text
     }
 
-    // Resetear el contador al cambiar de modo
-    resetCounter();
+    resetCounter();                        // reset counter when changing mode
 
-    qDebug() << "Count direction changed to:" << (countUp ? "PROGRESIVA" : "REGRESIVA");
+    qDebug() << "Count direction changed to:" << (countUp ? "PROGRESIVA" : "REGRESIVA"); // log
 }
-
