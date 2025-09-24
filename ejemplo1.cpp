@@ -21,47 +21,36 @@ ejemplo1::ejemplo1(): Ui_Counter()        // constructor for the class ejemplo1,
 
     // configure timer
     timer = new QTimer(this);             // create a QTimer, parented to this widget
+        // QTimer is a Qt class that provides a way to execute code at regular time intervals.
+        // It emits the timeout() signal after a specified interval,
+        // which you can connect to a slot (function) to perform actions periodically
     connect(timer, SIGNAL(timeout()), this, SLOT(updateCounter()));  // call updateCounter() every timeout
     timer->start(1000);                   // start timer with 1000ms (1 second) interval
 
-    // connect the original STOP/START button (from .ui)
-    connect(button, SIGNAL(clicked()), this, SLOT(doButton()));
+    // Give functionality to the original STOP/START button (from .ui)
+    connect(stopButton, SIGNAL(clicked()), this, SLOT(doButton()));
 
-    // --- CREATE ADDITIONAL WIDGETS ---
+    // --- GIVE FUNCTIONALITY TO ADDITIONAL WIDGETS ---
 
-    // create RESET button
-    QPushButton *resetButton = new QPushButton("RESET", this);
-    resetButton->setGeometry(80, 260, 251, 40);                   // set position and size
+    // Give functionality to RESET button
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetCounter()));  // link to resetCounter()
 
-    // create slider to change timer period
-    QSlider *periodSlider = new QSlider(Qt::Horizontal, this);    // horizontal slider
-    periodSlider->setGeometry(80, 310, 251, 30);                  // set position and size
-    periodSlider->setRange(100, 5000);                            // min 100ms, max 5000ms
-    periodSlider->setValue(1000);                                 // default = 1000ms (1 second)
-    connect(periodSlider, SIGNAL(valueChanged(int)), this, SLOT(changePeriod(int))); // link slider to changePeriod()
+    // Give functionality to slider to change timer period// default = 1000ms (1 second)
+    connect(verticalSlider, SIGNAL(valueChanged(int)), this, SLOT(changePeriod(int))); // link slider to changePeriod()
 
-    // create label to show current period
-    QLabel *periodLabel = new QLabel("Período: 1000 ms", this);
-    periodLabel->setGeometry(80, 340, 251, 20);
-
-    // create button to switch between up/down counting
-    QPushButton *directionButton = new QPushButton("MODO: PROGRESIVA", this);
-    directionButton->setGeometry(80, 370, 251, 40);  // position and size
-    connect(directionButton, SIGNAL(clicked()), this, SLOT(toggleCountDirection())); // toggle mode when clicked
-
-    show();    // display the main widget
+    // Give functionality to button to switch between up/down counting
+    //connect(directionButton, SIGNAL(clicked()), this, SLOT(toggleCountDirection())); // toggle mode when clicked
 }
 
 void ejemplo1::doButton()
 {
     if (timer->isActive()) {               // if the timer is running
         timer->stop();                     // stop it
-        button->setText("START");          // change button text to START
+        stopButton->setText("START");          // change button text to START
         qDebug() << "Timer stopped";       // log message
     } else {                               // if the timer is stopped
         timer->start();                    // start it again (uses last interval)
-        button->setText("STOP");           // change button text to STOP
+        stopButton->setText("STOP");           // change button text to STOP
         qDebug() << "Timer started";       // log message
     }
 }
@@ -75,7 +64,7 @@ void ejemplo1::updateCounter()
             counterValue--;                // decrease counter
         } else {                           // if reached 0
             timer->stop();                 // stop the timer
-            button->setText("START");      // reset button text
+            stopButton->setText("START");      // reset button text
             qDebug() << "Countdown finished!"; // log message
         }
     }
@@ -104,17 +93,16 @@ void ejemplo1::changePeriod(int value)
     // periodLabel->setText(QString("Período: %1 ms").arg(value));
 }
 
+
 void ejemplo1::toggleCountDirection()
 {
+    /*
     countUp = !countUp;                    // invert direction flag
 
-    // find the direction button dynamically (not the best approach — ideally store it as a member)
-    QPushButton *directionButton = findChild<QPushButton*>();
-    if (directionButton) {                 // if found
-        directionButton->setText(countUp ? "MODO: PROGRESIVA" : "MODO: REGRESIVA"); // update text
-    }
+    directionButton->setText(countUp ? "MODE: PROGRESSIVE" : "MODE: REGRESSIVE"); // update text
 
     resetCounter();                        // reset counter when changing mode
 
-    qDebug() << "Count direction changed to:" << (countUp ? "PROGRESIVA" : "REGRESIVA"); // log
+    qDebug() << "Count direction changed to:" << (countUp ? "PROGRESSIVE" : "REGRESSIVE"); // log
+    */
 }
