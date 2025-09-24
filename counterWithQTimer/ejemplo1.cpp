@@ -1,4 +1,4 @@
-#include "ejemplo1.h"                     // include the header file for this class
+#include "ejemplo1.h"
 #include <QDebug>                         // for printing debug messages to console
 #include <QSlider>                        // for the QSlider widget
 #include <QPushButton>                    // for QPushButton widget

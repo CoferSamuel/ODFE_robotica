@@ -1,5 +1,5 @@
 #include <QtWidgets>          // include all Qt widget classes (QApplication, QWidget, etc.)
-#include "ejemplo1.h"         // include our custom widget class ejemplo1
+#include "ejemplo1.h"
 
 int main(int argc, char** argv)  // standard C++ main function (argc = argument count, argv = argument values)
 {
