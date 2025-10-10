@@ -81,6 +81,31 @@ void SpecificWorker::initialize()
 void SpecificWorker::compute()
 {
     std::cout << "Compute worker" << std::endl;
+
+	// Move the robot
+		std::cout << "Position of the robot: " << std::endl;
+		int x, z; float alpha;
+
+
+		try {
+			this->omnirobot_proxy->getBasePose(x, z, alpha);
+			std::cout << "x: " << x << ", z: " << z << ", alpha: "  << alpha << std::endl;
+		}
+		catch(const Ice::Exception &e)
+		{
+		  std::cout << "Error in OmniRobot" << e << std::endl;
+		}
+	// Lidar tests
+	try {
+	    std::string name; float start, len; int decimationDegreeFactor;
+		this->lidar3d_proxy->getLidarData(name, start, len, decimationDegreeFactor);
+		std::cout << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
+	}
+	catch(const Ice::Exception &e)
+	{
+		std::cout << "Error in Lidar" << e << std::endl;
+	}
+
 	//computeCODE
 	//try
 	//{
@@ -144,7 +169,7 @@ int SpecificWorker::startup_check()
 // RoboCompLidar3D::TDataCategory
 
 /**************************************/
-// From the RoboCompOmniRobot you can call this methods:
+// From the RoboCompOmniRobot you can call this methods: TODO more explanation
 // RoboCompOmniRobot::void this->omnirobot_proxy->correctOdometer(int x, int z, float alpha)
 // RoboCompOmniRobot::void this->omnirobot_proxy->getBasePose(int x, int z, float alpha)
 // RoboCompOmniRobot::void this->omnirobot_proxy->getBaseState(RoboCompGenericBase::TBaseState state)
