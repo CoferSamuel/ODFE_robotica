@@ -72,6 +72,7 @@ public slots:
 	 */
 	void emergency();
 
+	
 	/**
 	 * \brief Restores the component from an emergency state.
 	 */

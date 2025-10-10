@@ -46,7 +46,7 @@ SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, 
 		//Add your custom state
 		statemachine.addState(states["CustomState"].get());
 		***/
-
+		//a
 		statemachine.setChildMode(QState::ExclusiveStates);
 		statemachine.start();
 
