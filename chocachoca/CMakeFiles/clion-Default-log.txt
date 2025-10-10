@@ -1,0 +1,18 @@
+/snap/clion/385/bin/cmake/linux/x64/bin/cmake -G "Unix Makefiles" -S /home/jose/robocomp/components/ODFE/chocachoca -B /home/jose/robocomp/components/ODFE/chocachoca
+CMake Warning at CMakeLists.txt:5 (MESSAGE):
+  ROBOCOMP variable not set.  Using the default value:
+  /home/robocomp/robocomp
+
+
+CMake Warning (dev) at CMakeLists.txt:22 (INSTALL):
+  Policy CMP0177 is not set: install() DESTINATION paths are normalized.  Run
+  "cmake --help-policy CMP0177" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Using g++ 13 or higher, setting the C++23 standard.
+CMake Error at generated/CMakeLists.txt:19 (MESSAGE):
+  Couldn't find RoboComp in /home/robocomp/robocomp/! Exiting...
+
+
+-- Configuring incomplete, errors occurred!
