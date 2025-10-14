@@ -1,6 +1,6 @@
 # Proxies for required interfaces
 Proxies.Lidar3D = "lidar3d:tcp -h localhost -p 11988" # 11988 This number is in the Lidar3D component
-Proxies.OmniRobot = "omnirobot:tcp -h localhost -p 10006" # This number can be found in webots-bridge
+Proxies.OmniRobot = "omnirobot:tcp -h localhost -p 10004" # This number can be found in webots-bridge
 
 
 

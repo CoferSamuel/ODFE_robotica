@@ -80,26 +80,41 @@ void SpecificWorker::initialize()
 
 void SpecificWorker::compute()
 {
-    std::cout << "Compute worker" << std::endl;
+    std::cout << "================" << " Compute worker() " << "================" << std::endl;
 
 	// Move the robot
-		std::cout << "Position of the robot: " << std::endl;
+		// std::cout << "Position of the robot: " << std::endl;
 		int x, z; float alpha;
 
 
 		try {
 			this->omnirobot_proxy->getBasePose(x, z, alpha);
-			std::cout << "x: " << x << ", z: " << z << ", alpha: "  << alpha << std::endl;
+			std::cout << "ROBOT: " << std::endl;
+			std::cout << "      " << "x: " << x << ", z: " << z << ", alpha: "  << alpha << std::endl;
+			std::cout << "      " << "--------------------------------" << std::endl;
+
+			RoboCompGenericBase::TBaseState state;
+			this->omnirobot_proxy->getBaseState(state);
+			std::cout << "      " << "x: " << state.x << ", correctedX: " << state.correctedX << ", z: " << state.z << ", correctedZ: " << state.correctedZ << ", alpha: " << state.alpha << ", correctedAlpha: " << state.correctedAlpha << std::endl;
+			std::cout << "      " << "advVx: " << state.advVx << ", advVz: " << state.advVz << ", rotV: "  << state.rotV << ", isMoving: " << state.isMoving << std::endl;
+			std::cout << "      " << "--------------------------------" << std::endl;
+
+			float advx = 500.0;
+			float advz = 0.0;
+			float rot = 0.0;
+			std::cout << "      " << "Setting speed to: advx: " << advx << ", advz: " << advz << ", rot: "  << rot << std::endl;
+			this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
 		}
 		catch(const Ice::Exception &e)
 		{
-		  std::cout << "Error in OmniRobot" << e << std::endl;
+		  std::cout << "Error in OmniRobot: " << e << std::endl;
 		}
+
 	// Lidar tests
 	try {
 	    std::string name; float start, len; int decimationDegreeFactor;
 		this->lidar3d_proxy->getLidarData(name, start, len, decimationDegreeFactor);
-		std::cout << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
+		std::cout << "LIDAR: " << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
 	}
 	catch(const Ice::Exception &e)
 	{
