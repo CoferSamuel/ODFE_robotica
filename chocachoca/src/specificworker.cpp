@@ -97,62 +97,76 @@ void SpecificWorker::compute()
 {
     std::cout << "Compute worker" << std::endl;
 
-	// Robot speed
-	bool setRobotSpeed = true;
-
-	if(setRobotSpeed){
-		float advx = 500.0;
-		float advz = 0.0;
-		float rot = 0.0;
-		std::cout << "      " << "Setting speed to: advx: " << advx << ", advz: " << advz << ", rot: "  << rot << std::endl;
-		this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
-	}
-
-	// Show characteristics
-	bool characteristics = true;
-	if(characteristics){
-		int x, z; float alpha;
-
-		try {
-			this->omnirobot_proxy->getBasePose(x, z, alpha);
-			std::cout << "ROBOT: " << std::endl;
-			std::cout << "      " << "x: " << x << ", z: " << z << ", alpha: "  << alpha << std::endl;
-			std::cout << "      " << "--------------------------------" << std::endl;
-			RoboCompGenericBase::TBaseState state;
-			this->omnirobot_proxy->getBaseState(state);
-			std::cout << "      " << "x: " << state.x << ", correctedX: " << state.correctedX << ", z: " << state.z << ", correctedZ: " << state.correctedZ << ", alpha: " << state.alpha << ", correctedAlpha: " << state.correctedAlpha << std::endl;
-			std::cout << "      " << "advVx: " << state.advVx << ", advVz: " << state.advVz << ", rotV: "  << state.rotV << ", isMoving: " << state.isMoving << std::endl;
-			std::cout << "      " << "--------------------------------" << std::endl;
-		}
-		catch(const Ice::Exception &e)
-		{
-			std::cout << "Error in OmniRobot: " << e << std::endl;
-		}
-
-		// Lidar tests
-		try {
-			std::string name; float start, len; int decimationDegreeFactor;
-			this->lidar3d_proxy->getLidarData(name, start, len, decimationDegreeFactor);
-			std::cout << "LIDAR: " << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
-		}
-		catch(const Ice::Exception &e)
-		{
-			std::cout << "Error in Lidar" << e << std::endl;
-		}
-	}
+	std::vector<RoboCompLidar3D::TPoint> points;
+	std::vector<RoboCompLidar3D::TPoint> arrayFrontal;
+ 
 
 	try
 	{
+
+
 		const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
 		qInfo()<<"full"<< data.points.size();
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
-		const auto filter_data = filter_lidar(data.points);
+		const auto filter_data = filter_min_distance_cppitertools(data.points);
 		qInfo() << filter_data.value().size();
-		if (filter_data.has_value())
+		if (filter_data.has_value()){
 			draw_lidar(filter_data.value(), &viewer->scene);
+			points = filter_data.value();
+		}
+
+
 	}
-	catch (const Ice::Exception& e) { std::cout << e.what() << std::endl; return; }
+	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
+
 	new_target_slot(QPointF());
+
+
+
+      // El min
+      // si menor distancia en el centro del array es menor the 500
+      // el minimo elemento está en la mitad del array. Para leerlo calcula el largo del array/2, y algo de Begin
+      //    adv = 0, rot = 1
+      // else adv 1000 rot = 0
+   // Si no hay puntos, no continuamos
+
+
+
+
+      if (points.empty())
+         return;
+
+
+      // Obtener el punto central del array (zona frontal)
+      int mid_index = points.size() / 2;
+      float frontal_dist = points[mid_index].distance2d;
+
+
+      // Comportamiento simple de evasión
+      float side = 0.f;
+      float adv = 0.f;
+      float rot = 0.f;
+
+
+      if (frontal_dist < 2000)  // obstáculo cerca
+      {
+         adv = 0.f;
+         rot = 1.f;
+      }
+      else  // despejado
+      {
+         adv = 1000.f;
+         rot = 0.f;
+      }
+      try
+      {
+         omnirobot_proxy->setSpeedBase(side, adv, rot);
+      }catch (const Ice::Exception &e) {
+         std::cout << e.what() << std::endl;
+      }
+
+
+
 }
 
 void SpecificWorker::new_target_slot(QPointF)
@@ -186,6 +200,7 @@ void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphic
 	{
 		const auto dp = scene->addRect(-25, -25, 50, 50, pen);
 		dp->setPos(p.x, p.y);
+		
 		draw_points.push_back(dp);   // add to the list of points to be deleted next time
 	}
 }
@@ -243,31 +258,24 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 	{
 		// 'group' is an iterable object containing all points for the current angle.
 		auto min_it = std::min_element(std::begin(group), std::end(group),[]( const auto& a, const auto& b) { return a.r < b.r; });
-		result.emplace_back(RoboCompLidar3D::TPoint{.x=min_it->x, .y=min_it->y, .phi=min_it->phi, .r=min_it->r});
+        // El filtro por distancia y ángulo se aplica aquí. 
+		// De tal manera que solo detecta 180º hacia delante y 980 mm de distancia hacia abajo
+        if (min_it->phi < M_PI_2 && min_it->phi > -M_PI_2 && min_it->r < 980)
+         {
+            result.emplace_back(RoboCompLidar3D::TPoint{
+                .x = min_it->x,
+                .y = min_it->y,
+                .phi = min_it->phi,
+                .r = min_it->r
+            });
+        }	
 	}
 
 	return result;
 }
 
 
-std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_lidar(const RoboCompLidar3D::TPoints &points)
-{
-   if (points.empty()) return {};
 
-
-   RoboCompLidar3D::TPoints filtered;
-   for (auto &&[angle, pts] : iter::groupby(points, [](const auto &p)
-      {
-         float multiplier = std::pow(10.f, 2);
-         return std::floor(p.phi*multiplier)/multiplier;
-      }))
-   {
-         auto min_it = std::min_element(pts.begin(), pts.end(), [](const auto &a, const auto &b)
-               {return a.r < b.r;} );
-         filtered.emplace_back(*min_it);
-   }
-   return filtered;
-}
 
 
 
