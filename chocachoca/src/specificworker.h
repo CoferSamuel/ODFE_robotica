@@ -43,11 +43,7 @@
 class SpecificWorker : public GenericWorker
 {
 Q_OBJECT
-private:
-	QRectF dimensions;
-	AbstractGraphicViewer *viewer;
-	const int ROBOT_LENGTH = 400;
-	QGraphicsPolygonItem *robot_polygon;
+
 
 public:
     /**
@@ -105,10 +101,18 @@ private:
 	/**
      * \brief Flag indicating whether startup checks are enabled.
      */
+	QRectF dimensions;
+	AbstractGraphicViewer *viewer;
+	const int ROBOT_LENGTH = 400;
+	QGraphicsPolygonItem *robot_polygon;
+	
+
 	bool startup_check_flag;
 	std::optional<RoboCompLidar3D::TPoints>  filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
 
-	void draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
+    std::optional<RoboCompLidar3D::TPoints> filter_lidar(const RoboCompLidar3D::TPoints &points);
+
+    void draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
 
 

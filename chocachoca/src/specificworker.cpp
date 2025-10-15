@@ -36,11 +36,11 @@ SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, 
 		#ifdef HIBERNATION_ENABLED
 			hibernationChecker.start(500);
 		#endif
-		
+
 		// Example statemachine:
 		/***
 		//Your definition for the statesmachine (if you dont want use a execute function, use nullptr)
-		states["CustomState"] = std::make_unique<GRAFCETStep>("CustomState", period, 
+		states["CustomState"] = std::make_unique<GRAFCETStep>("CustomState", period,
 															std::bind(&SpecificWorker::customLoop, this),  // Cyclic function
 															std::bind(&SpecificWorker::customEnter, this), // On-enter function
 															std::bind(&SpecificWorker::customExit, this)); // On-exit function
@@ -77,12 +77,13 @@ void SpecificWorker::initialize()
     //initializeCODE
 
     /////////GET PARAMS, OPEND DEVICES....////////
-    // int period = configLoader.get<int>("Period.Compute"); //NOTE: If you want get period of compute use getPeriod("compute")
+    // int period = configLoader.get<int>("Period.Compute"); 
+	//NOTE: If you want get period of compute use getPeriod("compute")
     // std::string device = configLoader.get<std::string>("Device.name");
 
 	this->dimensions = QRectF(-6000, -3000, 12000, 6000);
 	viewer = new AbstractGraphicViewer(this->frame, this->dimensions);
-	//this->resize(900,450);
+	this->resize(900,450);
 	viewer->show();
 	const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue"));
 	robot_polygon = std::get<0>(rob);
@@ -92,75 +93,36 @@ void SpecificWorker::initialize()
 }
 
 
-
 void SpecificWorker::compute()
 {
     std::cout << "Compute worker" << std::endl;
 
-	// Robot speed
-
-	bool setRobotSpeed = true;
-
-	if(setRobotSpeed){
-		float advx = 500.0;
-		float advz = 0.0;
-		float rot = 0.0;
-		std::cout << "      " << "Setting speed to: advx: " << advx << ", advz: " << advz << ", rot: "  << rot << std::endl;
-		this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
-	}
-
-
-	// Show characteristics
-	bool characteristics = true;
-
-	if(characteristics){
-		int x, z; float alpha;
-		try {
-			this->omnirobot_proxy->getBasePose(x, z, alpha);
-			std::cout << "ROBOT: " << std::endl;
-			std::cout << "      " << "x: " << x << ", z: " << z << ", alpha: "  << alpha << std::endl;
-			std::cout << "      " << "--------------------------------" << std::endl;
-
-			RoboCompGenericBase::TBaseState state;
-			this->omnirobot_proxy->getBaseState(state);
-			std::cout << "      " << "x: " << state.x << ", correctedX: " << state.correctedX << ", z: " << state.z << ", correctedZ: " << state.correctedZ << ", alpha: " << state.alpha << ", correctedAlpha: " << state.correctedAlpha << std::endl;
-			std::cout << "      " << "advVx: " << state.advVx << ", advVz: " << state.advVz << ", rotV: "  << state.rotV << ", isMoving: " << state.isMoving << std::endl;
-			std::cout << "      " << "--------------------------------" << std::endl;
-		}
-		catch(const Ice::Exception &e)
-		{
-			std::cout << "Error in OmniRobot: " << e << std::endl;
-		}
-
-		// Lidar tests
-		try {
-			std::string name; float start, len; int decimationDegreeFactor;
-			this->lidar3d_proxy->getLidarData(name, start, len, decimationDegreeFactor);
-			std::cout << "LIDAR: " << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
-		}
-		catch(const Ice::Exception &e)
-		{
-			std::cout << "Error in Lidar" << e << std::endl;
-		}
-	}
-
-
-	// Código joseloro
 	try
 	{
+
+
 		const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
 		qInfo()<<"full"<< data.points.size();
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
-		const auto filter_data = filter_min_distance_cppitertools(data.points);
+		const auto filter_data = filter_lidar(data.points);
 		qInfo() << filter_data.value().size();
 		if (filter_data.has_value())
-			draw_lidar( filter_data.value(), &viewer->scene);
+			draw_lidar(filter_data.value(), &viewer->scene);
 	}
 	catch (const Ice::Exception& e) { std::cout << e.what() << std::endl; return; }
+	new_target_slot(QPointF());
 }
 
 void SpecificWorker::new_target_slot(QPointF)
 {
+	try {
+		RoboCompGenericBase::TBaseState bState;
+		omnirobot_proxy->getBaseState(bState);
+		robot_polygon->setRotation(bState.alpha*180/M_1_PI);
+		robot_polygon->setPos(bState.x,bState.z);
+		std::cout << bState.alpha << " " << bState.x << " " << bState.z << std::endl;
+	 }
+	 catch (const Ice::Exception &e)  {std::cout << e.what() << std::endl; return; }
 }
 
 
@@ -231,11 +193,9 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 	for (auto &&[angle, group] : iter::groupby(points, [](const auto& p)
 	{
 
-
-
-				float multiplier = std::pow(10.0f, 2);
-				return std::floor(p.phi * multiplier) / multiplier;
-			}
+		float multiplier = std::pow(10.0f, 2);
+		return std::floor(p.phi * multiplier) / multiplier;
+	}
 		)
 	)
 	{
@@ -246,6 +206,27 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 
 	return result;
 }
+
+
+std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_lidar(const RoboCompLidar3D::TPoints &points)
+{
+   if (points.empty()) return {};
+
+
+   RoboCompLidar3D::TPoints filtered;
+   for (auto &&[angle, pts] : iter::groupby(points, [](const auto &p)
+      {
+         float multiplier = std::pow(10.f, 2);
+         return std::floor(p.phi*multiplier)/multiplier;
+      }))
+   {
+         auto min_it = std::min_element(pts.begin(), pts.end(), [](const auto &a, const auto &b)
+               {return a.r < b.r;} );
+         filtered.emplace_back(*min_it);
+   }
+   return filtered;
+}
+
 
 
 /**************************************/
@@ -277,4 +258,3 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 /**************************************/
 // From the RoboCompOmniRobot you can use this types:
 // RoboCompOmniRobot::TMechParams
-
