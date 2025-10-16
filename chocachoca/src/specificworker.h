@@ -110,6 +110,8 @@ private:
 	bool startup_check_flag;
 	std::optional<RoboCompLidar3D::TPoints>  filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
 
+    RoboCompLidar3D::TPoints filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d);
+
     void draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
 
