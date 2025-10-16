@@ -25,6 +25,22 @@
 //Filtrar lider solo por parte delantera
 //Un if que va delante que compruebe anguilo
 //ipot o icot con valor 400
+
+
+// Definición del enum para los estados del robot
+enum class RobotState
+{
+    IDLE,        // Estado parado
+    FORWARD,     // Estado avanzando hacia delante
+    TURN,        // Estado girando
+    FOLLOW_WALL, // Estado siguiendo la pared
+    SPIRAL       // Estado realizando un patrón en espiral
+};
+RobotState currentState = RobotState::IDLE;
+
+
+
+
 SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
 	this->startup_check_flag = startup_check;
@@ -90,141 +106,85 @@ void SpecificWorker::initialize()
 	robot_polygon = std::get<0>(rob);
 
 	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
+	
 
 }
 
 
 void SpecificWorker::compute()
 {
+
     std::cout << "Compute worker" << std::endl;
 
 	std::vector<RoboCompLidar3D::TPoint> points;
 	std::vector<RoboCompLidar3D::TPoint> arrayFrontal;
- 
+	int mid_index = 0;
+	float frontal_dist = 0;
 
 	try
 	{
-
-
-		const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
+	 	const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
 		qInfo()<<"full"<< data.points.size();
+		
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		const auto filter_data = filter_min_distance_cppitertools(data.points);
+		mid_index = filter_data.value().size() / 2;
+		frontal_dist = points[mid_index].distance2d;
 		qInfo() << filter_data.value().size();
-		if (filter_data.has_value()){
+		if (filter_data.has_value())
+		{
 			draw_lidar(filter_data.value(), &viewer->scene);
 			points = filter_data.value();
 		}
 
 
+		
 	}
 	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
 
-	// new_target_slot(QPointF());
+	// Obtener el punto central del array (zona frontal)
 
-	int x, z; float alpha;
-
-
-	try {
-		this->omnirobot_proxy->getBasePose(x, z, alpha);
-
-		RoboCompGenericBase::TBaseState state;
-
-		// Esto deberia de ir en el inicialize para que asi solo se ejecute una vez
-		float advx = 0.0;
-		float advz = 400.0;
-		float rot = 0.0;
-		this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
-
-		std::string name; float start, len; int decimationDegreeFactor;
-		const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", len, decimationDegreeFactor);
-
-		if (len == 0 && decimationDegreeFactor == 0)
-			std::cout << "sa chocao " << std::endl;
-
-
-		// Comprobamos si hay puntos delante y a menos de 450 cm de distancia
-		//if(p.phi < M_PI_2 && p.phi > -M_PI_2 && p.r < 450)
-		// 	if(derecha libre)
-		// 		rot = -1.0;
-		// 	else if(izquierda libre)
-		// 		rot = 1.0;
-		// 	else
-		// 		set rotation(180)
-	}
-	catch(const Ice::Exception &e)
+		// Ejemplo de uso en un switch
+	float advx,advz,rot;
+	switch(currentState)
 	{
-	  std::cout << "Error in OmniRobot: " << e << std::endl;
+		case RobotState::IDLE:
+			// Aquí va la lógica para cuando el robot está parado
+			currentState = RobotState::FORWARD;
+			break;
+
+		case RobotState::FORWARD:
+			advx = 200.0;	
+			advz = 0.0;
+			rot = 0.0;
+			this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
+			if (frontal_dist < 50)  // obstáculo cerca
+				currentState = RobotState::TURN;
+
+			break;
+			
+
+		case RobotState::TURN:
+			// Lógica de giro
+			advx = 0.0;	
+			advz = 0.0;
+			rot = 1.0f;
+			this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
+			std::cout << "TURN" << std::endl;
+			currentState = RobotState::FORWARD;
+
+			break;
+
+		case RobotState::FOLLOW_WALL:
+			// Lógica de seguimiento de pared
+			std::cout << "FOLLOW_WALL" << std::endl;
+			break;
+
+		case RobotState::SPIRAL:
+			// Lógica de espiral
+			std::cout << "SPIRAL" << std::endl;
+			break;
 	}
-
-	// Lidar tests
-	try {
-		std::string name; float start, len; int decimationDegreeFactor;
-		this->lidar3d_proxy->getLidarData(name, start, len, decimationDegreeFactor);
-		std::cout << "LIDAR: " << "name: " << name << ", start: " << start << ", len: "  << len << ", decimationDegreeFactor: " << decimationDegreeFactor << std::endl;
-	}
-	catch(const Ice::Exception &e)
-	{
-		std::cout << "Error in Lidar" << e << std::endl;
-	}
-
-//computeCODE
-//try
-//{
-//  camera_proxy->getYImage(0,img, cState, bState);
-//    if (img.empty())
-//        emit goToEmergency()
-//  memcpy(image_gray.data, &img[0], m_width*m_height*sizeof(uchar));
-//  searchTags(image_gray);
-//}
-//catch(const Ice::Exception &e)
-//{
-//  std::cout << "Error reading from Camera" << e << std::endl;
-//}
-
-    // El min
-    // si menor distancia en el centro del array es menor the 500
-    // el minimo elemento está en la mitad del array. Para leerlo calcula el largo del array/2, y algo de Begin
-    //    adv = 0, rot = 1
-    // else adv 1000 rot = 0
-  	// Si no hay puntos, no continuamos
-
-
-
-
-    //   if (points.empty())
-    //      return;
-
-
-    //   // Obtener el punto central del array (zona frontal)
-    //   int mid_index = points.size() / 2;
-    //   float frontal_dist = points[mid_index].distance2d;
-
-
-    //   // Comportamiento simple de evasión
-    //   float side = 0.f;
-    //   float adv = 0.f;
-    //   float rot = 0.f;
-
-
-    //   if (frontal_dist < 2000)  // obstáculo cerca
-    //   {
-    //      adv = 0.f;
-    //      rot = 1.f;
-    //   }
-    //   else  // despejado
-    //   {
-    //      adv = 1000.f;
-    //      rot = 0.f;
-    //   }
-    //   try
-    //   {
-    //      omnirobot_proxy->setSpeedBase(side, adv, rot);
-    //   }catch (const Ice::Exception &e) {
-    //      std::cout << e.what() << std::endl;
-    //   }
-
-
 
 }
 
@@ -328,36 +288,45 @@ int SpecificWorker::startup_check()
 }
 
 
+// Esta función recibe un conjunto de puntos del LiDAR (cada punto tiene coordenadas x, y, r y phi)
+// y devuelve, para cada ángulo 'phi', el punto más cercano (menor distancia 'r').
+// Se usa std::optional para devolver un resultado vacío si no hay puntos válidos.
 std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints& points)
 {
-	// non-empty condition
+	// 🧩 1️⃣ Si no hay puntos, se devuelve un optional vacío.
 	if (points.empty())
 	{
 		return {};
 	}
+
+	// 🧩 2️⃣ Se crea un contenedor para los puntos filtrados.
+	// Se reserva memoria para evitar realocaciones (mejora de rendimiento).
 	RoboCompLidar3D::TPoints result;
 	result.reserve(points.size());
 
-	// loop over the groups produced by item::groupBy
+	// 🧩 3️⃣ Se agrupan los puntos por su ángulo 'phi' con una precisión de 2 decimales.
+	//    Esto significa que todos los puntos que tengan un ángulo muy similar se procesan juntos.
 	for (auto &&[angle, group] : iter::groupby(points, [](const auto& p)
 	{
-
+		// Redondeo de 'phi' a dos decimales.
 		float multiplier = std::pow(10.0f, 2);
 		return std::floor(p.phi * multiplier) / multiplier;
-	}
-		)
-	)
+	}))
 	{
-		// 'group' is an iterable object containing all points for the current angle.
-		auto min_it = std::min_element(std::begin(group), std::end(group),[]( const auto& a, const auto& b) { return a.r < b.r; });
-        // El filtro por distancia y ángulo se aplica aquí. 
+		// 🧩 4️⃣ Dentro de cada grupo de puntos con el mismo ángulo,
+		// se busca el punto con menor distancia 'r' (el más cercano al robot).
+		auto min_it = std::min_element(std::begin(group), std::end(group),
+			[](const auto& a, const auto& b) { return a.r < b.r; });
 
-			result.emplace_back(*min_it);
-        	
+		// 🧩 5️⃣ Se añade ese punto al vector de resultados.
+		// Este punto representa el obstáculo más cercano en esa dirección.
+		result.emplace_back(*min_it);
 	}
 
+	// 🧩 6️⃣ Se devuelve el conjunto de puntos filtrados (uno por ángulo).
 	return result;
 }
+
 
 // RoboCompLidar3D::TPoints SpecificWorker::filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d)
 // {
@@ -396,6 +365,20 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 //              result.push_back(points[i]);
 //     return result;
 // }
+
+
+
+
+
+/*
+	Fordward -> Basicamente set velocidad
+	Turn -> Basicamente set rotation,
+							rotation se le mete velocidad y rota hasta que no encuentre una pared (lo hace solo)
+	FollowWall -> El más complicado, al lidar ser una mierda debes de ir reajustando el angulo del robot
+									 porque no es capaz de seguir recto correctamente
+									 A todo esto tiene que ir detectando la pared
+	Spining -> En teoria no es muy complicado
+*/
 
 
 
