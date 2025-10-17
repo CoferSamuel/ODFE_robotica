@@ -72,9 +72,7 @@ public slots:
 	void compute();
 
 
-
-
-	void new_target_slot(QPointF);
+    void new_target_slot(QPointF);
 
 
 
@@ -105,15 +103,22 @@ private:
 	AbstractGraphicViewer *viewer;
 	const int ROBOT_LENGTH = 400;
 	QGraphicsPolygonItem *robot_polygon;
-	
-
 	bool startup_check_flag;
+	
+	enum class State{IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL};
+	SpecificWorker::State state = SpecificWorker::State::IDLE;
+
+
 	std::optional<RoboCompLidar3D::TPoints>  filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
 
     RoboCompLidar3D::TPoints filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d);
 
     void draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
+	std::tuple<SpecificWorker::State, float, float> forward(const RoboCompLidar3D::TPoints &points);
+    std::tuple<SpecificWorker::State, float, float> turn(const RoboCompLidar3D::TPoints &points);
+	std::tuple<SpecificWorker::State, float, float> follow_wall(const RoboCompLidar3D::TPoints &points);
+	std::tuple<SpecificWorker::State, float, float> spiral(const RoboCompLidar3D::TPoints &points);
 
 
 signals:

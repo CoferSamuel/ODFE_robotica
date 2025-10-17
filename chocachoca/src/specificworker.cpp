@@ -22,22 +22,6 @@
 #include <QRect>
 #include <cppitertools/groupby.hpp>
 #include <cppitertools/enumerate.hpp>
-//Filtrar lider solo por parte delantera
-//Un if que va delante que compruebe anguilo
-//ipot o icot con valor 400
-
-
-// Definición del enum para los estados del robot
-enum class RobotState
-{
-    IDLE,        // Estado parado
-    FORWARD,     // Estado avanzando hacia delante
-    TURN,        // Estado girando
-    FOLLOW_WALL, // Estado siguiendo la pared
-    SPIRAL       // Estado realizando un patrón en espiral
-};
-RobotState currentState = RobotState::IDLE;
-
 
 
 
@@ -115,9 +99,7 @@ void SpecificWorker::compute()
 {
 
     std::cout << "Compute worker" << std::endl;
-
-	std::vector<RoboCompLidar3D::TPoint> points;
-	std::vector<RoboCompLidar3D::TPoint> arrayFrontal;
+	std::tuple<SpecificWorker::State, float, float> result;	
 	int mid_index = 0;
 	float frontal_dist = 0;
 
@@ -129,13 +111,11 @@ void SpecificWorker::compute()
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		const auto filter_data = filter_min_distance_cppitertools(data.points);
 		mid_index = filter_data.value().size() / 2;
-		frontal_dist = points[mid_index].distance2d;
+		frontal_dist = filter_data.value()[mid_index].distance2d;
 		qInfo() << filter_data.value().size();
 		if (filter_data.has_value())
-		{
 			draw_lidar(filter_data.value(), &viewer->scene);
-			points = filter_data.value();
-		}
+
 
 
 		
@@ -146,41 +126,47 @@ void SpecificWorker::compute()
 
 		// Ejemplo de uso en un switch
 	float advx,advz,rot;
-	switch(currentState)
+	switch(state)
 	{
-		case RobotState::IDLE:
+		case SpecificWorker::State::IDLE:
 			// Aquí va la lógica para cuando el robot está parado
-			currentState = RobotState::FORWARD;
+			state = SpecificWorker::State::FORWARD;
 			break;
 
-		case RobotState::FORWARD:
-			advx = 200.0;	
-			advz = 0.0;
-			rot = 0.0;
-			this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
-			if (frontal_dist < 50)  // obstáculo cerca
-				currentState = RobotState::TURN;
+		case SpecificWorker::State::FORWARD:
+			if (min->distance2d <= MIN_THRESHOLD)
+			{
+				qInfo() << "FORWARD -> TURN";
+				result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, 1.f);
+			} else
+			{
+				// qInfo() << "FORWARD -> FORWARD";
+				result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, 3000.f, 0.f);
+			}
 
 			break;
 			
 
-		case RobotState::TURN:
+		case SpecificWorker::State::TURN:
 			// Lógica de giro
-			advx = 0.0;	
-			advz = 0.0;
-			rot = 1.0f;
-			this->omnirobot_proxy->setSpeedBase(advx, advz, rot);
-			std::cout << "TURN" << std::endl;
-			currentState = RobotState::FORWARD;
+
+
+			if (min->distance2d > MIN_THRESHOLD) {
+				qInfo() << "TURN -> FORWARD";
+				result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, 3000.f, 0.f);
+			} else
+			{
+				result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, 1.f);
+			}
 
 			break;
 
-		case RobotState::FOLLOW_WALL:
+		case SpecificWorker::State::FOLLOW_WALL:
 			// Lógica de seguimiento de pared
 			std::cout << "FOLLOW_WALL" << std::endl;
 			break;
 
-		case RobotState::SPIRAL:
+		case SpecificWorker::State::SPIRAL:
 			// Lógica de espiral
 			std::cout << "SPIRAL" << std::endl;
 			break;
@@ -188,6 +174,49 @@ void SpecificWorker::compute()
 
 }
 
+//El robot avanza rápido cuando no hay obstáculos y frena o gira cuanto más cerca o frontal está el obstáculo.
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const RoboCompLidar3D::TPoints& points)
+{
+	auto point = points.front();
+	// point.distance2d es la distancia euclidiana al punto (por ejemplo, sqrt(x² + z²)).
+	// 		si distance2d es grande, el resultado es grande; 
+	//		si es pequeño (obstáculo cerca), el resultado es pequeño.
+	// std::clamp(valor, 1.f, 0.f) → limita el valor al rango [0, 1].
+	// Por lo tanto, break_adv será 1 cuando no haya obstáculos cerca y 0 cuando estén muy cerca.
+	float break_adv = std::clamp(point.distance2d * (1/MIN_THRESHOLD), 1.f, 0.f);	
+	// atan2(y, x) devuelve el ángulo en radianes entre el eje X y el punto (x, y).
+	// Calcula el ángulo de rotación hacia el obstáculo:
+	float rot = atan2(point.x, point.z);
+
+	// Este término controla cuánto debe frenar la rotación en función del ángulo.
+	// Si rot es positivo (obstáculo a la derecha), brake_rot disminuye con rot.
+	// Si rot es negativo (obstáculo a la izquierda), brake_rot aumenta con rot
+	float brake_rot = rot>=0 ? std::clamp(rot+1, 1.f, 0.f) : std::clamp(1-rot, 0.f, 1.f);
+	// Combina los dos factores anteriores:
+	// 		MAX_ADV: velocidad máxima (por ejemplo, 200 mm/s)
+	//		break_adv: freno por distancia
+	// 		brake_rot: freno por dirección
+	float adv_speed = MAX_ADV * break_adv * brake_rot;
+
+	return std::tuple<SpecificWorker::State, float, float> (SpecificWorker::State::FORWARD, adv_speed, brake_rot);
+}
+
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboCompLidar3D::TPoints& points)
+{
+	return{};
+}
+
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(const RoboCompLidar3D::TPoints &points)
+{
+    return std::tuple<SpecificWorker::State, float, float>();
+}
+
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const RoboCompLidar3D::TPoints &points)
+{
+    return std::tuple<SpecificWorker::State, float, float>();
+}
+
+// NO SE USA ACTUALMENTE
 void SpecificWorker::new_target_slot(QPointF)
 {
     try {
