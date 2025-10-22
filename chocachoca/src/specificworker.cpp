@@ -23,6 +23,7 @@
 #include <cppitertools/groupby.hpp>
 #include <cppitertools/enumerate.hpp>
 #include <cppitertools/zip.hpp>
+#include <algorithm>
 using namespace std;
 
 const float MIN_DISTANCE_TURN = 450.0f; // Distancia mínima para salir del estado TURN
@@ -116,9 +117,9 @@ void SpecificWorker::compute()
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		filtered_points = filter_isolated_points(filter_data.value(), 200.0f);
 
-		qInfo() << filtered_points.size();
-		if (filtered_points.has_value())
-			draw_lidar(filtered_points.value(), &viewer->scene);
+//		qInfo() << filter_data.size();
+		if (filter_data.has_value())
+			draw_lidar(filter_data.value(), &viewer->scene);
 
 
 
@@ -226,6 +227,7 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(cons
 {
 	RoboCompLidar3D::TPoints frontal_points;
 	frontal_points.reserve(points.size());	
+	// for, para filtrar los puntos que estan al frente del robot
 	for (const auto &p : points)
 	{
 		if (p.phi > -M_PI_4 && p.phi < M_PI_4)  // -45° < phi < +45°
@@ -233,19 +235,22 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(cons
 			frontal_points.push_back(p);
 		}
 	}
-
-		auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
+	// for, para buscar el punto más cercano entre los puntos frontales
+	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
 		{ return p1.r < p2.r; });
 
+	// for, que busca si el punto más cercano está en el vector de puntos frontales
+	auto it = std::find_if(frontal_points.begin(), frontal_points.end(),[&](const auto &p) 
+		{ return p.x == min_dist->x && p.y == min_dist->y && p.phi == min_dist->phi && p.r == min_dist->r;});
 
-    if (min_dist->r < MIN_DISTANCE_TURN)
-	{
-		qInfo() << "CHANGE FROM FOLLOW WALL TO TURN";
-		return {State::TURN, MAX_ADV, 0.0f};  // Girar si hay obstáculo cerca
-	}
+	if (it != frontal_points.end())	
+		if (min_dist->r < MIN_DISTANCE_TURN)
+			{
+				qInfo() << "CHANGE FROM FOLLOW WALL TO TURN";
+				return {State::TURN, MAX_ADV, 0.0f};  // Girar si hay obstáculo cerca
+			}
 	
-
-
+	
 	qInfo() << "CONTINUE FOLLOWING WALL";
 
 	//What I do if I Stay
