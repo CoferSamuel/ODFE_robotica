@@ -22,6 +22,8 @@
 #include <QRect>
 #include <cppitertools/groupby.hpp>
 #include <cppitertools/enumerate.hpp>
+#include <cppitertools/zip.hpp>
+using namespace std;
 
 const float MIN_DISTANCE_TURN = 450.0f; // Distancia mínima para salir del estado TURN
 const float MAX_ADV = 200.0f;         // Velocidad máxima de avance en mm/s
@@ -110,14 +112,13 @@ void SpecificWorker::compute()
 	{
 	 	const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
 		qInfo()<<"full"<< data.points.size();
-		
-		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		const auto filter_data = filter_min_distance_cppitertools(data.points);
-		filtered_points = filter_data.value();
+		if (data.points.empty()){qWarning()<<"No points received"; return ;}
+		filtered_points = filter_isolated_points(filter_data.value(), 200.0f);
 
 		qInfo() << filtered_points.size();
-		if (filter_data.has_value())
-			draw_lidar(filter_data.value(), &viewer->scene);
+		if (filtered_points.has_value())
+			draw_lidar(filtered_points.value(), &viewer->scene);
 
 
 
@@ -223,21 +224,26 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboC
 
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(const RoboCompLidar3D::TPoints &points)
 {
-	auto frontal_points = points | std::views::filter([](const auto &p)
-	{ return p.phi < M_PI_4 && p.phi > -M_PI_4;  // -45º < phi < +45º 
-	});
-
-	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
-		{ return p1.r < p2.r; });
-
-	if (min_it != frontal_points.end())
+	RoboCompLidar3D::TPoints frontal_points;
+	frontal_points.reserve(points.size());	
+	for (const auto &p : points)
 	{
-    	if (min_it->r > MIN_DISTANCE_TURN + 200.0f)
+		if (p.phi > -M_PI_4 && p.phi < M_PI_4)  // -45° < phi < +45°
 		{
-			qInfo() << "CHANGE FROM FOLLOW WALL TO FORWARD";
-			return {State::FORWARD, MAX_ADV, 0.0f};  // Podemos avanzar
+			frontal_points.push_back(p);
 		}
 	}
+
+		auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
+		{ return p1.r < p2.r; });
+
+
+    if (min_dist->r < MIN_DISTANCE_TURN)
+	{
+		qInfo() << "CHANGE FROM FOLLOW WALL TO TURN";
+		return {State::TURN, MAX_ADV, 0.0f};  // Girar si hay obstáculo cerca
+	}
+	
 
 
 	qInfo() << "CONTINUE FOLLOWING WALL";
@@ -249,18 +255,18 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(cons
 		{
 			qInfo() << "FOLLOW WALL 1";
 
-			return {State::FOLLOW_WALL, 600.0f, -0.4f};
+			return {State::FOLLOW_WALL, MAX_ADV, -0.4f};
 		}
 		else
 		{
 			qInfo() << "FOLLOW WALL 2";
 
-			return {State::FOLLOW_WALL, 600.0f, 0.4f};  // Desplazamiento lateral + rotación
+			return {State::FOLLOW_WALL, MAX_ADV, 0.4f};  
 		}
 	}
 
 	qInfo() << "FOLLOW WALL 3";
-	return {State::FORWARD, 1000.0f, 0.0f};	
+	return {State::FOLLOW_WALL, MAX_ADV, 0.0f};
 }
 
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const RoboCompLidar3D::TPoints &points)
@@ -409,43 +415,42 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 }
 
 
-// RoboCompLidar3D::TPoints SpecificWorker::filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d)
-// {
-//     if (points.empty()) return {};
+RoboCompLidar3D::TPoints SpecificWorker::filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d)
+{
+    if (points.empty()) return {};
 
-//     const float d_squared = d * d;  // Avoid sqrt by comparing squared distances
-//     std::vector<bool> hasNeighbor(points.size(), false);
+    const float d_squared = d * d;  // Avoid sqrt by comparing squared distances
+    std::vector<bool> hasNeighbor(points.size(), false);
 
-//     // Create index vector for parallel iteration
-//     std::vector<size_t> indices(points.size());
-//     std::iota(indices.begin(), indices.end(), size_t{0});
+    // Create index vector for parallel iteration
+    std::vector<size_t> indices(points.size());
+    std::iota(indices.begin(), indices.end(), size_t{0});
 
-//     // Parallelize outer loop - each thread checks one point
-//     std::for_each(std::execution::par, indices.begin(), indices.end(), [&](size_t i)
-//         {
-//             const auto& p1 = points[i];
-//             // Sequential inner loop (avoid nested parallelism)
-//             for (auto &&[j,p2] : iter::enumerate(points))
-//                 {
-//                     if (i == j) continue;
-//                     const float dx = p1.x - p2.x;
-//                     const float dy = p1.y - p2.y;
-//                     if (dx * dx + dy * dy <= d_squared)
-//                     {
-//                         hasNeighbor[i] = true;
-//                         break;
-//                     }
-//                 }
-//         });
+    for (size_t i = 0; i < points.size(); ++i)
+    {
+        const auto& p1 = points[i];
+        for (size_t j = 0; j < points.size(); ++j)
+        {
+            if (i == j) continue;
+            const auto& p2 = points[j];
+            float dx = p1.x - p2.x;
+            float dy = p1.y - p2.y;
+            if (dx*dx + dy*dy <= d_squared)
+            {
+                hasNeighbor[i] = true;
+                break;
+            }
+        }
+    }
 
-//     // Collect results
-//     std::vector<RoboCompLidar3D::TPoint> result;
-//     result.reserve(points.size());
-//     for (auto &&[i, p] : iter::enumerate(points))
-//         if (hasNeighbor[i])
-//              result.push_back(points[i]);
-//     return result;
-// }
+    // Collect results
+    std::vector<RoboCompLidar3D::TPoint> result;
+    result.reserve(points.size());
+    for (auto &&[i, p] : iter::enumerate(points))
+        if (hasNeighbor[i])
+             result.push_back(points[i]);
+    return result;
+}
 
 
 
