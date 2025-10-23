@@ -106,7 +106,7 @@ private:
 	bool startup_check_flag;
 	
 	enum class State{IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL};
-	SpecificWorker::State state = SpecificWorker::State::FORWARD;
+	SpecificWorker::State state = SpecificWorker::State::SPIRAL;
 
 
 	std::optional<RoboCompLidar3D::TPoints>  filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);

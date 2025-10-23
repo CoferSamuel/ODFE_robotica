@@ -26,10 +26,11 @@
 #include <algorithm>
 using namespace std;
 
-const float MIN_DISTANCE_TURN = 450.0f; // Distancia mínima para salir del estado TURN
-const float MAX_ADV = 200.0f;         // Velocidad máxima de avance en mm/s
+const float MIN_DISTANCE_TURN = 600.0f; // Distancia mínima para salir del estado TURN
+const float MAX_ADV = 600.0f;         // Velocidad máxima de avance en mm/s
 const float MIN_THRESHOLD = 50.0f;  // Distancia mínima para empezar a frenar en mm
 const float MAX_BRAKE = 100.0f;       // Velocidad máxima de frenado en mm/s
+const float DIST_CHANGE_TO_SPIRAL= 2000.0f;//Distancia a la que no consideramos que no hay nada cerca para la espiral
 
 SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
@@ -84,7 +85,7 @@ void SpecificWorker::initialize()
     //initializeCODE
 
     /////////GET PARAMS, OPEND DEVICES....////////
-    // int period = configLoader.get<int>("Period.Compute"); 
+    // int period = configLoader.get<int>("Period.Compute");
 	//NOTE: If you want get period of compute use getPeriod("compute")
     // std::string device = configLoader.get<std::string>("Device.name");
 
@@ -96,7 +97,7 @@ void SpecificWorker::initialize()
 	robot_polygon = std::get<0>(rob);
 
 	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
-	
+
 
 }
 
@@ -106,7 +107,7 @@ void SpecificWorker::compute()
 
     std::cout << "Compute worker" << std::endl;
 	// Resultado devuelto por las funciones de comportamiento
-	std::tuple<SpecificWorker::State, float, float> result;	
+	std::tuple<SpecificWorker::State, float, float> result;
 	RoboCompLidar3D::TPoints filtered_points;
 
 	try
@@ -123,7 +124,7 @@ void SpecificWorker::compute()
 
 
 
-		
+
 	}
 	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
 
@@ -139,7 +140,7 @@ void SpecificWorker::compute()
 		case SpecificWorker::State::FORWARD:
 			result = forward(filtered_points);
 			break;
-			
+
 
 		case SpecificWorker::State::TURN:
 			// Lógica de giro
@@ -153,7 +154,7 @@ void SpecificWorker::compute()
 
 		case SpecificWorker::State::SPIRAL:
 			// Lógica de espiral
-			//result = spiral(filtered_points);
+			result = spiral(filtered_points);
 			std::cout << "SPIRAL" << std::endl;
 			break;
 	}
@@ -169,9 +170,22 @@ void SpecificWorker::compute()
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const RoboCompLidar3D::TPoints& points)
 {
 	std::tuple<SpecificWorker::State, float, float> result;
-	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
-			{ return p1.r < p2.r; });	// Punto más cercano
 
+	RoboCompLidar3D::TPoints frontal_points;
+	frontal_points.reserve(points.size());
+	// for, para filtrar los puntos que estan al frente del robot
+	for (const auto &p : points)
+	{
+		if (p.phi > (-M_PI_4 )&& p.phi < (M_PI_4))  // -45° < phi < +45°
+		{
+			frontal_points.push_back(p);
+		}
+	}
+	auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
+			{ return p1.r < p2.r; });	// Punto más cercano
+	if (min_dist->r>DIST_CHANGE_TO_SPIRAL) {
+		return{State::SPIRAL,0.0f,0.0f};
+	}
 	// Estos tres calculos, se pueden quitar y poner valores fijos si se desea
 
 	// Cálculo de velocidad de avance basada en la distancia al obstáculo más cercano
@@ -181,31 +195,44 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const Ro
 	float brake_rot = brake_speed / 2.0f; // Reducción de la velocidad de rotación al frenar
 
 	// Decisión de estado basada en la distancia al obstáculo más cercano
-	if (min_dist->r > MIN_DISTANCE_TURN) {		
+	if (min_dist->r > MIN_DISTANCE_TURN) {
 		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, adv_speed, 0.f);
 	} else {
 		qInfo() << "FORWARD -> TURN";
 		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, brake_rot);
-	} 
+	}
 	return result;
 }
 
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboCompLidar3D::TPoints& points)
-{	
+{
+	static int cont=0;
 	std::tuple<SpecificWorker::State, float, float> result;
-	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
+
+	RoboCompLidar3D::TPoints frontal_points;
+	frontal_points.reserve(points.size());
+	// for, para filtrar los puntos que estan al frente del robot
+	for (const auto &p : points)
+	{
+		if (p.phi > (-M_PI_4 )&& p.phi < (M_PI_4))  // -45° < phi < +45°
+		{
+			frontal_points.push_back(p);
+		}
+	}
+	auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
 			{ return p1.r < p2.r; });	// Punto más cercano
 
 	// Si ya no hay obstáculo cerca, volvemos a FORWARD
-	if (min_dist->r > MIN_DISTANCE_TURN)
+	if (min_dist->r > MIN_DISTANCE_TURN+100)
 	{
+		cont=0;
 		// Aleatoriamente decido si seguir pared o avanzar
 		if (std::rand() % 2 == 0)
 		{
 			qInfo() << "TURN -> FOLLOW WALL";
 			result = {State::FOLLOW_WALL, MAX_ADV, 0.0f};  // Podemos avanzar
 		}
-		else 
+		else
 		{
 			qInfo() << "TURN -> FORWARD";
 			result = {State::FORWARD, MAX_ADV, 0.0f};  // Podemos avanzar
@@ -213,70 +240,95 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboC
 
 	}
 	else {
+
 		qInfo() << "TURN AGAIN";
-		if (min_dist->phi < 0)
-			result =  {State::TURN, 0.0f, 0.5f};
+		cont++;
+		if (cont>=100)
+			result=  {State::TURN, 0.0f, 1.0f};
 		else
-			result = {State::TURN, 0.0f, -0.5f};
-		
+			if (min_dist->phi < 0)
+				result =  {State::TURN, 0.0f, 1.0f};
+			else
+				result = {State::TURN, 0.0f, -1.0f};
+
 	}
 	return result;
 }
 
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(const RoboCompLidar3D::TPoints &points)
 {
-	RoboCompLidar3D::TPoints frontal_points;
-	frontal_points.reserve(points.size());	
-	// for, para filtrar los puntos que estan al frente del robot
-	for (const auto &p : points)
-	{
-		if (p.phi > -M_PI_4 && p.phi < M_PI_4)  // -45° < phi < +45°
-		{
-			frontal_points.push_back(p);
-		}
-	}
-	// for, para buscar el punto más cercano entre los puntos frontales
+
 	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
 		{ return p1.r < p2.r; });
-
-	// for, que busca si el punto más cercano está en el vector de puntos frontales
-	auto it = std::find_if(frontal_points.begin(), frontal_points.end(),[&](const auto &p) 
-		{ return p.x == min_dist->x && p.y == min_dist->y && p.phi == min_dist->phi && p.r == min_dist->r;});
-
-	if (it != frontal_points.end())	
-		if (min_dist->r < MIN_DISTANCE_TURN)
-			{
-				qInfo() << "CHANGE FROM FOLLOW WALL TO TURN";
-				return {State::TURN, MAX_ADV, 0.0f};  // Girar si hay obstáculo cerca
-			}
-	
-	
-	qInfo() << "CONTINUE FOLLOWING WALL";
-
-	//What I do if I Stay
-	if (min_dist->r < MIN_DISTANCE_TURN)
+	qInfo() << "DISTANCIA PARED------------------"<<min_dist->r;
+	// Si ya no hay obstáculo cerca, volvemos a FORWARD
+	if (min_dist->r >= MIN_DISTANCE_TURN && min_dist->r < MIN_DISTANCE_TURN+150)
 	{
-		if (min_dist->phi < 0)
-		{
-			qInfo() << "FOLLOW WALL 1";
-
-			return {State::FOLLOW_WALL, MAX_ADV, -0.4f};
-		}
-		else
-		{
-			qInfo() << "FOLLOW WALL 2";
-
-			return {State::FOLLOW_WALL, MAX_ADV, 0.4f};  
-		}
+		qInfo() << "FOLLOW WALL";
+		return {State::FOLLOW_WALL, 150.0f, 0.0f};  // Podemos avanzar
 	}
 
-	qInfo() << "FOLLOW WALL 3";
-	return {State::FOLLOW_WALL, MAX_ADV, 0.0f};
+	//Estamos muy lejos de la pared en este caso 750
+	if (min_dist->r > MIN_DISTANCE_TURN+150)//Si estoy lejos de la pared corrijo el movimiento
+	{
+		//Detectamos en que lado esta la pared que seguimos y reducimos la velocidad para rotar.
+		if (min_dist->phi < 0)
+		{
+			qInfo() << "FOLLOW WALL LEFT FAR";
+			return {State::FOLLOW_WALL, 150.0f, -0.2f};
+		}
+
+			qInfo() << "FOLLOW WALL RIGHT FAR";
+
+			return {State::FOLLOW_WALL, 150.0f, 0.2f};
+
+	}
+	if (MIN_DISTANCE_TURN-100 < min_dist->r && min_dist->r < MIN_DISTANCE_TURN+10)//Esto es si estoy cerca de la pared y corrijo el movimiento
+	{
+		//Detectamos en que lado esta la pared que seguimos y reducimos la velocidad para rotar.
+		if (min_dist->phi < 0)
+		{
+			qInfo() << "FOLLOW WALL LEFT NEAR";
+			return {State::FOLLOW_WALL, 150.0f, 0.2f};
+		}
+
+		qInfo() << "FOLLOW WALL RIGHT NEAR";
+
+		return {State::FOLLOW_WALL, 150.0f, -0.2f};
+
+	}
+
+	qInfo() << "FOLLOW WALL -> FORWARD";
+	return {State::FORWARD, 600.0f, 0.0f};
 }
 
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const RoboCompLidar3D::TPoints &points)
 {
-    return std::tuple<SpecificWorker::State, float, float>();
+
+	static float adv_speed_spiral = 500.0f;   // velocidad lineal inicial (mm/s)
+	static float rot_speed_spiral = 3.0f;     // velocidad angular inicial (rad/s)
+	const float MAX_ADV_SPIRAL = 1000.0f;        // velocidad máxima de avance
+	const float MIN_ROT = 0.0f;        // rotación mínima
+
+	// 1️⃣ Comprobamos si hay obstáculos cerca
+	auto min_dist = std::min_element(points.begin(), points.end(),
+									 [](const auto &a, const auto &b){ return a.r < b.r; });
+
+	if (min_dist != points.end() && min_dist->r < MIN_DISTANCE_TURN)
+	{
+		qInfo() << "SPIRAL -> OBSTÁCULO DETECTADO. Cambiando a TURN.";
+		adv_speed_spiral = 100.0f;   // reseteamos valores
+		rot_speed_spiral = 4.0f;
+		return {State::TURN, 0.0f, 0.0f};
+	}
+
+	// 2️⃣ Aumentamos velocidad de avance y reducimos rotación (efecto espiral)
+	adv_speed_spiral = std::min(adv_speed_spiral + 2.5f, MAX_ADV_SPIRAL);
+	rot_speed_spiral = std::max(rot_speed_spiral - 0.01f, MIN_ROT);
+
+	qInfo() << "SPIRAL: adv" << adv_speed_spiral << "rot" << rot_speed_spiral;
+	return {State::SPIRAL, adv_speed_spiral, rot_speed_spiral};
+
 }
 
 // NO SE USA ACTUALMENTE
@@ -342,7 +394,7 @@ void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphic
 
 		// Se coloca el rectángulo en las coordenadas (x, y) del punto LiDAR
 		dp->setPos(p.x, p.y);
-		
+
 		// Se guarda el puntero al rectángulo en el vector para poder eliminarlo la próxima vez
 		draw_points.push_back(dp);
 	}
@@ -467,11 +519,11 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_isolated_points(const RoboCompLi
 		Codigo para avanzar rapido si no hay obstaculo cerca
 					auto point = points.front();
 					// point.distance2d es la distancia euclidiana al punto (por ejemplo, sqrt(x² + z²)).
-					// 		si distance2d es grande, el resultado es grande; 
+					// 		si distance2d es grande, el resultado es grande;
 					//		si es pequeño (obstáculo cerca), el resultado es pequeño.
 					// std::clamp(valor, 1.f, 0.f) → limita el valor al rango [0, 1].
 					// Por lo tanto, break_adv será 1 cuando no haya obstáculos cerca y 0 cuando estén muy cerca.
-					float break_adv = std::clamp(point.distance2d * (1/MIN_THRESHOLD), 1.f, 0.f);	
+					float break_adv = std::clamp(point.distance2d * (1/MIN_THRESHOLD), 1.f, 0.f);
 					// atan2(y, x) devuelve el ángulo en radianes entre el eje X y el punto (x, y).
 					// Calcula el ángulo de rotación hacia el obstáculo:
 					float rot = atan2(point.x, point.z);
