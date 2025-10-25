@@ -210,21 +210,21 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const Ro
 	// If the nearest frontal obstacle is very far, switch to spiral exploration
 	if (min_dist->r>DIST_CHANGE_TO_SPIRAL) {
 		return{State::SPIRAL,0.0f,0.0f};              // change behaviour to SPIRAL
-	}
-
-	// Decide whether to keep going forward or enter turning state based on min distance
-	if (min_dist->r > MIN_DISTANCE_TURN) {
-		// Compute forward speed proportional to how far the nearest obstacle is, clamped to MAX_ADV
-		// Either go at maximum speed or scale down based on proximity to obstacle
-		float adv_speed = std::min(MAX_ADV, (min_dist->r - MIN_THRESHOLD) * (MAX_ADV / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
-		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, adv_speed, 0.f);
-	} else {
-		qInfo() << "FORWARD -> TURN";                  // log state transition
-		// Compute a braking term proportional to how close we are to the critical distance
-		float brake_speed = std::min(MAX_BRAKE, (MIN_DISTANCE_TURN - min_dist->r) * (MAX_BRAKE / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
-		float brake_rot = brake_speed / 2.0f;               // reduce rotation while braking 
-		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, brake_rot);
-	}
+	}else{ // If the nearest frontal obstacle is close
+		// Decide whether to keep going forward or enter turning state based on min distance
+		if (min_dist->r > MIN_DISTANCE_TURN) {
+			// Compute forward speed proportional to how far the nearest obstacle is, clamped to MAX_ADV
+			// Either go at maximum speed or scale down based on proximity to obstacle
+			float adv_speed = std::min(MAX_ADV, (min_dist->r - MIN_THRESHOLD) * (MAX_ADV / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
+			result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, adv_speed, 0.f);
+		} else {
+			qInfo() << "FORWARD -> TURN";                  // log state transition
+			// Compute a braking term proportional to how close we are to the critical distance
+			float brake_speed = std::min(MAX_BRAKE, (MIN_DISTANCE_TURN - min_dist->r) * (MAX_BRAKE / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
+			float brake_rot = brake_speed / 2.0f;               // reduce rotation while braking 
+			result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, brake_rot);
+		}
+	}	
 	return result;                                      // return chosen state and speeds
 }
 
