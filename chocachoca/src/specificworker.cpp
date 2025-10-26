@@ -32,7 +32,7 @@ using namespace std;                                // bring standard names into
 
 // --- Tunable constants used by behaviour/state logic ---
 const float MIN_DISTANCE_TURN = 600.0f;             // minimum safe distance (mm) to stop turning and resume forward
-const float MAX_ADV = 600.0f;                       // maximum forward speed (mm/s)
+const float MAX_ADV = 800.0f;                       // maximum forward speed (mm/s)
 const float MIN_THRESHOLD = 50.0f;                  // threshold distance where braking begins (mm)
 const float MAX_BRAKE = 100.0f;                     // maximum braking contribution to linear speed (mm/s)
 const float DIST_CHANGE_TO_SPIRAL= 2000.0f;         // if nearest obstacle further than this, switch to spiral exploration
@@ -116,6 +116,7 @@ void SpecificWorker::initialize()
 
 	// Connect mouse events from the viewer to a slot that handles new targets (clicks)
 	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
+	srand(time(NULL));
 
 }
 
@@ -175,7 +176,6 @@ void SpecificWorker::compute()
 		case SpecificWorker::State::SPIRAL:
 			// Execute spiral exploration behaviour
 			result = spiral(filtered_points);
-			std::cout << "SPIRAL" << std::endl;
 			break;
 	}
 	// Extract the computed next state and speeds from the behavior result
@@ -203,13 +203,18 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const Ro
 			frontal_points.push_back(p);              // keep frontal points
 		}
 	}
+	// Find the closest point (the most limiting obstacle), spiral needs all points
+	auto min_dist_spiral = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
+			{ return p1.r < p2.r; });    // Punto más cercano
+
 	// Find the closest frontal point (the most limiting obstacle)
 	auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
 			{ return p1.r < p2.r; });    // Punto más cercano
 
 	// If the nearest frontal obstacle is very far, switch to spiral exploration
-	if (min_dist->r>DIST_CHANGE_TO_SPIRAL) {
+	if (min_dist_spiral->r >DIST_CHANGE_TO_SPIRAL) {
 		return{State::SPIRAL,0.0f,0.0f};              // change behaviour to SPIRAL
+
 	}else{ // If the nearest frontal obstacle is close
 		// Decide whether to keep going forward or enter turning state based on min distance
 		if (min_dist->r > MIN_DISTANCE_TURN) {
@@ -234,6 +239,7 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboC
 {
 	static int cont=0;                                  // persistent counter across calls
 	std::tuple<SpecificWorker::State, float, float> result; // For return value
+	static float rot = 0.6f;                        	// default rotation speed
 
 	// Select frontal points (-45°..45°) to reason about the immediate front
 	RoboCompLidar3D::TPoints frontal_points;
@@ -258,6 +264,9 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboC
 	// If obstacle has moved sufficiently away, decide randomly between FOLLOW_WALL and FORWARD
 	if (min_dist->r > MIN_DISTANCE_TURN+100)
 	{
+		// Randomly choose rotation speed for next turns
+		// 30 percent chance to turn more aggressively, number more bigger means less turns
+		rot = (rand() % 100 < 70) ? 0.6f : 3.0f;
 		cont=0;                                        // reset counter
 		// Randomly decide whether to follow wall or continue forward
 		if (std::rand() % 2 == 0)
@@ -278,11 +287,14 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboC
 		cont++;
 		if (cont>=100)
 			result=  {State::TURN, 0.0f, 1.0f};        // force a positive rotation after many TURN AGAIN
-		else
+		else {
+			if ( rot > 0.6f ) qInfo() << "TURN MORE AGGRESSIVELY" << ", rot:" << rot;
 			if (min_dist->phi < 0)
-				result =  {State::TURN, 0.0f, 1.0f};  // obstacle to the left -> turn one direction
+				result =  {State::TURN, 0.0f, rot};  // obstacle to the left -> turn one direction
 			else
-				result = {State::TURN, 0.0f, -1.0f};  // obstacle to the right -> turn opposite direction
+				result = {State::TURN, 0.0f, -rot};  // obstacle to the right -> turn opposite direction
+		}
+
 
 	}
 	return result;                                      // return decision
@@ -298,37 +310,38 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(cons
 		{ return p1.r < p2.r; });
 	qInfo() << "DISTANCIA PARED------------------"<<min_dist->r; // debug log
 	// If in a narrow band near MIN_DISTANCE_TURN, keep following
-	if (min_dist->r >= MIN_DISTANCE_TURN && min_dist->r < MIN_DISTANCE_TURN+150)
+	if (min_dist->r >= MIN_DISTANCE_TURN+50 && min_dist->r < MIN_DISTANCE_TURN+200)
 	{
 		qInfo() << "FOLLOW WALL";
-		return {State::FOLLOW_WALL, 150.0f, 0.0f};  // proceed forward slowly
+		return {State::FOLLOW_WALL, 550.0f, 0.0f};  // proceed forward slowly
 	}
 
 	// If too far from wall, gently steer towards it depending on which side it's located
-	if (min_dist->r > MIN_DISTANCE_TURN+150)
+	if (min_dist->r > MIN_DISTANCE_TURN+200)
 	{
 		if (min_dist->phi < 0)
 		{
 			qInfo() << "FOLLOW WALL LEFT FAR";
-			return {State::FOLLOW_WALL, 150.0f, -0.2f}; // turn right slightly
+			return {State::FOLLOW_WALL, 270.0f, -1.5f}; // turn right slightly
 		}
 
 		qInfo() << "FOLLOW WALL RIGHT FAR";
-		return {State::FOLLOW_WALL, 150.0f, 0.2f};     // turn left slightly
+		return {State::FOLLOW_WALL, 270.0f, 1.5f};     // turn left slightly
 
 	}
 	// If very close to wall, steer away slightly depending on side
-	if (MIN_DISTANCE_TURN-100 < min_dist->r && min_dist->r < MIN_DISTANCE_TURN+10)
+	if (MIN_DISTANCE_TURN-120 < min_dist->r && min_dist->r < MIN_DISTANCE_TURN+50)
 	{
+		
 		if (min_dist->phi < 0)
 		{
 			qInfo() << "FOLLOW WALL LEFT NEAR";
-			return {State::FOLLOW_WALL, 150.0f, 0.2f};  // rotate to increase distance
+			return {State::FOLLOW_WALL, 270.0f, 2.2f};  // rotate to increase distance
 		}
 
 		qInfo() << "FOLLOW WALL RIGHT NEAR";
 
-		return {State::FOLLOW_WALL, 150.0f, -0.2f};
+		return {State::FOLLOW_WALL, 270.0f, -2.2f};
 
 	}
 
@@ -341,26 +354,27 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(cons
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const RoboCompLidar3D::TPoints &points)
 {
 
-	static float adv_speed_spiral = 500.0f;   // initial linear speed for spiral (persistent)
-	static float rot_speed_spiral = 3.0f;     // initial angular speed for spiral (persistent)
-	const float MAX_ADV_SPIRAL = 1000.0f;     // cap for forward speed
+	static float adv_speed_spiral = 600.0f;   // initial linear speed for spiral (persistent)
+	static float rot_speed_spiral = 1.8f;     // initial angular speed for spiral (persistent)
+	const float MAX_ADV_SPIRAL = 1200.0f;     // cap for forward speed
 	const float MIN_ROT = 0.0f;              // minimum angular speed (we allow it to go to 0)
 
 	// Check for any close obstacles: if found -> go to TURN behaviour and reset spiral speeds
-	auto min_dist = std::min_element(points.begin(), points.end(),
-									 [](const auto &a, const auto &b){ return a.r < b.r; });
+	auto min_dist = std::min_element(points.begin(), points.end(),[](const auto &a, const auto &b){ return a.r < b.r; });
 
-	if (min_dist != points.end() && min_dist->r < MIN_DISTANCE_TURN)
+	if (min_dist->r < MIN_DISTANCE_TURN)
 	{
 		qInfo() << "SPIRAL -> OBSTÁCULO DETECTADO. Cambiando a TURN.";
-		adv_speed_spiral = 100.0f;   // reset linear speed for next time
-		rot_speed_spiral = 4.0f;     // reset rotational speed
+		adv_speed_spiral = 600.0f;   // reset linear speed for next time
+		rot_speed_spiral = 1.8f;     // reset rotational speed
 		return {State::TURN, 0.0f, 0.0f}; // switch to TURN immediately
 	}
 
 	// Gradually increase forward speed and slowly reduce rotation to create an outward spiral trajectory
 	adv_speed_spiral = std::min(adv_speed_spiral + 2.5f, MAX_ADV_SPIRAL);
-	rot_speed_spiral = std::max(rot_speed_spiral - 0.01f, MIN_ROT);
+
+	if (rot_speed_spiral > MIN_ROT)
+        rot_speed_spiral -= 0.03f * (rot_speed_spiral / 5.0f);  // reduce rotation gradually
 
 	qInfo() << "SPIRAL: adv" << adv_speed_spiral << "rot" << rot_speed_spiral;
 	return {State::SPIRAL, adv_speed_spiral, rot_speed_spiral};
