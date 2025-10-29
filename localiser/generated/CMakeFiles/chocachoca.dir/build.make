@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 # Include any dependencies generated for this target.
 include generated/CMakeFiles/chocachoca.dir/depend.make
@@ -70,22 +70,22 @@ include generated/CMakeFiles/chocachoca.dir/progress.make
 include generated/CMakeFiles/chocachoca.dir/flags.make
 
 generated/OmniRobot.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "BU ice=>h/cpp: Generating OmniRobot.h and OmniRobot.cpp from /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.ice"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.ice -I/home/jose/robocomp/components/ODFE/chocachoca/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "BU ice=>h/cpp: Generating OmniRobot.h and OmniRobot.cpp from /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.ice"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.ice -I/home/jose/robocomp/components/ODFE/localiser/generated/ --output-dir .
 
 generated/OmniRobot.h: generated/OmniRobot.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/OmniRobot.h
 
 generated/Lidar3D.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "BU ice=>h/cpp: Generating Lidar3D.h and Lidar3D.cpp from /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.ice"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.ice -I/home/jose/robocomp/components/ODFE/chocachoca/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "BU ice=>h/cpp: Generating Lidar3D.h and Lidar3D.cpp from /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.ice"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.ice -I/home/jose/robocomp/components/ODFE/localiser/generated/ --output-dir .
 
 generated/Lidar3D.h: generated/Lidar3D.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/Lidar3D.h
 
 generated/GenericBase.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "BU ice=>h/cpp: Generating GenericBase.h and GenericBase.cpp from /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.ice"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.ice -I/home/jose/robocomp/components/ODFE/chocachoca/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "BU ice=>h/cpp: Generating GenericBase.h and GenericBase.cpp from /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.ice"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.ice -I/home/jose/robocomp/components/ODFE/localiser/generated/ --output-dir .
 
 generated/GenericBase.h: generated/GenericBase.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/GenericBase.h
@@ -93,177 +93,177 @@ generated/GenericBase.h: generated/GenericBase.cpp
 generated/chocachoca_autogen/timestamp: /usr/lib/qt6/libexec/moc
 generated/chocachoca_autogen/timestamp: /usr/lib/qt6/libexec/uic
 generated/chocachoca_autogen/timestamp: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Automatic MOC and UIC for target chocachoca"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/cmake -E cmake_autogen /home/jose/robocomp/components/ODFE/chocachoca/generated/CMakeFiles/chocachoca_autogen.dir/AutogenInfo.json Debug
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/cmake -E touch /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Automatic MOC and UIC for target chocachoca"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/cmake -E cmake_autogen /home/jose/robocomp/components/ODFE/localiser/generated/CMakeFiles/chocachoca_autogen.dir/AutogenInfo.json ""
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/cmake -E touch /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/timestamp
 
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: generated/chocachoca_autogen/mocs_compilation.cpp
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o -MF CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o -MF CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/mocs_compilation.cpp
 
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/mocs_compilation.cpp > CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/mocs_compilation.cpp > CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/mocs_compilation.cpp -o CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/mocs_compilation.cpp -o CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -c /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -c /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: src/specificworker.cpp
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o -MF CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o.d -o CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o -MF CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o.d -o CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/src/specificworker.cpp
 
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.cpp > CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/src/specificworker.cpp > CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.cpp -o CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/src/specificworker.cpp -o CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: /home/jose/robocomp/classes/rapplication/rapplication.cpp
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -c /home/jose/robocomp/classes/rapplication/rapplication.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -c /home/jose/robocomp/classes/rapplication/rapplication.cpp
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/rapplication/rapplication.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/rapplication/rapplication.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/rapplication/rapplication.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/rapplication/rapplication.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: /home/jose/robocomp/classes/sigwatch/sigwatch.cpp
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -c /home/jose/robocomp/classes/sigwatch/sigwatch.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -c /home/jose/robocomp/classes/sigwatch/sigwatch.cpp
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/sigwatch/sigwatch.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/sigwatch/sigwatch.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/sigwatch/sigwatch.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/sigwatch/sigwatch.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -c /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -c /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -c /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -MF CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o.d -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -c /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp > CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp -o CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/main.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/main.cpp.o: generated/main.cpp
 generated/CMakeFiles/chocachoca.dir/main.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object generated/CMakeFiles/chocachoca.dir/main.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/main.cpp.o -MF CMakeFiles/chocachoca.dir/main.cpp.o.d -o CMakeFiles/chocachoca.dir/main.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object generated/CMakeFiles/chocachoca.dir/main.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/main.cpp.o -MF CMakeFiles/chocachoca.dir/main.cpp.o.d -o CMakeFiles/chocachoca.dir/main.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/main.cpp
 
 generated/CMakeFiles/chocachoca.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/main.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/main.cpp > CMakeFiles/chocachoca.dir/main.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/main.cpp > CMakeFiles/chocachoca.dir/main.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/main.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/main.cpp -o CMakeFiles/chocachoca.dir/main.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/main.cpp -o CMakeFiles/chocachoca.dir/main.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o: generated/genericworker.cpp
 generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o -MF CMakeFiles/chocachoca.dir/genericworker.cpp.o.d -o CMakeFiles/chocachoca.dir/genericworker.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o -MF CMakeFiles/chocachoca.dir/genericworker.cpp.o.d -o CMakeFiles/chocachoca.dir/genericworker.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.cpp
 
 generated/CMakeFiles/chocachoca.dir/genericworker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/genericworker.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.cpp > CMakeFiles/chocachoca.dir/genericworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.cpp > CMakeFiles/chocachoca.dir/genericworker.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/genericworker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/genericworker.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.cpp -o CMakeFiles/chocachoca.dir/genericworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.cpp -o CMakeFiles/chocachoca.dir/genericworker.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o: generated/OmniRobot.cpp
 generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o -MF CMakeFiles/chocachoca.dir/OmniRobot.cpp.o.d -o CMakeFiles/chocachoca.dir/OmniRobot.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o -MF CMakeFiles/chocachoca.dir/OmniRobot.cpp.o.d -o CMakeFiles/chocachoca.dir/OmniRobot.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.cpp
 
 generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/OmniRobot.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.cpp > CMakeFiles/chocachoca.dir/OmniRobot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.cpp > CMakeFiles/chocachoca.dir/OmniRobot.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/OmniRobot.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.cpp -o CMakeFiles/chocachoca.dir/OmniRobot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.cpp -o CMakeFiles/chocachoca.dir/OmniRobot.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o: generated/Lidar3D.cpp
 generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o -MF CMakeFiles/chocachoca.dir/Lidar3D.cpp.o.d -o CMakeFiles/chocachoca.dir/Lidar3D.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o -MF CMakeFiles/chocachoca.dir/Lidar3D.cpp.o.d -o CMakeFiles/chocachoca.dir/Lidar3D.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.cpp
 
 generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/Lidar3D.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.cpp > CMakeFiles/chocachoca.dir/Lidar3D.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.cpp > CMakeFiles/chocachoca.dir/Lidar3D.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/Lidar3D.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.cpp -o CMakeFiles/chocachoca.dir/Lidar3D.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.cpp -o CMakeFiles/chocachoca.dir/Lidar3D.cpp.s
 
 generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o: generated/CMakeFiles/chocachoca.dir/flags.make
 generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o: generated/GenericBase.cpp
 generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o: generated/CMakeFiles/chocachoca.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o -MF CMakeFiles/chocachoca.dir/GenericBase.cpp.o.d -o CMakeFiles/chocachoca.dir/GenericBase.cpp.o -c /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o -MF CMakeFiles/chocachoca.dir/GenericBase.cpp.o.d -o CMakeFiles/chocachoca.dir/GenericBase.cpp.o -c /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.cpp
 
 generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/chocachoca.dir/GenericBase.cpp.i"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.cpp > CMakeFiles/chocachoca.dir/GenericBase.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.cpp > CMakeFiles/chocachoca.dir/GenericBase.cpp.i
 
 generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/chocachoca.dir/GenericBase.cpp.s"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.cpp -o CMakeFiles/chocachoca.dir/GenericBase.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.cpp -o CMakeFiles/chocachoca.dir/GenericBase.cpp.s
 
 # Object files for target chocachoca
 chocachoca_OBJECTS = \
@@ -309,15 +309,15 @@ bin/chocachoca: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
 bin/chocachoca: /usr/lib/x86_64-linux-gnu/libGLX.so
 bin/chocachoca: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 bin/chocachoca: generated/CMakeFiles/chocachoca.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable ../bin/chocachoca"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/chocachoca.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable ../bin/chocachoca"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/chocachoca.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 generated/CMakeFiles/chocachoca.dir/build: bin/chocachoca
 .PHONY : generated/CMakeFiles/chocachoca.dir/build
 
 generated/CMakeFiles/chocachoca.dir/clean:
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && $(CMAKE_COMMAND) -P CMakeFiles/chocachoca.dir/cmake_clean.cmake
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && $(CMAKE_COMMAND) -P CMakeFiles/chocachoca.dir/cmake_clean.cmake
 .PHONY : generated/CMakeFiles/chocachoca.dir/clean
 
 generated/CMakeFiles/chocachoca.dir/depend: generated/GenericBase.cpp
@@ -327,6 +327,6 @@ generated/CMakeFiles/chocachoca.dir/depend: generated/Lidar3D.h
 generated/CMakeFiles/chocachoca.dir/depend: generated/OmniRobot.cpp
 generated/CMakeFiles/chocachoca.dir/depend: generated/OmniRobot.h
 generated/CMakeFiles/chocachoca.dir/depend: generated/chocachoca_autogen/timestamp
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/chocachoca /home/jose/robocomp/components/ODFE/chocachoca/generated /home/jose/robocomp/components/ODFE/chocachoca /home/jose/robocomp/components/ODFE/chocachoca/generated /home/jose/robocomp/components/ODFE/chocachoca/generated/CMakeFiles/chocachoca.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/jose/robocomp/components/ODFE/localiser && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/localiser /home/jose/robocomp/components/ODFE/localiser/generated /home/jose/robocomp/components/ODFE/localiser /home/jose/robocomp/components/ODFE/localiser/generated /home/jose/robocomp/components/ODFE/localiser/generated/CMakeFiles/chocachoca.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : generated/CMakeFiles/chocachoca.dir/depend
 

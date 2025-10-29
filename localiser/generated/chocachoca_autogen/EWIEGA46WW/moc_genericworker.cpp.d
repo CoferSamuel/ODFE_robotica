@@ -1,8 +1,8 @@
-/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/EWIEGA46WW/moc_genericworker.cpp: /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
+/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/EWIEGA46WW/moc_genericworker.cpp: /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
   /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.h \
   /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.tpp \
   /home/jose/robocomp/core/classes/grafcetStep/GRAFCETStep.h \

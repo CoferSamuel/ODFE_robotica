@@ -1,7 +1,7 @@
 generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: \
- /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/src/specificworker.cpp \
  /usr/include/stdc-predef.h \
- /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/src/specificworker.h \
  /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
@@ -453,7 +453,7 @@ generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qpainterpath.h \
  /usr/include/c++/13/iostream \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGui \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGuiDepends \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
@@ -961,11 +961,11 @@ generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiversion.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/include/ui_mainUI.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/include/ui_mainUI.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFrame \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
  /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QState \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
@@ -1039,7 +1039,7 @@ generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QEvent \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/cassert /usr/include/Ice/ProxyHandle.h \
@@ -1082,8 +1082,8 @@ generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o: \
  /usr/include/c++/13/deque /usr/include/c++/13/bits/stl_deque.h \
  /usr/include/c++/13/bits/deque.tcc /usr/include/Ice/FactoryTableInit.h \
  /usr/include/Ice/DefaultValueFactory.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qcolor.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QRect \
  /usr/local/include/cppitertools/groupby.hpp \

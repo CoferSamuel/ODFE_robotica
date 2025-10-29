@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles /home/jose/robocomp/components/ODFE/chocachoca/generated//CMakeFiles/progress.marks
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles 0
+	cd /home/jose/robocomp/components/ODFE/localiser && $(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/localiser/CMakeFiles /home/jose/robocomp/components/ODFE/localiser/generated//CMakeFiles/progress.marks
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/localiser/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/clean
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,36 +148,36 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/jose/robocomp/components/ODFE/localiser && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
-generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/rule
-.PHONY : generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/rule
+generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/rule:
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/rule
+.PHONY : generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/rule
 
 # Convenience name for target.
-ICES__home_jose_robocomp_components_ODFE_chocachoca_generated: generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/rule
-.PHONY : ICES__home_jose_robocomp_components_ODFE_chocachoca_generated
+ICES__home_jose_robocomp_components_ODFE_localiser_generated: generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/rule
+.PHONY : ICES__home_jose_robocomp_components_ODFE_localiser_generated
 
 # fast build rule for target.
-ICES__home_jose_robocomp_components_ODFE_chocachoca_generated/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/build.make generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_chocachoca_generated.dir/build
-.PHONY : ICES__home_jose_robocomp_components_ODFE_chocachoca_generated/fast
+ICES__home_jose_robocomp_components_ODFE_localiser_generated/fast:
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/build.make generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_localiser_generated.dir/build
+.PHONY : ICES__home_jose_robocomp_components_ODFE_localiser_generated/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 
 # Convenience name for target.
@@ -186,12 +186,26 @@ ICE_OmniRobot_target: generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 
 # fast build rule for target.
 ICE_OmniRobot_target/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_OmniRobot_target.dir/build.make generated/CMakeFiles/ICE_OmniRobot_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_OmniRobot_target.dir/build.make generated/CMakeFiles/ICE_OmniRobot_target.dir/build
 .PHONY : ICE_OmniRobot_target/fast
 
 # Convenience name for target.
+generated/CMakeFiles/ICE_Lidar3D_target.dir/rule:
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
+.PHONY : generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
+
+# Convenience name for target.
+ICE_Lidar3D_target: generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
+.PHONY : ICE_Lidar3D_target
+
+# fast build rule for target.
+ICE_Lidar3D_target/fast:
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Lidar3D_target.dir/build.make generated/CMakeFiles/ICE_Lidar3D_target.dir/build
+.PHONY : ICE_Lidar3D_target/fast
+
+# Convenience name for target.
 generated/CMakeFiles/ICE_GenericBase_target.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_GenericBase_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 
 # Convenience name for target.
@@ -200,12 +214,12 @@ ICE_GenericBase_target: generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 
 # fast build rule for target.
 ICE_GenericBase_target/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_GenericBase_target.dir/build.make generated/CMakeFiles/ICE_GenericBase_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_GenericBase_target.dir/build.make generated/CMakeFiles/ICE_GenericBase_target.dir/build
 .PHONY : ICE_GenericBase_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/chocachoca.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca.dir/rule
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca.dir/rule
 .PHONY : generated/CMakeFiles/chocachoca.dir/rule
 
 # Convenience name for target.
@@ -214,12 +228,12 @@ chocachoca: generated/CMakeFiles/chocachoca.dir/rule
 
 # fast build rule for target.
 chocachoca/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/build
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/build
 .PHONY : chocachoca/fast
 
 # Convenience name for target.
 generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/rule
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/rule
 .PHONY : generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/rule
 
 # Convenience name for target.
@@ -228,12 +242,12 @@ chocachoca_autogen_timestamp_deps: generated/CMakeFiles/chocachoca_autogen_times
 
 # fast build rule for target.
 chocachoca_autogen_timestamp_deps/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build
 .PHONY : chocachoca_autogen_timestamp_deps/fast
 
 # Convenience name for target.
 generated/CMakeFiles/chocachoca_autogen.dir/rule:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca_autogen.dir/rule
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/chocachoca_autogen.dir/rule
 .PHONY : generated/CMakeFiles/chocachoca_autogen.dir/rule
 
 # Convenience name for target.
@@ -242,7 +256,7 @@ chocachoca_autogen: generated/CMakeFiles/chocachoca_autogen.dir/rule
 
 # fast build rule for target.
 chocachoca_autogen/fast:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen.dir/build.make generated/CMakeFiles/chocachoca_autogen.dir/build
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen.dir/build.make generated/CMakeFiles/chocachoca_autogen.dir/build
 .PHONY : chocachoca_autogen/fast
 
 GenericBase.o: GenericBase.cpp.o
@@ -250,7 +264,7 @@ GenericBase.o: GenericBase.cpp.o
 
 # target to build an object file
 GenericBase.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.o
 .PHONY : GenericBase.cpp.o
 
 GenericBase.i: GenericBase.cpp.i
@@ -258,7 +272,7 @@ GenericBase.i: GenericBase.cpp.i
 
 # target to preprocess a source file
 GenericBase.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.i
 .PHONY : GenericBase.cpp.i
 
 GenericBase.s: GenericBase.cpp.s
@@ -266,7 +280,7 @@ GenericBase.s: GenericBase.cpp.s
 
 # target to generate assembly for a file
 GenericBase.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/GenericBase.cpp.s
 .PHONY : GenericBase.cpp.s
 
 Lidar3D.o: Lidar3D.cpp.o
@@ -274,7 +288,7 @@ Lidar3D.o: Lidar3D.cpp.o
 
 # target to build an object file
 Lidar3D.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.o
 .PHONY : Lidar3D.cpp.o
 
 Lidar3D.i: Lidar3D.cpp.i
@@ -282,7 +296,7 @@ Lidar3D.i: Lidar3D.cpp.i
 
 # target to preprocess a source file
 Lidar3D.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.i
 .PHONY : Lidar3D.cpp.i
 
 Lidar3D.s: Lidar3D.cpp.s
@@ -290,7 +304,7 @@ Lidar3D.s: Lidar3D.cpp.s
 
 # target to generate assembly for a file
 Lidar3D.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/Lidar3D.cpp.s
 .PHONY : Lidar3D.cpp.s
 
 OmniRobot.o: OmniRobot.cpp.o
@@ -298,7 +312,7 @@ OmniRobot.o: OmniRobot.cpp.o
 
 # target to build an object file
 OmniRobot.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.o
 .PHONY : OmniRobot.cpp.o
 
 OmniRobot.i: OmniRobot.cpp.i
@@ -306,7 +320,7 @@ OmniRobot.i: OmniRobot.cpp.i
 
 # target to preprocess a source file
 OmniRobot.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.i
 .PHONY : OmniRobot.cpp.i
 
 OmniRobot.s: OmniRobot.cpp.s
@@ -314,7 +328,7 @@ OmniRobot.s: OmniRobot.cpp.s
 
 # target to generate assembly for a file
 OmniRobot.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/OmniRobot.cpp.s
 .PHONY : OmniRobot.cpp.s
 
 __/src/specificworker.o: __/src/specificworker.cpp.o
@@ -322,7 +336,7 @@ __/src/specificworker.o: __/src/specificworker.cpp.o
 
 # target to build an object file
 __/src/specificworker.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o
 .PHONY : __/src/specificworker.cpp.o
 
 __/src/specificworker.i: __/src/specificworker.cpp.i
@@ -330,7 +344,7 @@ __/src/specificworker.i: __/src/specificworker.cpp.i
 
 # target to preprocess a source file
 __/src/specificworker.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.i
 .PHONY : __/src/specificworker.cpp.i
 
 __/src/specificworker.s: __/src/specificworker.cpp.s
@@ -338,7 +352,7 @@ __/src/specificworker.s: __/src/specificworker.cpp.s
 
 # target to generate assembly for a file
 __/src/specificworker.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.s
 .PHONY : __/src/specificworker.cpp.s
 
 chocachoca_autogen/mocs_compilation.o: chocachoca_autogen/mocs_compilation.cpp.o
@@ -346,7 +360,7 @@ chocachoca_autogen/mocs_compilation.o: chocachoca_autogen/mocs_compilation.cpp.o
 
 # target to build an object file
 chocachoca_autogen/mocs_compilation.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o
 .PHONY : chocachoca_autogen/mocs_compilation.cpp.o
 
 chocachoca_autogen/mocs_compilation.i: chocachoca_autogen/mocs_compilation.cpp.i
@@ -354,7 +368,7 @@ chocachoca_autogen/mocs_compilation.i: chocachoca_autogen/mocs_compilation.cpp.i
 
 # target to preprocess a source file
 chocachoca_autogen/mocs_compilation.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.i
 .PHONY : chocachoca_autogen/mocs_compilation.cpp.i
 
 chocachoca_autogen/mocs_compilation.s: chocachoca_autogen/mocs_compilation.cpp.s
@@ -362,7 +376,7 @@ chocachoca_autogen/mocs_compilation.s: chocachoca_autogen/mocs_compilation.cpp.s
 
 # target to generate assembly for a file
 chocachoca_autogen/mocs_compilation.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.s
 .PHONY : chocachoca_autogen/mocs_compilation.cpp.s
 
 genericworker.o: genericworker.cpp.o
@@ -370,7 +384,7 @@ genericworker.o: genericworker.cpp.o
 
 # target to build an object file
 genericworker.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o
 .PHONY : genericworker.cpp.o
 
 genericworker.i: genericworker.cpp.i
@@ -378,7 +392,7 @@ genericworker.i: genericworker.cpp.i
 
 # target to preprocess a source file
 genericworker.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.i
 .PHONY : genericworker.cpp.i
 
 genericworker.s: genericworker.cpp.s
@@ -386,7 +400,7 @@ genericworker.s: genericworker.cpp.s
 
 # target to generate assembly for a file
 genericworker.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/genericworker.cpp.s
 .PHONY : genericworker.cpp.s
 
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.o: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
@@ -394,7 +408,7 @@ home/jose/robocomp/classes/ConfigLoader/ConfigLoader.o: home/jose/robocomp/class
 
 # target to build an object file
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
 .PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
 
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.i: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
@@ -402,7 +416,7 @@ home/jose/robocomp/classes/ConfigLoader/ConfigLoader.i: home/jose/robocomp/class
 
 # target to preprocess a source file
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
 .PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
 
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.s: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
@@ -410,7 +424,7 @@ home/jose/robocomp/classes/ConfigLoader/ConfigLoader.s: home/jose/robocomp/class
 
 # target to generate assembly for a file
 home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
 .PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
 
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
@@ -418,7 +432,7 @@ home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o: ho
 
 # target to build an object file
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
 .PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
 
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
@@ -426,7 +440,7 @@ home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i: ho
 
 # target to preprocess a source file
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
 .PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
 
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
@@ -434,7 +448,7 @@ home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s: ho
 
 # target to generate assembly for a file
 home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
 .PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
 
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.o: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
@@ -442,7 +456,7 @@ home/jose/robocomp/classes/grafcetStep/GRAFCETStep.o: home/jose/robocomp/classes
 
 # target to build an object file
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
 .PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
 
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.i: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
@@ -450,7 +464,7 @@ home/jose/robocomp/classes/grafcetStep/GRAFCETStep.i: home/jose/robocomp/classes
 
 # target to preprocess a source file
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
 .PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
 
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.s: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
@@ -458,7 +472,7 @@ home/jose/robocomp/classes/grafcetStep/GRAFCETStep.s: home/jose/robocomp/classes
 
 # target to generate assembly for a file
 home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
 .PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
 
 home/jose/robocomp/classes/rapplication/rapplication.o: home/jose/robocomp/classes/rapplication/rapplication.cpp.o
@@ -466,7 +480,7 @@ home/jose/robocomp/classes/rapplication/rapplication.o: home/jose/robocomp/class
 
 # target to build an object file
 home/jose/robocomp/classes/rapplication/rapplication.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o
 .PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.o
 
 home/jose/robocomp/classes/rapplication/rapplication.i: home/jose/robocomp/classes/rapplication/rapplication.cpp.i
@@ -474,7 +488,7 @@ home/jose/robocomp/classes/rapplication/rapplication.i: home/jose/robocomp/class
 
 # target to preprocess a source file
 home/jose/robocomp/classes/rapplication/rapplication.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
 .PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.i
 
 home/jose/robocomp/classes/rapplication/rapplication.s: home/jose/robocomp/classes/rapplication/rapplication.cpp.s
@@ -482,7 +496,7 @@ home/jose/robocomp/classes/rapplication/rapplication.s: home/jose/robocomp/class
 
 # target to generate assembly for a file
 home/jose/robocomp/classes/rapplication/rapplication.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
 .PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.s
 
 home/jose/robocomp/classes/sigwatch/sigwatch.o: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
@@ -490,7 +504,7 @@ home/jose/robocomp/classes/sigwatch/sigwatch.o: home/jose/robocomp/classes/sigwa
 
 # target to build an object file
 home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
 .PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
 
 home/jose/robocomp/classes/sigwatch/sigwatch.i: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
@@ -498,7 +512,7 @@ home/jose/robocomp/classes/sigwatch/sigwatch.i: home/jose/robocomp/classes/sigwa
 
 # target to preprocess a source file
 home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
 .PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
 
 home/jose/robocomp/classes/sigwatch/sigwatch.s: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
@@ -506,7 +520,7 @@ home/jose/robocomp/classes/sigwatch/sigwatch.s: home/jose/robocomp/classes/sigwa
 
 # target to generate assembly for a file
 home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
 .PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
 
 main.o: main.cpp.o
@@ -514,7 +528,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.o
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -522,7 +536,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.i
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -530,7 +544,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.s
+	cd /home/jose/robocomp/components/ODFE/localiser && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -545,8 +559,9 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... ICES__home_jose_robocomp_components_ODFE_chocachoca_generated"
+	@echo "... ICES__home_jose_robocomp_components_ODFE_localiser_generated"
 	@echo "... ICE_GenericBase_target"
+	@echo "... ICE_Lidar3D_target"
 	@echo "... ICE_OmniRobot_target"
 	@echo "... chocachoca_autogen"
 	@echo "... chocachoca_autogen_timestamp_deps"
@@ -598,6 +613,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/jose/robocomp/components/ODFE/localiser && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

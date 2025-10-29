@@ -107,7 +107,6 @@ void SpecificWorker::compute()
 
     std::cout << "Compute worker" << std::endl;
 	// Resultado devuelto por las funciones de comportamiento
-	std::tuple<SpecificWorker::State, float, float> result;
 	RoboCompLidar3D::TPoints filtered_points;
 
 	try
@@ -128,8 +127,22 @@ void SpecificWorker::compute()
 	}
 	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
 
-
+	std::tuple<SpecificWorker::State, float, float> result= StateMachine(state);
 	// Ejemplo de uso en un switch
+	// Aplicar las velocidades calculadas al robot
+	SetMachineSpeed(result);
+}
+
+void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, float> result){
+	state = std::get<0>(result);
+	float adv = std::get<1>(result);
+	float rot = std::get<2>(result);
+	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
+	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+}
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(){
+	std::tuple<SpecificWorker::State, float, float> result;
+
 	switch(state)
 	{
 		case SpecificWorker::State::IDLE:
@@ -155,17 +168,10 @@ void SpecificWorker::compute()
 		case SpecificWorker::State::SPIRAL:
 			// Lógica de espiral
 			result = spiral(filtered_points);
-			std::cout << "SPIRAL" << std::endl;
 			break;
 	}
-	// Aplicar las velocidades calculadas al robot
-	state = std::get<0>(result);
-	float adv = std::get<1>(result);
-	float rot = std::get<2>(result);
-	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
-	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+	return result;
 }
-
 //El robot avanza rápido cuando no hay obstáculos y frena o gira cuanto más cerca o frontal está el obstáculo.
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const RoboCompLidar3D::TPoints& points)
 {

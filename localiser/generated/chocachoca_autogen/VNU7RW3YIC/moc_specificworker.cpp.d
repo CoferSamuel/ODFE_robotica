@@ -1,9 +1,9 @@
-/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/VNU7RW3YIC/moc_specificworker.cpp: /home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h \
+/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/VNU7RW3YIC/moc_specificworker.cpp: /home/jose/robocomp/components/ODFE/localiser/src/specificworker.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h \
   /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.h \
   /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.tpp \
   /home/jose/robocomp/core/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \

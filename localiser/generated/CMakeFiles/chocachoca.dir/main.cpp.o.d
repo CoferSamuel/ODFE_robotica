@@ -1,5 +1,5 @@
 generated/CMakeFiles/chocachoca.dir/main.cpp.o: \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/main.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/main.cpp \
  /usr/include/stdc-predef.h /usr/include/signal.h /usr/include/features.h \
  /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -1251,12 +1251,12 @@ generated/CMakeFiles/chocachoca.dir/main.cpp.o: \
  /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /home/jose/robocomp/classes/sigwatch/sigwatch.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGui \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/include/ui_mainUI.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/include/ui_mainUI.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFrame \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QState \
@@ -1271,10 +1271,10 @@ generated/CMakeFiles/chocachoca.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QEvent \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/../src/specificworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/../src/specificworker.h \
  /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGraphicsScene \
@@ -1290,4 +1290,4 @@ generated/CMakeFiles/chocachoca.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGraphicsPolygonItem \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h
+ /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h

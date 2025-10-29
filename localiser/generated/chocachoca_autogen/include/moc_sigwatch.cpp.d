@@ -1,5 +1,5 @@
-/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/include/moc_sigwatch.cpp: /home/jose/robocomp/classes/sigwatch/sigwatch.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
+/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/include/moc_sigwatch.cpp: /home/jose/robocomp/classes/sigwatch/sigwatch.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \

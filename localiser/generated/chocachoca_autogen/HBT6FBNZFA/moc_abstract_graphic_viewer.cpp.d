@@ -1,5 +1,5 @@
-/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/HBT6FBNZFA/moc_abstract_graphic_viewer.cpp: /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
+/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/HBT6FBNZFA/moc_abstract_graphic_viewer.cpp: /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \

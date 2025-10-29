@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/chocachoca
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/localiser
 
 # Utility rule file for chocachoca_autogen.
 
@@ -71,9 +71,9 @@ generated/CMakeFiles/chocachoca_autogen: generated/chocachoca_autogen/timestamp
 generated/chocachoca_autogen/timestamp: /usr/lib/qt6/libexec/moc
 generated/chocachoca_autogen/timestamp: /usr/lib/qt6/libexec/uic
 generated/chocachoca_autogen/timestamp: generated/CMakeFiles/chocachoca_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/chocachoca/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target chocachoca"
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/cmake -E cmake_autogen /home/jose/robocomp/components/ODFE/chocachoca/generated/CMakeFiles/chocachoca_autogen.dir/AutogenInfo.json Debug
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && /usr/bin/cmake -E touch /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/localiser/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target chocachoca"
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/cmake -E cmake_autogen /home/jose/robocomp/components/ODFE/localiser/generated/CMakeFiles/chocachoca_autogen.dir/AutogenInfo.json ""
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && /usr/bin/cmake -E touch /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/timestamp
 
 chocachoca_autogen: generated/CMakeFiles/chocachoca_autogen
 chocachoca_autogen: generated/chocachoca_autogen/timestamp
@@ -85,10 +85,10 @@ generated/CMakeFiles/chocachoca_autogen.dir/build: chocachoca_autogen
 .PHONY : generated/CMakeFiles/chocachoca_autogen.dir/build
 
 generated/CMakeFiles/chocachoca_autogen.dir/clean:
-	cd /home/jose/robocomp/components/ODFE/chocachoca/generated && $(CMAKE_COMMAND) -P CMakeFiles/chocachoca_autogen.dir/cmake_clean.cmake
+	cd /home/jose/robocomp/components/ODFE/localiser/generated && $(CMAKE_COMMAND) -P CMakeFiles/chocachoca_autogen.dir/cmake_clean.cmake
 .PHONY : generated/CMakeFiles/chocachoca_autogen.dir/clean
 
 generated/CMakeFiles/chocachoca_autogen.dir/depend:
-	cd /home/jose/robocomp/components/ODFE/chocachoca && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/chocachoca /home/jose/robocomp/components/ODFE/chocachoca/generated /home/jose/robocomp/components/ODFE/chocachoca /home/jose/robocomp/components/ODFE/chocachoca/generated /home/jose/robocomp/components/ODFE/chocachoca/generated/CMakeFiles/chocachoca_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/jose/robocomp/components/ODFE/localiser && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/localiser /home/jose/robocomp/components/ODFE/localiser/generated /home/jose/robocomp/components/ODFE/localiser /home/jose/robocomp/components/ODFE/localiser/generated /home/jose/robocomp/components/ODFE/localiser/generated/CMakeFiles/chocachoca_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : generated/CMakeFiles/chocachoca_autogen.dir/depend
 

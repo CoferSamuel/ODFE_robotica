@@ -11,17 +11,17 @@ chocachoca_autogen/timestamp: \
 	/home/jose/robocomp/classes/sigwatch/sigwatch.h \
 	/home/jose/robocomp/cmake/modules/qt.cmake \
 	/home/jose/robocomp/cmake/robocomp.cmake \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/CMakeLists.txt \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.cpp \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h \
-	/home/jose/robocomp/components/ODFE/chocachoca/generated/main.cpp \
-	/home/jose/robocomp/components/ODFE/chocachoca/src/CMakeLists.txt \
-	/home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.cpp \
-	/home/jose/robocomp/components/ODFE/chocachoca/src/specificworker.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/CMakeLists.txt \
+	/home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/genericworker.cpp \
+	/home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h \
+	/home/jose/robocomp/components/ODFE/localiser/generated/main.cpp \
+	/home/jose/robocomp/components/ODFE/localiser/src/CMakeLists.txt \
+	/home/jose/robocomp/components/ODFE/localiser/src/specificworker.cpp \
+	/home/jose/robocomp/components/ODFE/localiser/src/specificworker.h \
 	/home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.h \
 	/home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.tpp \
 	/home/jose/robocomp/core/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
@@ -1129,5 +1129,5 @@ chocachoca_autogen/timestamp: \
 	/usr/share/cmake-3.28/Modules/Internal/CheckSourceCompiles.cmake \
 	/usr/share/cmake-3.28/Modules/MacroAddFileDependencies.cmake \
 	/usr/share/cmake-3.28/Modules/SelectLibraryConfigurations.cmake \
-	/home/jose/robocomp/components/ODFE/chocachoca/src/mainUI.ui \
+	/home/jose/robocomp/components/ODFE/localiser/src/mainUI.ui \
 	/usr/bin/cmake

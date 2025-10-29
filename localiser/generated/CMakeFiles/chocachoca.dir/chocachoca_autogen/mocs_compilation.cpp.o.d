@@ -1,7 +1,7 @@
 generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/mocs_compilation.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/HBT6FBNZFA/moc_abstract_graphic_viewer.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/HBT6FBNZFA/moc_abstract_graphic_viewer.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -196,7 +196,7 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/HBT6FBNZFA/../../../../../../classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/HBT6FBNZFA/../../../../../../classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
@@ -452,8 +452,8 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgraphicsitem.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qpainterpath.h \
  /usr/include/c++/13/iostream \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/U2T7NSCTX3/moc_GRAFCETStep.cpp \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/U2T7NSCTX3/../../../../../../classes/grafcetStep/GRAFCETStep.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/U2T7NSCTX3/moc_GRAFCETStep.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/U2T7NSCTX3/../../../../../../classes/grafcetStep/GRAFCETStep.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QState \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetaobject.h \
@@ -465,8 +465,8 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qbasictimer.h \
  /usr/include/c++/13/mutex /usr/include/c++/13/bits/unique_lock.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/EWIEGA46WW/moc_genericworker.cpp \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/EWIEGA46WW/../../genericworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/EWIEGA46WW/moc_genericworker.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/EWIEGA46WW/../../genericworker.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGui \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGuiDepends \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
@@ -970,11 +970,11 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiversion.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/include/ui_mainUI.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/include/ui_mainUI.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFrame \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
  /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
  /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /usr/include/c++/13/fstream \
@@ -1040,7 +1040,7 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QEvent \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/GenericBase.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/GenericBase.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/cassert /usr/include/Ice/ProxyHandle.h \
@@ -1083,11 +1083,11 @@ generated/CMakeFiles/chocachoca.dir/chocachoca_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/deque /usr/include/c++/13/bits/stl_deque.h \
  /usr/include/c++/13/bits/deque.tcc /usr/include/Ice/FactoryTableInit.h \
  /usr/include/Ice/DefaultValueFactory.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/Lidar3D.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/OmniRobot.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/OmniRobot.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QScreen \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/VNU7RW3YIC/moc_specificworker.cpp \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/VNU7RW3YIC/../../../src/specificworker.h \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/VNU7RW3YIC/moc_specificworker.cpp \
+ /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/VNU7RW3YIC/../../../src/specificworker.h \
  /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h \
- /home/jose/robocomp/components/ODFE/chocachoca/generated/genericworker.h
+ /home/jose/robocomp/components/ODFE/localiser/generated/genericworker.h

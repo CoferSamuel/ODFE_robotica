@@ -1,5 +1,5 @@
-/home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/U2T7NSCTX3/moc_GRAFCETStep.cpp: /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
-  /home/jose/robocomp/components/ODFE/chocachoca/generated/chocachoca_autogen/moc_predefs.h \
+/home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/U2T7NSCTX3/moc_GRAFCETStep.cpp: /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
+  /home/jose/robocomp/components/ODFE/localiser/generated/chocachoca_autogen/moc_predefs.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
