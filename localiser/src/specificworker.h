@@ -119,8 +119,8 @@ private:
     std::tuple<SpecificWorker::State, float, float> turn(const RoboCompLidar3D::TPoints &points);
 	std::tuple<SpecificWorker::State, float, float> follow_wall(const RoboCompLidar3D::TPoints &points);
 	std::tuple<SpecificWorker::State, float, float> spiral(const RoboCompLidar3D::TPoints &points);
-
-
+	void SetMachineSpeed(std::tuple<State, float, float> result);
+	std::tuple<SpecificWorker::State, float, float> StateMachine(RoboCompLidar3D::TPoints filtered_points);
 signals:
 	//void customSignal();
 };

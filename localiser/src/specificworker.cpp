@@ -127,7 +127,7 @@ void SpecificWorker::compute()
 	}
 	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
 
-	std::tuple<SpecificWorker::State, float, float> result= StateMachine(state);
+	std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
 	// Ejemplo de uso en un switch
 	// Aplicar las velocidades calculadas al robot
 	SetMachineSpeed(result);
@@ -140,7 +140,7 @@ void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, fl
 	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
 	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
 }
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(){
+std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(RoboCompLidar3D::TPoints filtered_points){
 	std::tuple<SpecificWorker::State, float, float> result;
 
 	switch(state)
