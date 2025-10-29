@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.20 )
+cmake_minimum_required( VERSION 3.10 )
 PROJECT( localiser )
 
 IF ( "$ENV{ROBOCOMP}" STREQUAL "")
@@ -10,7 +10,6 @@ SET(RC_COMPONENT_PATH ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "component base p
 SET(RC_COMPONENT_DEVEL_PATH "${CMAKE_CURRENT_SOURCE_DIR}" CACHE STRING "component binary path" FORCE)
 #SET(RC_COMPONENT_DEVEL_PATH "${WORKSPACE_PATH}/devel"  CACHE STRING "component binary path")
 SET(RC_COMPONENT_INSTALL_PATH $ENV{ROBOCOMP} CACHE STRING "component install path")
-set(CMAKE_CXX_STANDARD 17)
 
 #commented as now devel is merged into source space
 #get_filename_component( COMPONENT_NAME ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
@@ -23,6 +22,4 @@ SUBDIRS(generated)
 INSTALL(FILES etc/config DESTINATION ${RC_COMPONENT_INSTALL_PATH}/etc-default/ RENAME localiser.conf )
 
 #ADD_CUSTOM_TARGET(doc doxygen Doxyfile)
-#ADD_CUSTOM_TARGET(installdoc mkdir -p ${RC_COMPONENT_INSTALL_PATH}/doc COMMAND cp -R doc/html ${RC_COMPONENT_INSTALL_PATH}/doc/chocachoca )
-
-add_executable(new_target src/specificworker.cpp)
+#ADD_CUSTOM_TARGET(installdoc mkdir -p ${RC_COMPONENT_INSTALL_PATH}/doc COMMAND cp -R doc/html ${RC_COMPONENT_INSTALL_PATH}/doc/localiser )

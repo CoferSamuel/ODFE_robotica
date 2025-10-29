@@ -1,6 +1,8 @@
 # Sources set
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
+    $ENV{ROBOCOMP}/classes/abstract_graphic_viewer/abstract_graphic_viewer.h
+
 )
 
 # Headers set

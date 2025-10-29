@@ -162,19 +162,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named new_target
-
-# Build rule for target.
-new_target: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 new_target
-.PHONY : new_target
-
-# fast build rule for target.
-new_target/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/new_target.dir/build.make CMakeFiles/new_target.dir/build
-.PHONY : new_target/fast
-
-#=============================================================================
 # Target rules for targets named ICES__home_jose_robocomp_components_ODFE_localiser_generated
 
 # Build rule for target.
@@ -201,19 +188,6 @@ ICE_OmniRobot_target/fast:
 .PHONY : ICE_OmniRobot_target/fast
 
 #=============================================================================
-# Target rules for targets named ICE_Lidar3D_target
-
-# Build rule for target.
-ICE_Lidar3D_target: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ICE_Lidar3D_target
-.PHONY : ICE_Lidar3D_target
-
-# fast build rule for target.
-ICE_Lidar3D_target/fast:
-	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Lidar3D_target.dir/build.make generated/CMakeFiles/ICE_Lidar3D_target.dir/build
-.PHONY : ICE_Lidar3D_target/fast
-
-#=============================================================================
 # Target rules for targets named ICE_GenericBase_target
 
 # Build rule for target.
@@ -227,67 +201,56 @@ ICE_GenericBase_target/fast:
 .PHONY : ICE_GenericBase_target/fast
 
 #=============================================================================
-# Target rules for targets named chocachoca
+# Target rules for targets named ICE_Lidar3D_target
 
 # Build rule for target.
-chocachoca: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 chocachoca
-.PHONY : chocachoca
+ICE_Lidar3D_target: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ICE_Lidar3D_target
+.PHONY : ICE_Lidar3D_target
 
 # fast build rule for target.
-chocachoca/fast:
-	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca.dir/build.make generated/CMakeFiles/chocachoca.dir/build
-.PHONY : chocachoca/fast
+ICE_Lidar3D_target/fast:
+	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Lidar3D_target.dir/build.make generated/CMakeFiles/ICE_Lidar3D_target.dir/build
+.PHONY : ICE_Lidar3D_target/fast
 
 #=============================================================================
-# Target rules for targets named chocachoca_autogen_timestamp_deps
+# Target rules for targets named localiser
 
 # Build rule for target.
-chocachoca_autogen_timestamp_deps: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 chocachoca_autogen_timestamp_deps
-.PHONY : chocachoca_autogen_timestamp_deps
+localiser: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 localiser
+.PHONY : localiser
 
 # fast build rule for target.
-chocachoca_autogen_timestamp_deps/fast:
-	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/chocachoca_autogen_timestamp_deps.dir/build
-.PHONY : chocachoca_autogen_timestamp_deps/fast
+localiser/fast:
+	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/localiser.dir/build.make generated/CMakeFiles/localiser.dir/build
+.PHONY : localiser/fast
 
 #=============================================================================
-# Target rules for targets named chocachoca_autogen
+# Target rules for targets named localiser_autogen_timestamp_deps
 
 # Build rule for target.
-chocachoca_autogen: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 chocachoca_autogen
-.PHONY : chocachoca_autogen
+localiser_autogen_timestamp_deps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 localiser_autogen_timestamp_deps
+.PHONY : localiser_autogen_timestamp_deps
 
 # fast build rule for target.
-chocachoca_autogen/fast:
-	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/chocachoca_autogen.dir/build.make generated/CMakeFiles/chocachoca_autogen.dir/build
-.PHONY : chocachoca_autogen/fast
+localiser_autogen_timestamp_deps/fast:
+	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/localiser_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/localiser_autogen_timestamp_deps.dir/build
+.PHONY : localiser_autogen_timestamp_deps/fast
 
-src/specificworker.o: src/specificworker.cpp.o
-.PHONY : src/specificworker.o
+#=============================================================================
+# Target rules for targets named localiser_autogen
 
-# target to build an object file
-src/specificworker.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/new_target.dir/build.make CMakeFiles/new_target.dir/src/specificworker.cpp.o
-.PHONY : src/specificworker.cpp.o
+# Build rule for target.
+localiser_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 localiser_autogen
+.PHONY : localiser_autogen
 
-src/specificworker.i: src/specificworker.cpp.i
-.PHONY : src/specificworker.i
-
-# target to preprocess a source file
-src/specificworker.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/new_target.dir/build.make CMakeFiles/new_target.dir/src/specificworker.cpp.i
-.PHONY : src/specificworker.cpp.i
-
-src/specificworker.s: src/specificworker.cpp.s
-.PHONY : src/specificworker.s
-
-# target to generate assembly for a file
-src/specificworker.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/new_target.dir/build.make CMakeFiles/new_target.dir/src/specificworker.cpp.s
-.PHONY : src/specificworker.cpp.s
+# fast build rule for target.
+localiser_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f generated/CMakeFiles/localiser_autogen.dir/build.make generated/CMakeFiles/localiser_autogen.dir/build
+.PHONY : localiser_autogen/fast
 
 # Help Target
 help:
@@ -305,13 +268,9 @@ help:
 	@echo "... ICE_GenericBase_target"
 	@echo "... ICE_Lidar3D_target"
 	@echo "... ICE_OmniRobot_target"
-	@echo "... chocachoca_autogen"
-	@echo "... chocachoca_autogen_timestamp_deps"
-	@echo "... chocachoca"
-	@echo "... new_target"
-	@echo "... src/specificworker.o"
-	@echo "... src/specificworker.i"
-	@echo "... src/specificworker.s"
+	@echo "... localiser_autogen"
+	@echo "... localiser_autogen_timestamp_deps"
+	@echo "... localiser"
 .PHONY : help
 
 
