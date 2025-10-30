@@ -28,7 +28,9 @@
 #define SPECIFICWORKER_H
 #include <abstract_graphic_viewer/abstract_graphic_viewer.h>
 #include <qtmetamacros.h>
-
+#include "hungarian.h"
+#include "ransac_line_detector.h"
+#include "room_detector.h"
 
 
 // If you want to reduce the period automatically due to lack of use, you must uncomment the following line
@@ -36,6 +38,30 @@
 
 #include <genericworker.h>
 
+
+struct NominalRoom
+{
+	float width; //  mm
+	float length;
+	Corners corners;
+	explicit NominalRoom(const float width_=10000.f, const float length_=5000.f, Corners  corners_ = {}) : width(width_), length(length_), corners(std::move(corners_)){};
+	Corners transform_corners_to(const Eigen::Affine2d &transform) const  // for room to robot pass the inverse of robot_pose
+	{
+		Corners transformed_corners;
+		for(const auto &[p, _, __] : corners)
+		{
+			auto ep = Eigen::Vector2d{p.x(), p.y()};
+			Eigen::Vector2d tp = transform * ep;
+			transformed_corners.emplace_back(QPointF{static_cast<float>(tp.x()), static_cast<float>(tp.y())}, 0.f, 0.f);
+		}
+		return transformed_corners;
+	}
+};
+NominalRoom room{10000.f, 5000.f,
+			{{QPointF{-5000.f, -2500.f}, 0.f, 0.f},
+				   {QPointF{5000.f, -2500.f}, 0.f, 0.f},
+				   {QPointF{5000.f, 2500.f}, 0.f, 0.f},
+				   {QPointF{-5000.f, 2500.f}, 0.f, 0.f}}};
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
@@ -104,7 +130,11 @@ private:
 	const int ROBOT_LENGTH = 400;
 	QGraphicsPolygonItem *robot_polygon;
 	bool startup_check_flag;
-	
+	AbstractGraphicViewer *viewer_room;
+	Eigen::Affine2d robot_pose;
+	rc::Room_Detector room_detector;
+	rc::Hungarian hungarian;
+
 	enum class State{IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL};
 	SpecificWorker::State state = SpecificWorker::State::SPIRAL;
 

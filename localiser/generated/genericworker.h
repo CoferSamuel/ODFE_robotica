@@ -18,8 +18,10 @@
  */
 #ifndef GENERICWORKER_H
 #define GENERICWORKER_H
+#define USE_QTGUI
 
 #include <stdint.h>
+
 
 #if Qt5_FOUND
 	#include <QtWidgets>
