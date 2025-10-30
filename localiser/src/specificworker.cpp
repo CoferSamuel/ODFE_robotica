@@ -26,6 +26,13 @@
 #include <algorithm>
 using namespace std;
 
+// Definition of the global nominal room (previously defined in the header which caused multiple-definition errors)
+NominalRoom room{10000.f, 5000.f,
+			{{QPointF{-5000.f, -2500.f}, 0.f, 0.f},
+				   {QPointF{5000.f, -2500.f}, 0.f, 0.f},
+				   {QPointF{5000.f, 2500.f}, 0.f, 0.f},
+				   {QPointF{-5000.f, 2500.f}, 0.f, 0.f}}};
+
 const float MIN_DISTANCE_TURN = 600.0f; // Distancia mínima para salir del estado TURN
 const float MAX_ADV = 600.0f;         // Velocidad máxima de avance en mm/s
 const float MIN_THRESHOLD = 50.0f;  // Distancia mínima para empezar a frenar en mm

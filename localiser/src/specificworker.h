@@ -57,11 +57,9 @@ struct NominalRoom
 		return transformed_corners;
 	}
 };
-NominalRoom room{10000.f, 5000.f,
-			{{QPointF{-5000.f, -2500.f}, 0.f, 0.f},
-				   {QPointF{5000.f, -2500.f}, 0.f, 0.f},
-				   {QPointF{5000.f, 2500.f}, 0.f, 0.f},
-				   {QPointF{-5000.f, 2500.f}, 0.f, 0.f}}};
+
+// Declare global nominal room (defined in a single translation unit to avoid multiple-definition link errors)
+extern NominalRoom room;
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
