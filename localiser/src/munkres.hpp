@@ -1,6 +1,10 @@
 
 #pragma once
 
+/* Purpose: Header-only implementation of the Munkres (Hungarian) assignment algorithm.
+   Provides `munkres_algorithm` and `hungarian` helpers used to compute minimum-cost
+   bipartite matchings between detected features and nominal features. */
+
 // @see Tutorial on Implementation of Munkres' Assignment Algorithm
 //      Robert Pilgram, Murray State University
 

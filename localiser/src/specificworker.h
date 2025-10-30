@@ -17,6 +17,10 @@
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* Purpose: Declaration of `SpecificWorker`, the main runtime component for
+	the Localiser. It orchestrates sensing, detection (lines/corners), matching
+	(Hungarian), visualization and motion behaviors (state machine). */
+
 /**
 	\brief
 	@author authorname
@@ -28,6 +32,8 @@
 #define SPECIFICWORKER_H
 #include <abstract_graphic_viewer/abstract_graphic_viewer.h>
 #include <qtmetamacros.h>
+#include <QGraphicsItem>
+#include <vector>
 #include "hungarian.h"
 #include "ransac_line_detector.h"
 #include "room_detector.h"
@@ -128,7 +134,14 @@ private:
 	const int ROBOT_LENGTH = 400;
 	QGraphicsPolygonItem *robot_polygon;
 	bool startup_check_flag;
+	
 	AbstractGraphicViewer *viewer_room;
+	QGraphicsPolygonItem *robot_room_draw;
+	// Persistent room polygon shown in the room viewer (created on first compute)
+	QGraphicsPolygonItem *roomItemRoom;
+	// Corner marker items stored to avoid re-adding them every compute
+	std::vector<QGraphicsItem*> room_corner_items_main;
+	std::vector<QGraphicsItem*> room_corner_items_room;
 	Eigen::Affine2d robot_pose;
 	rc::Room_Detector room_detector;
 	rc::Hungarian hungarian;

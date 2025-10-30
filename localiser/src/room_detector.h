@@ -1,6 +1,10 @@
 //
 // Created by pbustos on 2/12/22.
 //
+/* Purpose: Room feature extraction utilities. `Room_Detector` converts 2D
+    points and line segments into room hypotheses: computes corners, filters
+    lines, estimates room sizes and provides drawing helpers to visualize
+    detected geometry in a `QGraphicsScene`. */
 
 #ifndef FORCEFIELD_ROOM_DETECTOR_H
 #define FORCEFIELD_ROOM_DETECTOR_H

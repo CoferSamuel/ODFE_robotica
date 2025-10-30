@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Purpose: Qt Designer UI describing the main Localiser dialog. Contains the
+    viewer frame, controls and layout used by the `SpecificWorker` GUI. -->
 <ui version="4.0">
  <class>guiDlg</class>
  <widget class="QWidget" name="guiDlg">

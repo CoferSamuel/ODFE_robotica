@@ -1,3 +1,6 @@
+# Purpose: CMake fragment for the source directory. It appends sources/headers and locates
+# required dependencies (OpenCV) so the top-level generated CMake can build the `localiser`
+# executable.
 # Sources set
 LIST(APPEND SOURCES
   ../src/specificworker.cpp

@@ -1,6 +1,8 @@
-//
 // Created by robolab on 12/5/24.
 //
+/* Purpose: High-level wrapper around the Munkres algorithm to match measured
+  corners to nominal corners. Produces `Match` results (measurement, nominal, error)
+  used by the room-localisation pipeline. */
 
 #ifndef BETA_ROBOTICA_CLASS_PRIVATE_HUNGARIAN_H
 #define BETA_ROBOTICA_CLASS_PRIVATE_HUNGARIAN_H

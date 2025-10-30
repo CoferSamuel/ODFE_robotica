@@ -1,9 +1,9 @@
-//
 // Created by pbustos on 2/12/22.
 //
-
+/* Purpose: Implements the `Room_Detector` methods declared in `room_detector.h`.
+    This file contains the logic to compute corners from line/point inputs, estimate
+    room sizes and provide visualization helpers. */
 #include "room_detector.h"
-#include <cppitertools/enumerate.hpp>
 #include <cppitertools/combinations.hpp>
 #include <opencv2/imgproc.hpp>
 #include <cppitertools/zip.hpp>

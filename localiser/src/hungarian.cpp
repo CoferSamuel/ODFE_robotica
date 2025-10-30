@@ -1,6 +1,8 @@
-//
 // Created by robolab on 12/5/24.
 //
+/* Purpose: Implements the Hungarian matching functionality declared in
+    `hungarian.h`. Builds cost matrices between measured and nominal corners and
+    invokes the Munkres algorithm to compute optimal assignments. */
 #include "hungarian.h"
 #include <ranges>
 

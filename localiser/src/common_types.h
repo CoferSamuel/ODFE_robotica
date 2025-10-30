@@ -1,6 +1,8 @@
-//
 // Created by pbustos on 9/12/24.
 //
+/* Purpose: Shared geometric and container types used across the Localiser component.
+    Defines aliases for Lidar points, LineSegment, Lines, Corners, Matches and other
+    common data-shapes consumed by detectors, matchers and the worker. */
 
 #ifndef COMMON_TYPES_H
 #define COMMON_TYPES_H

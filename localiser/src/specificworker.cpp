@@ -16,6 +16,11 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/* Purpose: Implementation of the `SpecificWorker` runtime logic. This file
+	contains the worker constructor/destructor, lifecycle hooks (`initialize`,
+	`compute`) and the behaviour state machine implementations used to control
+	the robot based on detected geometry and matches. */
 #include "specificworker.h"
 #include <iostream>
 #include <qcolor.h>
@@ -85,26 +90,68 @@ SpecificWorker::~SpecificWorker()
 }
 
 
+/**
+ * @brief Initialize the SpecificWorker GUI and internal state.
+ *
+ * This method sets up both the main viewer (left pane) used for live
+ * visualization of the robot and LIDAR points, and the dedicated "room"
+ * viewer (right pane) used to display the nominal room and a scaled view.
+ */
 void SpecificWorker::initialize()
 {
-    std::cout << "initialize worker" << std::endl;
+	std::cout << "initialize worker" << std::endl; // announce initialisation on stdout
 
-    //initializeCODE
+	// --- Prepare GUI geometry -------------------------------------------------
+	// Set the extents (scene rectangle) used by the main viewer: left/top/x/y
+	this->dimensions = QRectF(-6000, -3000, 12000, 6000); // scene covers +/-6m x, +/-3m y
 
-    /////////GET PARAMS, OPEND DEVICES....////////
-    // int period = configLoader.get<int>("Period.Compute");
-	//NOTE: If you want get period of compute use getPeriod("compute")
-    // std::string device = configLoader.get<std::string>("Device.name");
+	// Create the main AbstractGraphicViewer using the UI frame and scene extents
+	viewer = new AbstractGraphicViewer(this->frame, this->dimensions); // owned by Qt parent
 
-	this->dimensions = QRectF(-6000, -3000, 12000, 6000);
-	viewer = new AbstractGraphicViewer(this->frame, this->dimensions);
-	this->resize(900,450);
+	// Resize the widget window so the two viewers fit comfortably
+	this->resize(900,450); // set main widget size (width x height)
+
+	// Make the main viewer visible (Qt::show)
 	viewer->show();
-	const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue"));
-	robot_polygon = std::get<0>(rob);
 
+	// Add a robot polygon to the main viewer and keep the returned polygon item
+	const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue")); // create robot graphic
+	robot_polygon = std::get<0>(rob); // store pointer to polygon representing robot
+
+	// --- Room viewer and initial robot drawing --------------------------------
+	// A small local struct holds visualization constants used during init only
+	struct InitParams {
+		double GRID_MAX_DIM = 12000.0; // total grid dimension in mm (12m)
+		double ROBOT_WIDTH = 400.0;    // robot visual width in mm
+		double ROBOT_LENGTH = 400.0;   // robot visual length in mm
+		double GRID_STEP = 1000.0;     // grid step for drawing (1m)
+	} params;
+
+
+
+	// Compute half-size once to use for rectangle and grid drawing
+	double half = params.GRID_MAX_DIM / 2.0; // half the grid extent
+
+	// Build a QRectF that describes the room extents (centered at 0,0)
+	QRectF roomDims(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM);
+
+	// Create the dedicated room viewer (right pane) using its UI frame
+	viewer_room = new AbstractGraphicViewer(this->frame_room, roomDims);
+
+	// Add a smaller robot graphic to the room viewer and keep the polygon pointer
+	auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
+	robot_room_draw = rr; // pointer to robot polygon in the room viewer
+	
+	// draw room in viewer_room as a rectangle centered at (0,0)
+	viewer_room->scene.addRect(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM, QPen(Qt::black));
+	// Show the room viewer widget
+	viewer_room->show();
+
+	// --- Initialise robot pose in the internal model --------------------------
+	robot_pose.setIdentity(); // start with identity transform
+	robot_pose.translate(Eigen::Vector2d(0.0, 0.0)); // place robot at scene center
+	// Connect mouse coordinate signals from the main viewer to slot handler
 	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
-
 
 }
 
@@ -124,7 +171,49 @@ void SpecificWorker::compute()
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		filtered_points = filter_isolated_points(filter_data.value(), 200.0f);
 
-//		qInfo() << filter_data.size();
+		// --- Update robot visual using the current base state (if available)
+		try {
+			RoboCompGenericBase::TBaseState bState;
+			omnirobot_proxy->getBaseState(bState); // may throw if proxy disconnected
+			// Update rotation and position for the main viewer robot polygon
+			if (robot_polygon) {
+				robot_polygon->setRotation(bState.alpha + M_PI_2);
+				robot_polygon->setPos(bState.x, bState.z);
+			}
+			// Also update the robot graphic in the room viewer
+			if (robot_room_draw)
+				robot_room_draw->setPos(bState.x, bState.z);
+		}
+		catch (const Ice::Exception &){ /* ignore pose update errors */ }
+
+		// --- Lazy creation of room polygon and corner markers in the viewers
+		// Create them once on first compute() so drawing is performed in the main loop
+		if (!roomItemRoom && viewer_room)
+		{
+			QPolygonF roomPoly;
+			for (const auto &c : room.corners)
+			{
+				const QPointF &pt = std::get<0>(c);
+				roomPoly << pt;
+			}
+
+			QPen roomOutline(Qt::darkGreen); roomOutline.setWidth(8);
+			QBrush roomBrush(QColor(0, 255, 0, 30)); // semi-transparent green
+			roomItemRoom = viewer_room->scene.addPolygon(roomPoly, roomOutline, roomBrush);
+			roomItemRoom->setZValue(-1);
+
+			QPen cornerPen(Qt::red); cornerPen.setWidth(6);
+			for (const auto &c : room.corners)
+			{
+				const QPointF &pt = std::get<0>(c);
+				auto *m = viewer->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red));
+				room_corner_items_main.push_back(m);
+				auto *r = viewer_room->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red));
+				room_corner_items_room.push_back(r);
+			}
+		}
+
+		// Finally draw lidar points on the main viewer scene
 		if (filter_data.has_value())
 			draw_lidar(filter_data.value(), &viewer->scene);
 

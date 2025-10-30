@@ -1,7 +1,8 @@
-//
 // Created by pbustos on 27/10/25.
 //
-
+/* Purpose: Implementation of the RANSAC-based 2D line detector declared in
+    `ransac_line_detector.h`. Implements sampling, inlier selection, least-squares
+    fitting and line extraction logic. */
 #include "ransac_line_detector.h"
 #include <random>
 #include <algorithm>
