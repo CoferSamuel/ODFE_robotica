@@ -11,6 +11,13 @@ LIST(APPEND HEADERS
 )
 
 
+# Find OpenCV (used by room_detector.cpp/h)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc)
+if(OpenCV_FOUND)
+  include_directories(${OpenCV_INCLUDE_DIRS})
+  list(APPEND LIBS ${OpenCV_LIBS})
+endif()
+
 
 LIST(APPEND LIBS ${LIBS})
 

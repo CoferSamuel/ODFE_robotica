@@ -18,7 +18,11 @@ SET(RC_COMPONENT_INSTALL_PATH $ENV{ROBOCOMP} CACHE STRING "component install pat
 #STRING(STRIP ${COMPONENT_NAME} COMPONENT_NAME)
 #SET(COMPONENT_NAME ${COMPONENT_NAME} CACHE STRING "component name" FORCE)
 
-SUBDIRS(generated)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/generated")
+  SUBDIRS(generated)
+else()
+  MESSAGE(WARNING "generated directory not found: ${CMAKE_CURRENT_SOURCE_DIR}/generated. CMake will continue but some generated sources may be missing. Run CMake from the project root to regenerate or restore the 'generated' directory.")
+endif()
 
 INSTALL(FILES etc/config DESTINATION ${RC_COMPONENT_INSTALL_PATH}/etc-default/ RENAME localiser.conf )
 
