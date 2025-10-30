@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1" date="1760631417943" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 16/10/25, 18:16 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="chocachoca/bin/chocachoca" />
+    <option name="AFTER_PATH" value="chocachoca/bin/chocachoca" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1/chocachoca" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o" />
+    <option name="AFTER_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/genericworker.cpp.o" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1/genericworker.cpp.o" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/main.cpp.o" />
+    <option name="AFTER_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/main.cpp.o" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1/main.cpp.o" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o" />
+    <option name="AFTER_PATH" value="chocachoca/build/generated/CMakeFiles/chocachoca.dir/__/src/specificworker.cpp.o" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_16_10_25,_18_16_[Changes]1/specificworker.cpp.o" />
+  </binary>
+</changelist>

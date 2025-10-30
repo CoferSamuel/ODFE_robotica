@@ -1,0 +1,17 @@
+Index: chocachoca/etc/config
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># Proxies for required interfaces\nProxies.Lidar3D = \"lidar3d:tcp -h localhost -p 11988\"\nProxies.OmniRobot = \"omnirobot:tcp -h localhost -p 10004\"\n\n\n\nPeriod.Compute = 100\nPeriod.Emergency = 500\n\nIce.Warn.Connections = \"0\"\nIce.Trace.Network = \"0\"\nIce.Trace.Protocol = \"0\"\nIce.MessageSizeMax = \"20004800\"\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/chocachoca/etc/config b/chocachoca/etc/config
+--- a/chocachoca/etc/config	(revision 910a316edb8f489d52d2732d943c04bfea28ecb4)
++++ b/chocachoca/etc/config	(date 1760626498518)
+@@ -1,5 +1,5 @@
+ # Proxies for required interfaces
+-Proxies.Lidar3D = "lidar3d:tcp -h localhost -p 11988"
++Proxies.Lidar3D = "lidar3d:tcp -h localhost -p 11989"
+ Proxies.OmniRobot = "omnirobot:tcp -h localhost -p 10004"
+ 
+ 

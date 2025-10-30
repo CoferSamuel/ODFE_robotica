@@ -20,6 +20,7 @@
 #include "hungarian.h"
 #include "ransac_line_detector.h"
 #include "room_detector.h"
+#include "munkres.hpp"
 
 // Forward declarations to reduce compile-time coupling
 class QGraphicsPolygonItem;
