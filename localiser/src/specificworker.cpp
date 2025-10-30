@@ -102,57 +102,109 @@ void SpecificWorker::initialize()
 	std::cout << "initialize worker" << std::endl; // announce initialisation on stdout
 
 	// --- Prepare GUI geometry -------------------------------------------------
-	// Set the extents (scene rectangle) used by the main viewer: left/top/x/y
-	this->dimensions = QRectF(-6000, -3000, 12000, 6000); // scene covers +/-6m x, +/-3m y
+	/*
+	 * "viewer" (left pane) shows the robot at the center with a +/-6m x, +/-3m y
+	 * scene extent. It will display live LIDAR points and robot movement.
+	 *
+	 * "viewer_room" (right pane) shows a fixed-size room with grid and
+	 * nominal room outline. The robot will move inside this room according to its pose.
+	 */
 
-	// Create the main AbstractGraphicViewer using the UI frame and scene extents
-	viewer = new AbstractGraphicViewer(this->frame, this->dimensions); // owned by Qt parent
+	// Left pane: main viewer ----------------------------------------------
+		// Set the extents (scene rectangle) used by the main viewer: left/top/x/y
+		this->dimensions = QRectF(-6000, -3000, 12000, 6000); // scene covers +/-6m x, +/-3m y
 
-	// Resize the widget window so the two viewers fit comfortably
-	this->resize(900,450); // set main widget size (width x height)
+		// Create the main AbstractGraphicViewer using the UI frame and scene extents
+		viewer = new AbstractGraphicViewer(this->frame, this->dimensions); // owned by Qt parent
 
-	// Make the main viewer visible (Qt::show)
-	viewer->show();
+		// Resize the widget window so the two viewers fit comfortably
+		this->resize(900,450); // set main widget size (width x height)
 
-	// Add a robot polygon to the main viewer and keep the returned polygon item
-	const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue")); // create robot graphic
-	robot_polygon = std::get<0>(rob); // store pointer to polygon representing robot
+		// Make the main viewer visible (Qt::show)
+		viewer->show();
 
-	// --- Room viewer and initial robot drawing --------------------------------
-	// A small local struct holds visualization constants used during init only
-	struct InitParams {
-		double GRID_MAX_DIM = 12000.0; // total grid dimension in mm (12m)
-		double ROBOT_WIDTH = 400.0;    // robot visual width in mm
-		double ROBOT_LENGTH = 400.0;   // robot visual length in mm
-		double GRID_STEP = 1000.0;     // grid step for drawing (1m)
-	} params;
+		// Add a robot polygon to the main viewer and keep the returned polygon item
+		const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue")); // create robot graphic
+		robot_polygon = std::get<0>(rob); // store pointer to polygon representing robot
 
+	// --- Right pane: Room viewer --------------------------------
+		// A small local struct holds visualization constants used during init only
+		struct InitParams {
+			double GRID_MAX_DIM = 12000.0; // total grid dimension in mm (12m)
+			double ROBOT_WIDTH = 400.0;    // robot visual width in mm
+			double ROBOT_LENGTH = 400.0;   // robot visual length in mm
+			double GRID_STEP = 1000.0;     // grid step for drawing (1m)
+		} params;
 
+		// If a previous room viewer exists, delete it to avoid leaks and null the pointer
+		if (viewer_room) { delete viewer_room; viewer_room = nullptr; }
 
-	// Compute half-size once to use for rectangle and grid drawing
-	double half = params.GRID_MAX_DIM / 2.0; // half the grid extent
+		// Compute half-size once to use for rectangle and grid drawing
+		double half = params.GRID_MAX_DIM / 2.0; // half the grid extent
 
-	// Build a QRectF that describes the room extents (centered at 0,0)
-	QRectF roomDims(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM);
+		// Build a QRectF that describes the room extents (centered at 0,0)
+		QRectF roomDims(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM);
 
-	// Create the dedicated room viewer (right pane) using its UI frame
-	viewer_room = new AbstractGraphicViewer(this->frame_room, roomDims);
+		// Create the dedicated room viewer (right pane) using its UI frame
+		viewer_room = new AbstractGraphicViewer(this->frame_room, roomDims);
 
-	// Add a smaller robot graphic to the room viewer and keep the polygon pointer
-	auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
-	robot_room_draw = rr; // pointer to robot polygon in the room viewer
-	
-	// draw room in viewer_room as a rectangle centered at (0,0)
-	viewer_room->scene.addRect(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM, QPen(Qt::black));
-	// Show the room viewer widget
-	viewer_room->show();
+		// Add a smaller robot graphic to the room viewer and keep the polygon pointer
+		auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
+		robot_room_draw = rr; // pointer to robot polygon in the room viewer
 
-	// --- Initialise robot pose in the internal model --------------------------
-	robot_pose.setIdentity(); // start with identity transform
-	robot_pose.translate(Eigen::Vector2d(0.0, 0.0)); // place robot at scene center
-	// Connect mouse coordinate signals from the main viewer to slot handler
-	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
+		// Draw a centered rectangle representing the room border in the room viewer
+		QPen roomPen(Qt::black); // black pen for room outline
+		roomPen.setWidth(10);    // thick outline
+		viewer_room->scene.addRect(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM, roomPen, QBrush(Qt::NoBrush));
 
+		// Draw a dashed grid to help visualise scale inside the room viewer
+		QPen gridPen(Qt::gray); gridPen.setStyle(Qt::DashLine); // grey dashed grid lines
+		for (double x = -half; x <= half; x += params.GRID_STEP)
+			viewer_room->scene.addLine(x, -half, x, half, gridPen); // vertical grid lines
+		for (double y = -half; y <= half; y += params.GRID_STEP)
+			viewer_room->scene.addLine(-half, y, half, y, gridPen); // horizontal grid lines
+
+		// Show the room viewer widget
+		viewer_room->show();
+
+		// --- Initialise robot pose in the internal model --------------------------
+		robot_pose.setIdentity(); // start with identity transform
+		robot_pose.translate(Eigen::Vector2d(0.0, 0.0)); // place robot at scene center
+
+		// If a robot polygon exists in the room viewer, set its position from the pose
+		if (robot_room_draw) {
+			auto p = robot_pose.translation(); // get translation vector
+			robot_room_draw->setPos(p.x(), p.y()); // set graphical position
+		}
+
+		// --- Draw nominal room in the room viewer and add corner markers ---------
+		// Convert the NominalRoom corners to a QPolygonF for drawing
+		QPolygonF roomPoly;
+		for (const auto &c : room.corners)
+		{
+			const QPointF &pt = std::get<0>(c); // extract corner point
+			roomPoly << pt;                     // append to polygon
+		}
+
+		// Visual style for the nominal room polygon (translucent green fill)
+		QPen roomOutline(Qt::darkGreen); roomOutline.setWidth(8);
+		QBrush roomBrush(QColor(0, 255, 0, 30)); // semi-transparent green
+
+		// Add polygon only to the dedicated room viewer (keeps main viewer clear)
+		auto *roomItemRoom = viewer_room->scene.addPolygon(roomPoly, roomOutline, roomBrush);
+		roomItemRoom->setZValue(-1); // place behind other items in the room viewer
+
+		// Ensure the robot polygon in the main viewer is drawn above other items
+		if (robot_polygon)
+			robot_polygon->setZValue(1);
+
+		// Draw red circular corner markers
+		QPen cornerPen(Qt::red); cornerPen.setWidth(6);
+		for (const auto &c : room.corners)
+		{
+			const QPointF &pt = std::get<0>(c); // extract corner point
+			viewer_room->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red)); 
+		}
 }
 
 
@@ -171,49 +223,7 @@ void SpecificWorker::compute()
 		if (data.points.empty()){qWarning()<<"No points received"; return ;}
 		filtered_points = filter_isolated_points(filter_data.value(), 200.0f);
 
-		// --- Update robot visual using the current base state (if available)
-		try {
-			RoboCompGenericBase::TBaseState bState;
-			omnirobot_proxy->getBaseState(bState); // may throw if proxy disconnected
-			// Update rotation and position for the main viewer robot polygon
-			if (robot_polygon) {
-				robot_polygon->setRotation(bState.alpha + M_PI_2);
-				robot_polygon->setPos(bState.x, bState.z);
-			}
-			// Also update the robot graphic in the room viewer
-			if (robot_room_draw)
-				robot_room_draw->setPos(bState.x, bState.z);
-		}
-		catch (const Ice::Exception &){ /* ignore pose update errors */ }
-
-		// --- Lazy creation of room polygon and corner markers in the viewers
-		// Create them once on first compute() so drawing is performed in the main loop
-		if (!roomItemRoom && viewer_room)
-		{
-			QPolygonF roomPoly;
-			for (const auto &c : room.corners)
-			{
-				const QPointF &pt = std::get<0>(c);
-				roomPoly << pt;
-			}
-
-			QPen roomOutline(Qt::darkGreen); roomOutline.setWidth(8);
-			QBrush roomBrush(QColor(0, 255, 0, 30)); // semi-transparent green
-			roomItemRoom = viewer_room->scene.addPolygon(roomPoly, roomOutline, roomBrush);
-			roomItemRoom->setZValue(-1);
-
-			QPen cornerPen(Qt::red); cornerPen.setWidth(6);
-			for (const auto &c : room.corners)
-			{
-				const QPointF &pt = std::get<0>(c);
-				auto *m = viewer->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red));
-				room_corner_items_main.push_back(m);
-				auto *r = viewer_room->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red));
-				room_corner_items_room.push_back(r);
-			}
-		}
-
-		// Finally draw lidar points on the main viewer scene
+//		qInfo() << filter_data.size();
 		if (filter_data.has_value())
 			draw_lidar(filter_data.value(), &viewer->scene);
 
@@ -433,34 +443,7 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const Rob
 
 }
 
-// NO SE USA ACTUALMENTE
-void SpecificWorker::new_target_slot(QPointF)
-{
-    try {
-        // Declaramos una variable para almacenar el estado actual del robot
-        RoboCompGenericBase::TBaseState bState;
-
-        // Llamamos al proxy del robot omni para obtener su estado actual
-        // Esto llena bState con x, z, alpha (posición y orientación)
-        omnirobot_proxy->getBaseState(bState);
-
-        // Actualizamos la orientación del polígono que representa el robot en la vista
-        // bState.alpha está en radianes, Qt usa grados, así que convertimos
-        robot_polygon->setRotation(bState.alpha + M_PI_2);
-
-        // Actualizamos la posición del polígono en la escena (x, z)
-        // Nota: aquí se usa x y z porque Qt probablemente representa Y vertical
-        robot_polygon->setPos(bState.x, bState.z);
-
-        // Imprimimos por consola la orientación y posición para depuración
-        std::cout << bState.alpha << " " << bState.x << " " << bState.z << std::endl;
-     }
-     catch (const Ice::Exception &e)  {
-         // Capturamos cualquier excepción de Ice y la mostramos
-         std::cout << e.what() << std::endl;
-         return;
-     }
-}
+// Removed: new_target_slot(QPointF) no longer used
 
 
 void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene)
