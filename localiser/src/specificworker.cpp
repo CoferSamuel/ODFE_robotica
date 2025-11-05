@@ -215,6 +215,7 @@ void SpecificWorker::compute()
 	// Resultado devuelto por las funciones de comportamiento
 	RoboCompLidar3D::TPoints filtered_points;
 
+	// Get LIDAR data and draw it in the main viewer
 	try
 	{
 	 	const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
@@ -226,12 +227,14 @@ void SpecificWorker::compute()
 //		qInfo() << filter_data.size();
 		if (filter_data.has_value())
 			draw_lidar(filter_data.value(), &viewer->scene);
-
-
-
-
 	}
 	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
+
+	// ========== CORNER DETECTION AND VISUALIZATION ==========
+	// Detect corners from LIDAR points and visualize them in the main viewer
+	// This call encapsulates the entire pipeline: RANSAC line extraction, 
+	// 90° intersection detection, and dynamic circle visualization
+	detect_and_draw_corners(filtered_points);
 
 	std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
 	// Ejemplo de uso en un switch
@@ -246,6 +249,7 @@ void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, fl
 	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
 	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
 }
+
 std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(RoboCompLidar3D::TPoints filtered_points){
 	std::tuple<SpecificWorker::State, float, float> result;
 
@@ -483,8 +487,74 @@ void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphic
 		// Se guarda el puntero al rectángulo en el vector para poder eliminarlo la próxima vez
 		draw_points.push_back(dp);
 	}
+
+	// 
 }
 
+/**
+ * @brief Detect and visualize corners from LIDAR points in the main viewer.
+ * 
+ * This method encapsulates the complete corner detection and visualization pipeline.
+ * It extracts corners using RANSAC line detection and 90° intersection checks,
+ * then draws red semi-transparent circles at each detected corner location.
+ * The visualization is dynamic: old corner markers are removed before new ones are drawn.
+ * 
+ * @param points Filtered LIDAR points used for corner detection.
+ */
+void SpecificWorker::detect_and_draw_corners(const RoboCompLidar3D::TPoints &points)
+{
+	// Guard clause: skip processing if no points are available
+	if (points.empty())
+		return;
+
+	// ========== STEP 1: CORNER DETECTION ==========
+	// Extract corners from filtered LIDAR points using the room_detector
+	// This process internally performs:
+	//   a) RANSAC line detection to extract line segments from the point cloud
+	//   b) Pairwise comparison of all detected lines
+	//   c) Intersection computation for lines meeting at ~90° (± 0.2 radians)
+	//   d) Non-maximum suppression to avoid duplicate corners within 200mm
+	// The second parameter (nullptr) means we don't want intermediate visualization in a scene
+	Corners detected_corners = room_detector.compute_corners(points, nullptr);
+
+	// ========== STEP 2: CLEANUP OLD VISUALIZATION ==========
+	// Clean up previously drawn corner markers from the main viewer
+	// We use a static vector to persist the corner graphics items between calls
+	// This allows us to remove old markers before drawing new ones (dynamic visualization)
+	static std::vector<QGraphicsItem*> corner_items;
+	for (auto *item : corner_items)
+	{
+		viewer->scene.removeItem(item);  // Remove from the Qt scene graph
+		delete item;                     // Free the memory
+	}
+	corner_items.clear();  // Clear the vector for new items
+
+	// ========== STEP 3: DEFINE VISUAL STYLE ==========
+	// Define visual style for corner markers
+	QPen cornerPen(Qt::red);                         // Red outline for visibility
+	cornerPen.setWidth(6);                           // 6-pixel thick border
+	QBrush cornerBrush(QColor(255, 0, 0, 100));      // Semi-transparent red fill (alpha=100/255)
+
+	// ========== STEP 4: DRAW CORNER MARKERS ==========
+	// Draw a circle at each detected corner position
+	for (const auto &corner : detected_corners)
+	{
+		// Extract the QPointF position from the corner tuple (Corner = tuple<QPointF, angle, timestamp>)
+		const QPointF &pt = std::get<0>(corner);
+
+		// Draw circle: center at (pt.x, pt.y), diameter 200mm (radius 100mm from center)
+		// The ellipse is specified by its bounding box: (x-100, y-100, width=200, height=200)
+		auto *circle = viewer->scene.addEllipse(pt.x()-100, pt.y()-100, 200, 200, 
+		                                         cornerPen, cornerBrush);
+
+		// Store the graphics item pointer so we can remove it in the next cycle
+		corner_items.push_back(circle);
+	}
+
+	// ========== STEP 5: LOGGING ==========
+	// Log the number of detected corners for debugging and monitoring
+	qInfo() << "Detected corners:" << detected_corners.size();
+}
 
 
 

@@ -124,4 +124,14 @@ namespace rc
 
         return lines;
     }
+    
+    // Overload: detect_lines with default parameters
+    // This convenience method allows calling detect_lines without specifying parameters,
+    // using sensible defaults for typical room corner detection scenarios.
+    // It delegates to the full version with a default-constructed Params object.
+    std::vector<LineSegment> RansacLineDetector::detect_lines(const std::vector<Eigen::Vector2d>& points)
+    {
+        // Create default parameters and call the main implementation
+        return detect_lines(points, Params());
+    }
 } // rc

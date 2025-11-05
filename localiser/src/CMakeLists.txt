@@ -4,6 +4,10 @@
 # Sources set
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
+  # Corner detection and matching implementation files:
+  ../src/room_detector.cpp          # Room feature extraction: RANSAC lines → corners
+  ../src/hungarian.cpp              # Hungarian algorithm wrapper for corner matching
+  ../src/ransac_line_detector.cpp   # RANSAC-based 2D line segment detector
     $ENV{ROBOCOMP}/classes/abstract_graphic_viewer/abstract_graphic_viewer.h
 
 )
@@ -11,6 +15,12 @@ LIST(APPEND SOURCES
 # Headers set
 LIST(APPEND HEADERS
   ../src/specificworker.h
+  # Corner detection and matching header files:
+  ../src/room_detector.h            # Room_Detector class declaration
+  ../src/hungarian.h                # Hungarian class declaration
+  ../src/ransac_line_detector.h     # RansacLineDetector class declaration
+  ../src/common_types.h             # Shared types: LineSegment, Corners, Match, etc.
+  ../src/munkres.hpp                # Header-only Munkres algorithm implementation
 )
 
 

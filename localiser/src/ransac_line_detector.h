@@ -49,6 +49,22 @@ public:
      * @return std::vector<LineSegment> Detected line segments with endpoints and scores.
      */
     std::vector<LineSegment> detect_lines(const std::vector<Eigen::Vector2d>& points, const Params& params);
+    
+    /**
+     * @brief Detect line segments using default parameters.
+     * 
+     * This overload allows calling detect_lines without explicitly providing parameters.
+     * It internally creates a default Params() object with standard threshold values:
+     *   - distance_threshold = 50.0 mm
+     *   - min_points_per_line = 20
+     *   - max_iterations = 100
+     *   - max_lines = 10
+     *   - min_line_length = 300.0 mm
+     * 
+     * @param points Input 2D points in millimetres.
+     * @return std::vector<LineSegment> Detected line segments.
+     */
+    std::vector<LineSegment> detect_lines(const std::vector<Eigen::Vector2d>& points);
 };
 
 } // namespace rc

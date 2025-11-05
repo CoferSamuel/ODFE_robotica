@@ -149,6 +149,20 @@ private:
 	 */
 	void                      draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
+	/**
+	 * @brief Detect and visualize corners from LIDAR points in the main viewer.
+	 * 
+	 * This method performs the complete corner detection pipeline:
+	 *   1. Extracts line segments from LIDAR points using RANSAC
+	 *   2. Computes line intersections at ~90° angles to identify corners
+	 *   3. Applies non-maximum suppression to avoid duplicate corners
+	 *   4. Draws red semi-transparent circles at detected corner positions
+	 *   5. Manages dynamic visualization (removes old markers, adds new ones)
+	 * 
+	 * @param points Filtered LIDAR points to process for corner detection.
+	 */
+	void                      detect_and_draw_corners(const RoboCompLidar3D::TPoints &points);
+
 	// Behaviours ------------------------------------------------------------
 	/**
 	 * @brief Forward behaviour: advance if free, otherwise transition to turn.

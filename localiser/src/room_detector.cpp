@@ -5,6 +5,7 @@
     room sizes and provide visualization helpers. */
 #include "room_detector.h"
 #include <cppitertools/combinations.hpp>
+#include <cppitertools/enumerate.hpp>  // Added: needed for iter::enumerate in estimate_room_sizes
 #include <opencv2/imgproc.hpp>
 #include <cppitertools/zip.hpp>
 #include <chrono>
@@ -26,8 +27,11 @@ namespace rc
         //Eigen::Vector3d estimated_size = estimate_room_sizes(room_center, floor_line_cart);
         // std::cout << "Size " << estimated_size.x() << " " << estimated_size.y() << std::endl;
 
-        // compute lines
-        auto  lines = RansacLineDetector::detect_lines(floor_line_cart);
+        // compute lines using RANSAC
+        // Create a RansacLineDetector instance (non-static method)
+        // Then call detect_lines with the 2D points to extract line segments
+        RansacLineDetector ransac_detector;
+        auto  lines = ransac_detector.detect_lines(floor_line_cart);
         if (scene != nullptr) draw_lines_on_2D_tab(lines, scene);
 
         //lines = filter_lines_by_length(lines, static_cast<float>(estimated_size.head(2).minCoeff()/2.f));
