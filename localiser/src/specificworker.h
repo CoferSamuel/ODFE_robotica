@@ -51,7 +51,7 @@ struct NominalRoom
 	}
 };
 
-// Declare global nominal room (defined in a single translation unit to avoid multiple-definition link errors)
+// Definition of the global nominal room (previously defined in the header which caused multiple-definition errors)
 extern NominalRoom room;
 
 // Main worker class -----------------------------------------------------------
@@ -85,6 +85,8 @@ public slots: // DOUBT what is a slot?
 	 */
 	void initialize();
 
+	void new_target_slot(QPointF);
+
 	/**
 	 * @brief Main periodic loop. Polls sensors, updates visuals and state.
 	 * Fetches LIDAR data, filters points, draws them and advances the state machine.
@@ -110,6 +112,7 @@ signals: // DOUBT what is this for?
 private:
 	// Constants --------------------------------------------------------------
 	const int ROBOT_LENGTH = 400;        // Robot visual size in mm for drawing
+	const int ROBOT_WIDTH  = 400;        // Robot visual size in mm for drawing
 
 	// Viewers & graphics -----------------------------------------------------
 	QRectF                    dimensions;       // Scene extents for main viewer
@@ -122,9 +125,10 @@ private:
 	// State & models ---------------------------------------------------------
 	bool                      startup_check_flag = false; // run self-check?
 	Eigen::Affine2d           robot_pose;        // 2D pose used for transforms
+												 
 	rc::Room_Detector         room_detector;     // Line/corner detection
 	rc::Hungarian             hungarian;         // Matching
-	State                     state = State::SPIRAL; // Initial state
+	State     state = State::IDLE; // Initial state
 
 	// Helpers ---------------------------------------------------------------
 	/**
@@ -147,7 +151,7 @@ private:
 	 * @param points Points to draw.
 	 * @param scene Target QGraphicsScene.
 	 */
-	void                      draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
+	void draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
 	/**
 	 * @brief Detect and visualize corners from LIDAR points in the main viewer.
@@ -161,7 +165,7 @@ private:
 	 * 
 	 * @param points Filtered LIDAR points to process for corner detection.
 	 */
-	void                      detect_and_draw_corners(const RoboCompLidar3D::TPoints &points);
+	void detect_and_draw_corners(const RoboCompLidar3D::TPoints &points);
 
 	// Behaviours ------------------------------------------------------------
 	/**

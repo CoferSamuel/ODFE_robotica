@@ -29,20 +29,23 @@
 #include <cppitertools/enumerate.hpp>
 #include <cppitertools/zip.hpp>
 #include <algorithm>
+#include "common_types.h"
+
+
 using namespace std;
 
-// Definition of the global nominal room (previously defined in the header which caused multiple-definition errors)
 NominalRoom room{10000.f, 5000.f,
 			{{QPointF{-5000.f, -2500.f}, 0.f, 0.f},
 				   {QPointF{5000.f, -2500.f}, 0.f, 0.f},
 				   {QPointF{5000.f, 2500.f}, 0.f, 0.f},
 				   {QPointF{-5000.f, 2500.f}, 0.f, 0.f}}};
 
+
 const float MIN_DISTANCE_TURN = 600.0f; // Distancia mínima para salir del estado TURN
 const float MAX_ADV = 600.0f;         // Velocidad máxima de avance en mm/s
 const float MIN_THRESHOLD = 50.0f;  // Distancia mínima para empezar a frenar en mm
 const float MAX_BRAKE = 100.0f;       // Velocidad máxima de frenado en mm/s
-const float DIST_CHANGE_TO_SPIRAL= 2000.0f;//Distancia a la que no consideramos que no hay nada cerca para la espiral
+const float DIST_CHANGE_TO_SPIRAL= 200000.0f;//Distancia a la que no consideramos que no hay nada cerca para la espiral
 
 SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
@@ -128,54 +131,31 @@ void SpecificWorker::initialize()
 		robot_polygon = std::get<0>(rob); // store pointer to polygon representing robot
 
 	// --- Right pane: Room viewer --------------------------------
-		// A small local struct holds visualization constants used during init only
-		struct InitParams {
-			double GRID_MAX_DIM = 12000.0; // total grid dimension in mm (12m)
-			double ROBOT_WIDTH = 400.0;    // robot visual width in mm
-			double ROBOT_LENGTH = 400.0;   // robot visual length in mm
-			double GRID_STEP = 1000.0;     // grid step for drawing (1m)
-		} params;
-
-		// If a previous room viewer exists, delete it to avoid leaks and null the pointer
-		if (viewer_room) { delete viewer_room; viewer_room = nullptr; }
-
-		// Compute half-size once to use for rectangle and grid drawing
-		double half = params.GRID_MAX_DIM / 2.0; // half the grid extent
 
 		// Build a QRectF that describes the room extents (centered at 0,0)
-		QRectF roomDims(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM);
+		QRectF roomDims(-room.length, -room.length, room.width, room.width);
 
 		// Create the dedicated room viewer (right pane) using its UI frame
 		viewer_room = new AbstractGraphicViewer(this->frame_room, roomDims);
 
 		// Add a smaller robot graphic to the room viewer and keep the polygon pointer
-		auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
+		auto [rr, re] = viewer_room->add_robot(ROBOT_WIDTH, ROBOT_LENGTH, 0, 100, QColor("Blue"));
 		robot_room_draw = rr; // pointer to robot polygon in the room viewer
 
 		// Draw a centered rectangle representing the room border in the room viewer
 		QPen roomPen(Qt::black); // black pen for room outline
 		roomPen.setWidth(10);    // thick outline
-		viewer_room->scene.addRect(-half, -half, params.GRID_MAX_DIM, params.GRID_MAX_DIM, roomPen, QBrush(Qt::NoBrush));
+		viewer_room->scene.addRect(roomDims, roomPen); // add rectangle to scene
 
-		// Draw a dashed grid to help visualise scale inside the room viewer
-		QPen gridPen(Qt::gray); gridPen.setStyle(Qt::DashLine); // grey dashed grid lines
-		for (double x = -half; x <= half; x += params.GRID_STEP)
-			viewer_room->scene.addLine(x, -half, x, half, gridPen); // vertical grid lines
-		for (double y = -half; y <= half; y += params.GRID_STEP)
-			viewer_room->scene.addLine(-half, y, half, y, gridPen); // horizontal grid lines
 
-		// Show the room viewer widget
-		viewer_room->show();
 
 		// --- Initialise robot pose in the internal model --------------------------
 		robot_pose.setIdentity(); // start with identity transform
 		robot_pose.translate(Eigen::Vector2d(0.0, 0.0)); // place robot at scene center
+		robot_pose.rotate(M_PI / 2.0 + M_PI);
 
-		// If a robot polygon exists in the room viewer, set its position from the pose
-		if (robot_room_draw) {
-			auto p = robot_pose.translation(); // get translation vector
-			robot_room_draw->setPos(p.x(), p.y()); // set graphical position
-		}
+		// Show the room viewer widget
+		viewer_room->show();
 
 		// --- Draw nominal room in the room viewer and add corner markers ---------
 		// Convert the NominalRoom corners to a QPolygonF for drawing
@@ -205,8 +185,33 @@ void SpecificWorker::initialize()
 			const QPointF &pt = std::get<0>(c); // extract corner point
 			viewer_room->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red)); 
 		}
+
+		// Connect mouse events from the viewer to a slot that handles new targets (clicks)
+		connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
+		srand(time(NULL));
 }
 
+void SpecificWorker::new_target_slot(QPointF target)
+{
+	try {
+		RoboCompGenericBase::TBaseState bState;         // variable to receive odometry/state
+		omnirobot_proxy->getBaseState(bState);          // populate bState with x, z, alpha
+
+		// Update graphic representing robot orientation (Qt rotation uses degrees internally for items)
+		robot_polygon->setRotation(bState.alpha + M_PI_2);
+
+		// Update graphic position using robot's x,z coordinates
+		robot_polygon->setPos(bState.x, bState.z);
+
+		// Print state for debugging
+		std::cout << bState.alpha << " " << bState.x << " " << bState.z << std::endl;
+	 }
+	 catch (const Ice::Exception &e)  {
+		 // Print ICE exception in case of RPC failure
+		 std::cout << e.what() << std::endl;
+		 return;
+	 }
+}
 
 void SpecificWorker::compute()
 {
@@ -234,12 +239,54 @@ void SpecificWorker::compute()
 	// Detect corners from LIDAR points and visualize them in the main viewer
 	// This call encapsulates the entire pipeline: RANSAC line extraction, 
 	// 90° intersection detection, and dynamic circle visualization
-	detect_and_draw_corners(filtered_points);
 
-	std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
-	// Ejemplo de uso en un switch
+	// Cogemos las esquinas detectadas o mesuradas
+	Corners detected_corners = room_detector.compute_corners(filtered_points, &viewer->scene);
+
+	// Transform nominal room corners to robot frame for matching
+	Corners robot_corners = room.transform_corners_to(robot_pose.inverse());
+	
+	// Match detected corners to nominal room corners using Hungarian algorithm
+	auto matched_corners = hungarian.match(detected_corners, robot_corners, 1000.0);
+
+	Eigen::MatrixXd W(matched_corners.size() * 2, 3);
+	Eigen::VectorXd b(matched_corners.size() * 2);
+
+	for (auto &&[i, m]: matched_corners | iter::enumerate)
+	{
+		auto &[meas_c, nom_c, _] = m;
+		auto &[p_meas, __, ___] = meas_c;
+		auto &[p_nom, ____, _____] = nom_c;
+		
+		b(2 * i)     = p_nom.x() - p_meas.x();
+		b(2 * i + 1) = p_nom.y() - p_meas.y();
+		W.block<1, 3>(2 * i, 0)     << 1.0, 0.0, -p_meas.y();
+		W.block<1, 3>(2 * i + 1, 0) << 0.0, 1.0, p_meas.x();
+	}
+	// estimate new pose with pseudoinverse
+	const Eigen::Vector3d r = (W.transpose() * W).inverse() * W.transpose() * b;
+	std::cout << "Nueva pose estimada: " << std::endl;
+	std::cout << "X: " << r(0) << " Y: " << r(1) << " Theta: " << r(2) << std::endl;
+	qInfo() << "--------------------";
+
+
+	if (r.array().isNaN().any())
+		return;
+	
+	robot_pose.translate(Eigen::Vector2d(r(0), r(1)));
+	robot_pose.rotate(r[2]);
+
+	// Update robot graphic position in the room viewer
+	robot_room_draw->setPos(robot_pose.translation().x(), robot_pose.translation().y());
+	double angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+	robot_room_draw->setRotation(qRadiansToDegrees(angle));
+
+
+
+	// Descomentar para que se mueva solos
+	//std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
 	// Aplicar las velocidades calculadas al robot
-	SetMachineSpeed(result);
+	//SetMachineSpeed(result);
 }
 
 void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, float> result){
@@ -257,7 +304,6 @@ std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(Rob
 	{
 		case SpecificWorker::State::IDLE:
 			// Aquí va la lógica para cuando el robot está parado
-			state = SpecificWorker::State::FORWARD;
 			break;
 
 		case SpecificWorker::State::FORWARD:
