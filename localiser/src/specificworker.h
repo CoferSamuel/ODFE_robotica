@@ -128,7 +128,7 @@ private:
 												 
 	rc::Room_Detector         room_detector;     // Line/corner detection
 	rc::Hungarian             hungarian;         // Matching
-	State     state = State::IDLE; // Initial state
+	State     state = State::SPIRAL; // Initial state
 
 	// Helpers ---------------------------------------------------------------
 	/**

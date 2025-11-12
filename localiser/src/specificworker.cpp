@@ -284,9 +284,9 @@ void SpecificWorker::compute()
 
 
 	// Descomentar para que se mueva solos
-	//std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
+	std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
 	// Aplicar las velocidades calculadas al robot
-	//SetMachineSpeed(result);
+	SetMachineSpeed(result);
 }
 
 void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, float> result){
