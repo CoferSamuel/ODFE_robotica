@@ -96,7 +96,6 @@ SpecificWorker::~SpecificWorker()
  */
 void SpecificWorker::initialize()
 {
-   std::cout << "Initialize worker" << std::endl;
    if(this->startup_check_flag)
    {
       this->startup_check();
@@ -113,32 +112,33 @@ void SpecificWorker::initialize()
 	 * "viewer_room" (right pane) shows a fixed-size room with grid and
 	 * nominal room outline. The robot will move inside this room according to its pose.
 	 */
-
+		// Setup the auto-generated GUI from Qt Designer
+		setupUi(this);
 	
        viewer = new AbstractGraphicViewer(this->frame, params.GRID_MAX_DIM);
        auto [r, e] = viewer->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
        robot_draw = r;
-       //viewer->show();
-
-
+       
        viewer_room = new AbstractGraphicViewer(this->frame_room, params.GRID_MAX_DIM);
        auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
        robot_room_draw = rr;
        // draw room in viewer_room
+
        viewer_room->scene.addRect(nominal_rooms[0].rect(), QPen(Qt::black, 30));
-       //viewer_room->show();
-       show();
+	
 
        // initialise robot pose
        robot_pose.setIdentity();
        robot_pose.translate(Eigen::Vector2d(0.0,0.0));
+
+	   	this->show();
 
 
 		// Connect mouse events from the viewer to a slot that handles new targets (clicks)
 		connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
 		srand(time(NULL));       // Viewer
 
-       // time series plotter for match error
+		// time series plotter for match error
        TimeSeriesPlotter::Config plotConfig;
        plotConfig.title = "Maximum Match Error Over Time";
        plotConfig.yAxisLabel = "Error (mm)";
@@ -146,12 +146,12 @@ void SpecificWorker::initialize()
        plotConfig.autoScaleY = false;       // We will set a fixed range
        plotConfig.yMin = 0;
        plotConfig.yMax = 1000;
-       time_series_plotter = std::make_unique<TimeSeriesPlotter>(frame_plot_error, plotConfig);
-       match_error_graph = time_series_plotter->addGraph("", Qt::blue);
+    	//SpecificWorker::time_series_plotter = std::make_unique<TimeSeriesPlotter>(frame_plot_error, plotConfig);
+     	//match_error_graph = time_series_plotter->addGraph("", Qt::blue);
 
 
        // stop robot
-       move_robot(0, 0, 0);
+       //move_robot(0, 0, 0);
    }
 }
 
@@ -180,7 +180,7 @@ void SpecificWorker::new_target_slot(QPointF target)
 
 void SpecificWorker::compute()
 {
-
+	QThread::msleep(500); // wait for viewer to be ready
     std::cout << "Compute worker" << std::endl;
 	// Resultado devuelto por las funciones de comportamiento
     RoboCompLidar3D::TPoints data = read_data();
@@ -471,24 +471,23 @@ bool SpecificWorker::update_robot_pose(const Corners &corners, const Match &matc
 	
 	robot_pose.translate(Eigen::Vector2d(r(0), r(1)));
 	robot_pose.rotate(r[2]);
-	// ------------ ¿? Porque devuelvo algo?	
-    return true;
+
+	return true;
 }
 
 void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
 {
 	//TODO comprobar si el error es muy grande y no mover el robot
-	//if (max_match_error>500){
-	//	std::cout << "Error muy grande, no muevo el robot" << std::endl;
-	//	return;
-	//}
-	// try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
-	// catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+	if (max_match_error>500){
+		std::cout << "Error muy grande, no muevo el robot" << std::endl;
+		return;
+	}
+	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
+	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
 }
 
 std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 {
-	// GOTO_ROOM_CENTER
 
 	// TURN
     return {SpecificWorker::STATE::TURN, 0.0f, 0.5f};
