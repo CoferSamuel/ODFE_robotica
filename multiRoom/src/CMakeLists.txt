@@ -7,6 +7,9 @@ LIST(APPEND SOURCES
   ../src/room_detector.cpp          # Room feature extraction
   ../src/hungarian.cpp              # Hungarian algorithm wrapper
   ../src/ransac_line_detector.cpp   # RANSAC-based 2D line segment detector
+  ../src/time_series_plotter.cpp     # Time series plotter utility
+  ../src/door_detector.cpp        # Door detection logic
+  ../src/qcustomplot.cpp       # QCustomPlot library source
 )
 
 # Dependiendo de cómo use RoboComp este archivo, a veces es mejor
@@ -30,6 +33,9 @@ LIST(APPEND HEADERS
   ../src/ransac_line_detector.h
   ../src/common_types.h
   ../src/munkres.hpp
+  ../src/time_series_plotter.h
+  ../src/door_detector.h
+  ../src/qcustomplot.h
 )
 
 # --- Find Dependencies ---

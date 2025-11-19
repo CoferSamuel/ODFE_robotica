@@ -33,7 +33,7 @@
 
 #include <genericworker.h>
 #include "abstract_graphic_viewer/abstract_graphic_viewer.h"
-// #include <expected> // Commented to compile
+#include <expected> // Commented to compile
 #include <random>
 #include <doublebuffer/DoubleBuffer.h>
 #include "time_series_plotter.h"
@@ -49,6 +49,7 @@
 #include "hungarian.h"
 #include "door_detector.h"
 #include "image_processor.h"
+#include "nominal_room.h"
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
@@ -69,6 +70,7 @@ class SpecificWorker final : public GenericWorker
 
     public slots:
         void initialize();
+        void new_target_slot(QPointF target);
         void compute();
         void emergency();
         void restore();
@@ -121,37 +123,12 @@ class SpecificWorker final : public GenericWorker
         Eigen::Affine2d robot_pose;
 
         // rooms
-
-        // Nominal room model used for drawing and basic transforms
-        struct NominalRoom
-        {
-            float width;                 // Room width in mm
-            float length;                // Room length in mm
-            Corners corners;             // Room corners in scene coordinates
-
-            explicit NominalRoom(const float width_=10000.f, const float length_=5000.f, Corners corners_ = {})
-                : width(width_), length(length_), corners(std::move(corners_)) {}
-
-            // Transform room corners with an arbitrary 2D affine transform
-            // For room->robot you can pass the inverse of the robot pose
-            Corners transform_corners_to(const Eigen::Affine2d &transform) const
-            {
-                Corners transformed_corners;
-                for (const auto &[p, _, __] : corners)
-                {
-                    auto ep = Eigen::Vector2d{p.x(), p.y()};
-                    Eigen::Vector2d tp = transform * ep;
-                    transformed_corners.emplace_back(QPointF{static_cast<float>(tp.x()), static_cast<float>(tp.y())}, 0.f, 0.f);
-                }
-                return transformed_corners;
-            }
-        };
-
         std::vector<NominalRoom> nominal_rooms{ NominalRoom{5500.f, 4000.f}, NominalRoom{8000.f, 4000.f}};
         rc::Room_Detector room_detector;
         rc::Hungarian hungarian;
 
         // state machine
+        enum class State { IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL };
         enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
         inline const char* to_string(const STATE s) const
         {
@@ -180,6 +157,8 @@ class SpecificWorker final : public GenericWorker
 
         // draw
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
+
+        std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
 
         // aux
         RoboCompLidar3D::TPoints read_data();
@@ -224,6 +203,3 @@ signals:
 };
 
 #endif
-
-specificworker.h
-Mostrando specificworker.h.

@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        ".als.json": "jsonc",
+        "array": "cpp",
+        "primitiveset": "cpp",
+        "shader": "cpp",
+        "stateattribute": "cpp",
+        "uniform": "cpp",
+        "shape": "cpp",
+        "state": "cpp"
+    }
+}

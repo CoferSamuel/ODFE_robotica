@@ -10,7 +10,7 @@
 
 Doors DoorDetector::detect(const RoboCompLidar3D::TPoints &points, QGraphicsScene *scene)
 {
-   return doors;
+   return Doors{};
 }
 
 // Method to use the Doors vector to filter out the LiDAR points that como from a room outside the current one

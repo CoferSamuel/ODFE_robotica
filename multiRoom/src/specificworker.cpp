@@ -34,12 +34,6 @@
 
 using namespace std;
 
-NominalRoom room{10000.f, 5000.f,
-			{{QPointF{-5000.f, -2500.f}, 0.f, 0.f},
-				   {QPointF{5000.f, -2500.f}, 0.f, 0.f},
-				   {QPointF{5000.f, 2500.f}, 0.f, 0.f},
-				   {QPointF{-5000.f, 2500.f}, 0.f, 0.f}}};
-
 
 const float MIN_DISTANCE_TURN = 600.0f; // Distancia mínima para salir del estado TURN
 const float MAX_ADV = 600.0f;         // Velocidad máxima de avance en mm/s
@@ -120,25 +114,7 @@ void SpecificWorker::initialize()
 	 * nominal room outline. The robot will move inside this room according to its pose.
 	 */
 
-	// Left pane: main viewer ----------------------------------------------
-		// Set the extents (scene rectangle) used by the main viewer: left/top/x/y
-		this->dimensions = QRectF(-6000, -3000, 12000, 6000); // scene covers +/-6m x, +/-3m y
-
-		// Create the main AbstractGraphicViewer using the UI frame and scene extents
-		viewer = new AbstractGraphicViewer(this->frame, this->dimensions); // owned by Qt parent
-
-		// Resize the widget window so the two viewers fit comfortably
-		this->resize(900,450); // set main widget size (width x height)
-
-		// Make the main viewer visible (Qt::show)
-		viewer->show();
-
-		// Add a robot polygon to the main viewer and keep the returned polygon item
-		const auto rob = viewer->add_robot(ROBOT_LENGTH, ROBOT_LENGTH, 0, 190, QColor("Blue")); // create robot graphic
-		robot_polygon = std::get<0>(rob); // store pointer to polygon representing robot
-
-	// --- Right pane: Room viewer --------------------------------
-
+	
        viewer = new AbstractGraphicViewer(this->frame, params.GRID_MAX_DIM);
        auto [r, e] = viewer->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
        robot_draw = r;
@@ -157,35 +133,6 @@ void SpecificWorker::initialize()
        robot_pose.setIdentity();
        robot_pose.translate(Eigen::Vector2d(0.0,0.0));
 
-
-		// --- Draw nominal room in the room viewer and add corner markers ---------
-		// Convert the NominalRoom corners to a QPolygonF for drawing
-		QPolygonF roomPoly;
-		for (const auto &c : room.corners)
-		{
-			const QPointF &pt = std::get<0>(c); // extract corner point
-			roomPoly << pt;                     // append to polygon
-		}
-
-		// Visual style for the nominal room polygon (translucent green fill)
-		QPen roomOutline(Qt::darkGreen); roomOutline.setWidth(8);
-		QBrush roomBrush(QColor(0, 255, 0, 30)); // semi-transparent green
-
-		// Add polygon only to the dedicated room viewer (keeps main viewer clear)
-		auto *roomItemRoom = viewer_room->scene.addPolygon(roomPoly, roomOutline, roomBrush);
-		roomItemRoom->setZValue(-1); // place behind other items in the room viewer
-
-		// Ensure the robot polygon in the main viewer is drawn above other items
-		if (robot_polygon)
-			robot_polygon->setZValue(1);
-
-		// Draw red circular corner markers
-		QPen cornerPen(Qt::red); cornerPen.setWidth(6);
-		for (const auto &c : room.corners)
-		{
-			const QPointF &pt = std::get<0>(c); // extract corner point
-			viewer_room->scene.addEllipse(pt.x()-25, pt.y()-25, 50, 50, cornerPen, QBrush(Qt::red)); 
-		}
 
 		// Connect mouse events from the viewer to a slot that handles new targets (clicks)
 		connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
@@ -216,10 +163,10 @@ void SpecificWorker::new_target_slot(QPointF target)
 		omnirobot_proxy->getBaseState(bState);          // populate bState with x, z, alpha
 
 		// Update graphic representing robot orientation (Qt rotation uses degrees internally for items)
-		robot_polygon->setRotation(bState.alpha + M_PI_2);
+		robot_draw->setRotation(bState.alpha + M_PI_2);
 
 		// Update graphic position using robot's x,z coordinates
-		robot_polygon->setPos(bState.x, bState.z);
+		robot_draw->setPos(bState.x, bState.z);
 
 		// Print state for debugging
 		std::cout << bState.alpha << " " << bState.x << " " << bState.z << std::endl;
@@ -252,12 +199,14 @@ void SpecificWorker::compute()
 	// ========== ROBOT POSE ESTIMATION VIA CORNER MATCHING ==========
 	// Estimate and update the robot's pose based on matched corners
 	const auto center_opt = room_detector.estimate_center_from_walls(lines);
+	draw_lidar(data, center_opt, &viewer->scene);
+
 
 	// Transform nominal room corners to robot frame for matching
-	Corners robot_corners = room.transform_corners_to(robot_pose.inverse());
+	Corners robot_corners = nominal_rooms[0].transform_corners_to(robot_pose.inverse());
 	
 	// Match detected corners to nominal room corners using Hungarian algorithm
-	auto matched_corners = hungarian.match(detected_corners, robot_corners, 1000.0);
+	auto matched_corners = hungarian.match(corners, robot_corners);
 
 	  // compute max of  match error
    float max_match_error = 99999.f;  
@@ -273,13 +222,13 @@ void SpecificWorker::compute()
 
     // update robot pose
 	if (localised)
-		update_robot_pose(corners, match);
+		update_robot_pose(corners, matched_corners);
 
-	RetVal ret_val = process_state(data, corners, match, viewer);
+	RetVal ret_val = process_state(data, corners, matched_corners, viewer);
    	auto [st, adv, rot] = ret_val;
    	state = st;
 
-	move_robot(adv, rot, max_match_error);
+	//move_robot(adv, rot, max_match_error);
 
 
 	// Update robot graphic position in the room viewer
@@ -290,334 +239,17 @@ void SpecificWorker::compute()
 
 
 	// Descomentar para que se mueva solos
-	std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
+	//std::tuple<SpecificWorker::State, float, float> result= StateMachine(filtered_points);
 	// Aplicar las velocidades calculadas al robot
-	SetMachineSpeed(result);
+	//SetMachineSpeed(result);
 }
 
-void SpecificWorker::SetMachineSpeed(std::tuple<SpecificWorker::State, float, float> result){
-	state = std::get<0>(result);
-	float adv = std::get<1>(result);
-	float rot = std::get<2>(result);
-	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
-	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
-}
-
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::StateMachine(RoboCompLidar3D::TPoints filtered_points){
-	std::tuple<SpecificWorker::State, float, float> result;
-
-	switch(state)
-	{
-		case SpecificWorker::State::IDLE:
-			// Aquí va la lógica para cuando el robot está parado
-			break;
-
-		case SpecificWorker::State::FORWARD:
-			result = forward(filtered_points);
-			break;
-
-
-		case SpecificWorker::State::TURN:
-			// Lógica de giro
-			result = turn(filtered_points);
-			break;
-
-		case SpecificWorker::State::FOLLOW_WALL:
-			// Lógica de seguimiento de pared
-			result = follow_wall(filtered_points);
-			break;
-
-		case SpecificWorker::State::SPIRAL:
-			// Lógica de espiral
-			result = spiral(filtered_points);
-			break;
-	}
-	return result;
-}
-//El robot avanza rápido cuando no hay obstáculos y frena o gira cuanto más cerca o frontal está el obstáculo.
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::forward(const RoboCompLidar3D::TPoints& points)
+void SpecificWorker::emergency()
 {
-	std::tuple<SpecificWorker::State, float, float> result;
-
-	RoboCompLidar3D::TPoints frontal_points;
-	frontal_points.reserve(points.size());
-	// for, para filtrar los puntos que estan al frente del robot
-	for (const auto &p : points)
-	{
-		if (p.phi > (-M_PI_4 )&& p.phi < (M_PI_4))  // -45° < phi < +45°
-		{
-			frontal_points.push_back(p);
-		}
-	}
-	auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
-			{ return p1.r < p2.r; });	// Punto más cercano
-	if (min_dist->r>DIST_CHANGE_TO_SPIRAL) {
-		return{State::SPIRAL,0.0f,0.0f};
-	}
-	// Estos tres calculos, se pueden quitar y poner valores fijos si se desea
-
-	// Cálculo de velocidad de avance basada en la distancia al obstáculo más cercano
-	float adv_speed = std::min(MAX_ADV, (min_dist->r - MIN_THRESHOLD) * (MAX_ADV / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
-	// Cálculo del freno por distancia
-	float brake_speed = std::min(MAX_BRAKE, (MIN_DISTANCE_TURN - min_dist->r) * (MAX_BRAKE / (MIN_DISTANCE_TURN - MIN_THRESHOLD)));
-	float brake_rot = brake_speed / 2.0f; // Reducción de la velocidad de rotación al frenar
-
-	// Decisión de estado basada en la distancia al obstáculo más cercano
-	if (min_dist->r > MIN_DISTANCE_TURN) {
-		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::FORWARD, adv_speed, 0.f);
-	} else {
-		qInfo() << "FORWARD -> TURN";
-		result = std::tuple<SpecificWorker::State, float, float>(SpecificWorker::State::TURN, 0.f, brake_rot);
-	}
-	return result;
-}
-
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::turn(const RoboCompLidar3D::TPoints& points)
-{
-	static int cont=0;
-	std::tuple<SpecificWorker::State, float, float> result;
-
-	RoboCompLidar3D::TPoints frontal_points;
-	frontal_points.reserve(points.size());
-	// for, para filtrar los puntos que estan al frente del robot
-	for (const auto &p : points)
-	{
-		if (p.phi > (-M_PI_4 )&& p.phi < (M_PI_4))  // -45° < phi < +45°
-		{
-			frontal_points.push_back(p);
-		}
-	}
-	auto min_dist = std::min_element(std::begin(frontal_points), std::end(frontal_points),[](const auto& p1, const auto& p2)
-			{ return p1.r < p2.r; });	// Punto más cercano
-
-	// Si ya no hay obstáculo cerca, volvemos a FORWARD
-	if (min_dist->r > MIN_DISTANCE_TURN+100)
-	{
-		cont=0;
-		// Aleatoriamente decido si seguir pared o avanzar
-		if (std::rand() % 2 == 0)
-		{
-			qInfo() << "TURN -> FOLLOW WALL";
-			result = {State::FOLLOW_WALL, MAX_ADV, 0.0f};  // Podemos avanzar
-		}
-		else
-		{
-			qInfo() << "TURN -> FORWARD";
-			result = {State::FORWARD, MAX_ADV, 0.0f};  // Podemos avanzar
-		}
-
-	}
-	else {
-
-		qInfo() << "TURN AGAIN";
-		cont++;
-		if (cont>=100)
-			result=  {State::TURN, 0.0f, 1.0f};
-		else
-			if (min_dist->phi < 0)
-				result =  {State::TURN, 0.0f, 1.0f};
-			else
-				result = {State::TURN, 0.0f, -1.0f};
-
-	}
-	return result;
-}
-
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::follow_wall(const RoboCompLidar3D::TPoints &points)
-{
-
-	auto min_dist = std::min_element(std::begin(points), std::end(points),[](const auto& p1, const auto& p2)
-		{ return p1.r < p2.r; });
-	qInfo() << "DISTANCIA PARED------------------"<<min_dist->r;
-	// Si ya no hay obstáculo cerca, volvemos a FORWARD
-	if (min_dist->r >= MIN_DISTANCE_TURN && min_dist->r < MIN_DISTANCE_TURN+150)
-	{
-		qInfo() << "FOLLOW WALL";
-		return {State::FOLLOW_WALL, 200.0f, 0.0f};  // Podemos avanzar
-	}
-
-	//Estamos muy lejos de la pared en este caso 750
-	if (min_dist->r > MIN_DISTANCE_TURN+150)//Si estoy lejos de la pared corrijo el movimiento
-	{
-		//Detectamos en que lado esta la pared que seguimos y reducimos la velocidad para rotar.
-		if (min_dist->phi < 0)
-		{
-			qInfo() << "FOLLOW WALL LEFT FAR";
-			return {State::FOLLOW_WALL, 150.0f, -0.1f};
-		}
-
-			qInfo() << "FOLLOW WALL RIGHT FAR";
-
-			return {State::FOLLOW_WALL, 150.0f, 0.1f};
-
-	}
-	if (MIN_DISTANCE_TURN-100 < min_dist->r && min_dist->r < MIN_DISTANCE_TURN+10)//Esto es si estoy cerca de la pared y corrijo el movimiento
-	{
-		//Detectamos en que lado esta la pared que seguimos y reducimos la velocidad para rotar.
-		if (min_dist->phi < 0)
-		{
-			qInfo() << "FOLLOW WALL LEFT NEAR";
-			return {State::FOLLOW_WALL, 150.0f, 0.1f};
-		}
-
-		qInfo() << "FOLLOW WALL RIGHT NEAR";
-
-		return {State::FOLLOW_WALL, 150.0f, -0.1f};
-
-	}
-
-	qInfo() << "FOLLOW WALL -> FORWARD";
-	return {State::FORWARD, 600.0f, 0.0f};
-}
-
-std::tuple<SpecificWorker::State, float, float> SpecificWorker::spiral(const RoboCompLidar3D::TPoints &points)
-{
-
-	static float adv_speed_spiral = 500.0f;   // velocidad lineal inicial (mm/s)
-	static float rot_speed_spiral = 3.0f;     // velocidad angular inicial (rad/s)
-	const float MAX_ADV_SPIRAL = 1000.0f;        // velocidad máxima de avance
-	const float MIN_ROT = 0.0f;        // rotación mínima
-
-	// 1️⃣ Comprobamos si hay obstáculos cerca
-	auto min_dist = std::min_element(points.begin(), points.end(),
-									 [](const auto &a, const auto &b){ return a.r < b.r; });
-
-	if (min_dist != points.end() && min_dist->r < MIN_DISTANCE_TURN)
-	{
-		qInfo() << "SPIRAL -> OBSTÁCULO DETECTADO. Cambiando a TURN.";
-		adv_speed_spiral = 100.0f;   // reseteamos valores
-		rot_speed_spiral = 4.0f;
-		return {State::TURN, 0.0f, 0.0f};
-	}
-
-	// 2️⃣ Aumentamos velocidad de avance y reducimos rotación (efecto espiral)
-	adv_speed_spiral = std::min(adv_speed_spiral + 2.5f, MAX_ADV_SPIRAL);
-	rot_speed_spiral = std::max(rot_speed_spiral - 0.01f, MIN_ROT);
-
-	qInfo() << "SPIRAL: adv" << adv_speed_spiral << "rot" << rot_speed_spiral;
-	return {State::SPIRAL, adv_speed_spiral, rot_speed_spiral};
-
 }
 
 // Removed: new_target_slot(QPointF) no longer used
 
-
-void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene)
-{
-	// Se declara un vector estático para almacenar los puntos dibujados en la escena.
-	// 'static' hace que el vector mantenga su contenido entre llamadas sucesivas a la función.
-	static std::vector<QGraphicsItem*> draw_points;
-
-	// Se recorren todos los puntos gráficos previamente dibujados para eliminarlos de la escena
-	for (const auto &p : draw_points)
-	{
-		scene->removeItem(p);  // Se elimina el objeto visual de la escena
-		delete p;              // Se libera la memoria ocupada por el objeto gráfico
-	}
-	draw_points.clear();       // Se limpia el vector para volver a llenarlo con nuevos puntos
-
-
-	// Se define el color con el que se dibujarán los nuevos puntos (verde claro)
-	const QColor color("Pink");
-
-	// Se define el grosor y el color del trazo (pen) para los rectángulos que representarán los puntos
-	const QPen pen(color, 10);
-
-	// (Opcional) Se podría definir un pincel sólido para rellenar los rectángulos, pero está comentado
-	// const QBrush brush(color, Qt::SolidPattern);
-
-	// Se recorren todos los puntos recibidos del LiDAR
-	for (const auto &p : points)
-	{
-		// Se crea un pequeño rectángulo (50x50 px) centrado en el origen (-25, -25)
-		// para representar visualmente el punto en la escena
-		const auto dp = scene->addRect(-25, -25, 50, 50, pen);
-
-		// Se coloca el rectángulo en las coordenadas (x, y) del punto LiDAR
-		dp->setPos(p.x, p.y);
-
-		// Se guarda el puntero al rectángulo en el vector para poder eliminarlo la próxima vez
-		draw_points.push_back(dp);
-	}
-
-	// 
-}
-
-/**
- * @brief Detect and visualize corners from LIDAR points in the main viewer.
- * 
- * This method encapsulates the complete corner detection and visualization pipeline.
- * It extracts corners using RANSAC line detection and 90° intersection checks,
- * then draws red semi-transparent circles at each detected corner location.
- * The visualization is dynamic: old corner markers are removed before new ones are drawn.
- * 
- * @param points Filtered LIDAR points used for corner detection.
- */
-void SpecificWorker::detect_and_draw_corners(const RoboCompLidar3D::TPoints &points)
-{
-	// Guard clause: skip processing if no points are available
-	if (points.empty())
-		return;
-
-	// ========== STEP 1: CORNER DETECTION ==========
-	// Extract corners from filtered LIDAR points using the room_detector
-	// This process internally performs:
-	//   a) RANSAC line detection to extract line segments from the point cloud
-	//   b) Pairwise comparison of all detected lines
-	//   c) Intersection computation for lines meeting at ~90° (± 0.2 radians)
-	//   d) Non-maximum suppression to avoid duplicate corners within 200mm
-	// The second parameter (nullptr) means we don't want intermediate visualization in a scene
-	Corners detected_corners = room_detector.compute_corners(points, nullptr);
-
-	// ========== STEP 2: CLEANUP OLD VISUALIZATION ==========
-	// Clean up previously drawn corner markers from the main viewer
-	// We use a static vector to persist the corner graphics items between calls
-	// This allows us to remove old markers before drawing new ones (dynamic visualization)
-	static std::vector<QGraphicsItem*> corner_items;
-	for (auto *item : corner_items)
-	{
-		viewer->scene.removeItem(item);  // Remove from the Qt scene graph
-		delete item;                     // Free the memory
-	}
-	corner_items.clear();  // Clear the vector for new items
-
-	// ========== STEP 3: DEFINE VISUAL STYLE ==========
-	// Define visual style for corner markers
-	QPen cornerPen(Qt::red);                         // Red outline for visibility
-	cornerPen.setWidth(6);                           // 6-pixel thick border
-	QBrush cornerBrush(QColor(255, 0, 0, 100));      // Semi-transparent red fill (alpha=100/255)
-
-	// ========== STEP 4: DRAW CORNER MARKERS ==========
-	// Draw a circle at each detected corner position
-	for (const auto &corner : detected_corners)
-	{
-		// Extract the QPointF position from the corner tuple (Corner = tuple<QPointF, angle, timestamp>)
-		const QPointF &pt = std::get<0>(corner);
-
-		// Draw circle: center at (pt.x, pt.y), diameter 200mm (radius 100mm from center)
-		// The ellipse is specified by its bounding box: (x-100, y-100, width=200, height=200)
-		auto *circle = viewer->scene.addEllipse(pt.x()-100, pt.y()-100, 200, 200, 
-		                                         cornerPen, cornerBrush);
-
-		// Store the graphics item pointer so we can remove it in the next cycle
-		corner_items.push_back(circle);
-	}
-
-	// ========== STEP 5: LOGGING ==========
-	// Log the number of detected corners for debugging and monitoring
-	qInfo() << "Detected corners:" << detected_corners.size();
-}
-
-
-
-void SpecificWorker::emergency()
-{
-    std::cout << "Emergency worker" << std::endl;
-    //emergencyCODE
-    //
-    //if (SUCCESSFUL) //The componet is safe for continue
-    //  emmit goToRestore()
-}
 
 
 
@@ -638,6 +270,58 @@ int SpecificWorker::startup_check()
 	return 0;
 }
 
+	/**
+ * @brief Dibuja los puntos del LiDAR en una escena gráfica, con un desplazamiento opcional.
+ * * Esta función limpia los puntos dibujados en la llamada anterior y dibuja
+ * los nuevos puntos (filtered_points). Si se proporciona 'center',
+ * todos los puntos se dibujan relativos a esa coordenada (actúa como un offset).
+ * * @param filtered_points Puntos del LiDAR a dibujar.
+ * @param center          Posición (opcional) que se usará como origen para dibujar los puntos.
+ * @param scene           Puntero a la QGraphicsScene donde se deben dibujar los puntos.
+ */
+void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, 
+                                std::optional<Eigen::Vector2d> center, 
+                                QGraphicsScene *scene)
+{
+    // Vector estático para almacenar los puntos dibujados y poder borrarlos después.
+    static std::vector<QGraphicsItem*> draw_points;
+
+    // 1. Limpia los puntos de la iteración anterior
+    for (const auto &p : draw_points)
+    {
+        scene->removeItem(p);
+        delete p;
+    }
+    draw_points.clear();
+
+    // 2. Define el estilo de los nuevos puntos
+    const QColor color("Pink");
+    const QPen pen(color, 10); // Un trazo rosa de 10px de grosor
+
+    // 3. Determina el desplazamiento (offset) basado en el nuevo parámetro 'center'
+    // Si 'center' no tiene valor, el offset es (0, 0).
+    double offsetX = 0.0;
+    double offsetY = 0.0;
+    
+    if (center.has_value()) // Comprueba si se ha pasado un centro
+    {
+        offsetX = center.value().x(); // Obtiene la coordenada x del centro
+        offsetY = center.value().y(); // Obtiene la coordenada y del centro
+    }
+
+    // 4. Dibuja los nuevos puntos usando el nombre de variable 'filtered_points'
+    for (const auto &p : filtered_points)
+    {
+        // Crea un pequeño rectángulo para representar el punto
+        const auto dp = scene->addRect(-25, -25, 50, 50, pen);
+
+        // Coloca el punto en su coordenada (p.x, p.y) MÁS el offset
+        dp->setPos(offsetX + p.x, offsetY + p.y);
+
+        // Guarda el punto dibujado para borrarlo en la siguiente llamada
+        draw_points.push_back(dp);
+    }
+}
 
 // Esta función recibe un conjunto de puntos del LiDAR (cada punto tiene coordenadas x, y, r y phi)
 // y devuelve, para cada ángulo 'phi', el punto más cercano (menor distancia 'r').
@@ -678,19 +362,34 @@ std::optional<RoboCompLidar3D::TPoints> SpecificWorker::filter_min_distance_cppi
 	return result;
 }
 
-RoboCompLidar3D::TPoints SpecificWorker::read_data()
+std::vector<RoboCompLidar3D::TPoint> SpecificWorker::read_data()
 {
-	// Get LIDAR data and draw it in the main viewer
-	try
-	{
-	 	const auto data= lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
-		const auto filter_data = filter_min_distance_cppitertools(data.points);
-		if (data.points.empty()){qWarning()<<"No points received"; return ;}
-		RoboCompLidar3D::TPoints filtered_points = filter_isolated_points(filter_data.value(), 200.0f);
+    // 1. Declara 'filter_data' en el alcance de la función (aquí fuera)
+    RoboCompLidar3D::TPoints filter_data = {}; // Inicialízala vacía
 
-	}
-	catch (const Ice::Exception &e){ std::cout << e.what() << std::endl; }
-    return filtered_points;
+    try
+    {
+        const auto data = lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
+        
+        // 2. Asigna el valor (sin 'RoboCompLidar3D::TPoints' delante)
+        //    Usamos .value_or() para desenvolver el 'optional' que devuelve la función
+        filter_data = filter_min_distance_cppitertools(data.points).value_or(RoboCompLidar3D::TPoints{});
+        
+        if (data.points.empty())
+        {
+            qWarning() << "No points received"; 
+            return {};
+        }
+    }
+    catch (const Ice::Exception &e)
+    { 
+        std::cout << e.what() << std::endl; 
+        return {}; // Devuelve vacío también si hay un error
+    }
+
+    // 3. Ahora 'filter_data' SÍ existe aquí, y es un TPoints (un vector), 
+    //    así que no uses .value()
+    return filter_isolated_points(filter_data, 200.0f);
 }
 
 std::expected<int, std::string> SpecificWorker::closest_lidar_index_to_given_angle(const auto &points, float angle)
@@ -746,10 +445,10 @@ void SpecificWorker::print_match(const Match &match, const float error) const
 
 bool SpecificWorker::update_robot_pose(const Corners &corners, const Match &match)
 {
-	Eigen::MatrixXd W(matched_corners.size() * 2, 3);
-	Eigen::VectorXd b(matched_corners.size() * 2);
+	Eigen::MatrixXd W(match.size() * 2, 3);
+	Eigen::VectorXd b(match.size() * 2);
 
-	for (auto &&[i, m]: matched_corners | iter::enumerate)
+	for (auto &&[i, m]: match | iter::enumerate)
 	{
 		auto &[meas_c, nom_c, _] = m;
 		auto &[p_meas, __, ___] = meas_c;
@@ -768,12 +467,12 @@ bool SpecificWorker::update_robot_pose(const Corners &corners, const Match &matc
 
 
 	if (r.array().isNaN().any())
-		return;
+		return	false;
 	
 	robot_pose.translate(Eigen::Vector2d(r(0), r(1)));
 	robot_pose.rotate(r[2]);
 	// ------------ ¿? Porque devuelvo algo?	
-    return false;
+    return true;
 }
 
 void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
@@ -783,16 +482,16 @@ void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
 	//	std::cout << "Error muy grande, no muevo el robot" << std::endl;
 	//	return;
 	//}
-	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
-	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+	// try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
+	// catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
 }
 
-RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
+std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 {
 	// GOTO_ROOM_CENTER
 
 	// TURN
-    return RetVal();
+    return {SpecificWorker::STATE::TURN, 0.0f, 0.5f};
 }
 
 /*
