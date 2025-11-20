@@ -1,5 +1,5 @@
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/include/moc_sigwatch.cpp: /home/josep/robocomp/classes/sigwatch/sigwatch.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
+/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/include/moc_sigwatch.cpp: /home/jose/robocomp/classes/sigwatch/sigwatch.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \

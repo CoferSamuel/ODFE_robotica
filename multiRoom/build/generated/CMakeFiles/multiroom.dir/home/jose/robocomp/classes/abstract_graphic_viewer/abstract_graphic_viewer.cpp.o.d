@@ -1,7 +1,7 @@
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: \
- /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp \
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: \
+ /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
+ /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \

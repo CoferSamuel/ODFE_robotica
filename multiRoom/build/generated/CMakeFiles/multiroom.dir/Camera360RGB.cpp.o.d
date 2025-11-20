@@ -1,7 +1,7 @@
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/stdlib.h /usr/include/c++/13/cstdlib \

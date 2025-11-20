@@ -1,4 +1,4 @@
-# Install script for directory: /home/josep/robocomp/components/ODFE_robotica/multiRoom
+# Install script for directory: /home/jose/robocomp/components/ODFE/multiRoom
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,19 +44,19 @@ endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/josep/robocomp/etc-default/multiroom.conf")
+   "/home/jose/robocomp/etc-default/multiroom.conf")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/josep/robocomp/etc-default" TYPE FILE RENAME "multiroom.conf" FILES "/home/josep/robocomp/components/ODFE_robotica/multiRoom/etc/config")
+  file(INSTALL DESTINATION "/home/jose/robocomp/etc-default" TYPE FILE RENAME "multiroom.conf" FILES "/home/jose/robocomp/components/ODFE/multiRoom/etc/config")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/cmake_install.cmake")
+  include("/home/jose/robocomp/components/ODFE/multiRoom/build/generated/cmake_install.cmake")
 
 endif()
 
@@ -68,5 +68,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/jose/robocomp/components/ODFE/multiRoom/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

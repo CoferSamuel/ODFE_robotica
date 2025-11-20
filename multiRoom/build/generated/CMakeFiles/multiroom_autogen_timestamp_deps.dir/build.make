@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/multiRoom
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom/build
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/multiRoom/build
 
 # Utility rule file for multiroom_autogen_timestamp_deps.
 
@@ -82,10 +82,10 @@ generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build: multiroom_autog
 .PHONY : generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build
 
 generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/clean:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/multiroom_autogen_timestamp_deps.dir/cmake_clean.cmake
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/multiroom_autogen_timestamp_deps.dir/cmake_clean.cmake
 .PHONY : generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/clean
 
 generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/depend:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/josep/robocomp/components/ODFE_robotica/multiRoom /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/multiRoom /home/jose/robocomp/components/ODFE/multiRoom/generated /home/jose/robocomp/components/ODFE/multiRoom/build /home/jose/robocomp/components/ODFE/multiRoom/build/generated /home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/depend
 

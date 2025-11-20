@@ -1,13 +1,13 @@
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/moc_genericworker.cpp: /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Camera360RGB.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/GenericBase.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Lidar3D.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/OmniRobot.h \
-  /home/josep/robocomp/core/classes/ConfigLoader/ConfigLoader.h \
-  /home/josep/robocomp/core/classes/ConfigLoader/ConfigLoader.tpp \
-  /home/josep/robocomp/core/classes/grafcetStep/GRAFCETStep.h \
+/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/moc_genericworker.cpp: /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/generated/Camera360RGB.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/generated/GenericBase.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/generated/Lidar3D.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/generated/OmniRobot.h \
+  /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.h \
+  /home/jose/robocomp/core/classes/ConfigLoader/ConfigLoader.tpp \
+  /home/jose/robocomp/core/classes/grafcetStep/GRAFCETStep.h \
   /usr/include/GL/gl.h \
   /usr/include/Ice/AsyncResult.h \
   /usr/include/Ice/BatchRequestQueueF.h \

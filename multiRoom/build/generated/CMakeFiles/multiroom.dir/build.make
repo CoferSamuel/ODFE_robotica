@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/multiRoom
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom/build
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/multiRoom/build
 
 # Include any dependencies generated for this target.
 include generated/CMakeFiles/multiroom.dir/depend.make
@@ -70,36 +70,36 @@ include generated/CMakeFiles/multiroom.dir/progress.make
 include generated/CMakeFiles/multiroom.dir/flags.make
 
 generated/Lidar3D.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "BU ice=>h/cpp: Generating Lidar3D.h and Lidar3D.cpp from /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Lidar3D.ice"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && slice2cpp --underscore /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Lidar3D.ice -I/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "BU ice=>h/cpp: Generating Lidar3D.h and Lidar3D.cpp from /home/jose/robocomp/components/ODFE/multiRoom/generated/Lidar3D.ice"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/multiRoom/generated/Lidar3D.ice -I/home/jose/robocomp/components/ODFE/multiRoom/generated/ --output-dir .
 
 generated/Lidar3D.h: generated/Lidar3D.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/Lidar3D.h
 
 generated/OmniRobot.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "BU ice=>h/cpp: Generating OmniRobot.h and OmniRobot.cpp from /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/OmniRobot.ice"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && slice2cpp --underscore /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/OmniRobot.ice -I/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "BU ice=>h/cpp: Generating OmniRobot.h and OmniRobot.cpp from /home/jose/robocomp/components/ODFE/multiRoom/generated/OmniRobot.ice"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/multiRoom/generated/OmniRobot.ice -I/home/jose/robocomp/components/ODFE/multiRoom/generated/ --output-dir .
 
 generated/OmniRobot.h: generated/OmniRobot.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/OmniRobot.h
 
 generated/Camera360RGB.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "BU ice=>h/cpp: Generating Camera360RGB.h and Camera360RGB.cpp from /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Camera360RGB.ice"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && slice2cpp --underscore /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/Camera360RGB.ice -I/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "BU ice=>h/cpp: Generating Camera360RGB.h and Camera360RGB.cpp from /home/jose/robocomp/components/ODFE/multiRoom/generated/Camera360RGB.ice"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/multiRoom/generated/Camera360RGB.ice -I/home/jose/robocomp/components/ODFE/multiRoom/generated/ --output-dir .
 
 generated/Camera360RGB.h: generated/Camera360RGB.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/Camera360RGB.h
 
 generated/GenericBase.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "BU ice=>h/cpp: Generating GenericBase.h and GenericBase.cpp from /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/GenericBase.ice"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && slice2cpp --underscore /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/GenericBase.ice -I/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "BU ice=>h/cpp: Generating GenericBase.h and GenericBase.cpp from /home/jose/robocomp/components/ODFE/multiRoom/generated/GenericBase.ice"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/multiRoom/generated/GenericBase.ice -I/home/jose/robocomp/components/ODFE/multiRoom/generated/ --output-dir .
 
 generated/GenericBase.h: generated/GenericBase.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/GenericBase.h
 
 generated/JoystickAdapter.cpp:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "BU ice=>h/cpp: Generating JoystickAdapter.h and JoystickAdapter.cpp from /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && slice2cpp --underscore /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice -I/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/ --output-dir .
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "BU ice=>h/cpp: Generating JoystickAdapter.h and JoystickAdapter.cpp from /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && slice2cpp --underscore /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice -I/home/jose/robocomp/components/ODFE/multiRoom/generated/ --output-dir .
 
 generated/JoystickAdapter.h: generated/JoystickAdapter.cpp
 	@$(CMAKE_COMMAND) -E touch_nocreate generated/JoystickAdapter.h
@@ -107,294 +107,294 @@ generated/JoystickAdapter.h: generated/JoystickAdapter.cpp
 generated/multiroom_autogen/timestamp: /usr/lib/qt6/libexec/moc
 generated/multiroom_autogen/timestamp: /usr/lib/qt6/libexec/uic
 generated/multiroom_autogen/timestamp: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Automatic MOC and UIC for target multiroom"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/cmake -E cmake_autogen /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/AutogenInfo.json ""
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/cmake -E touch /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Automatic MOC and UIC for target multiroom"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/cmake -E cmake_autogen /home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/AutogenInfo.json ""
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/cmake -E touch /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/timestamp
 
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: generated/multiroom_autogen/mocs_compilation.cpp
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o -MF CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o -MF CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp
 
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp > CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp > CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i
 
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp -o CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp -o CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -MF CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o.d -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -c /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -MF CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o.d -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o -c /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp > CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp > CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.cpp
+generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.cpp
 generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o -MF CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o -MF CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.cpp > CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.cpp > CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.cpp -o CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.cpp -o CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.cpp
+generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.cpp
 generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.cpp > CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.cpp > CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.cpp -o CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.cpp -o CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.cpp
+generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.cpp
 generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o -MF CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o -MF CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.cpp > CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.cpp > CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.cpp -o CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.cpp -o CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp
+generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp
 generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp > CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp > CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp -o CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp -o CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp
+generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp
 generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o -MF CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o -MF CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp > CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp > CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp -o CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp -o CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp
+generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp
 generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o -MF CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp > CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp > CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp -o CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp -o CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s
 
 generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.cpp
+generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.cpp
 generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o -MF CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o -MF CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o.d -o CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.cpp
 
 generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.cpp > CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.cpp > CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i
 
 generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.cpp -o CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.cpp -o CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o: /home/josep/robocomp/classes/rapplication/rapplication.cpp
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o -MF CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o.d -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o -c /home/josep/robocomp/classes/rapplication/rapplication.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: /home/jose/robocomp/classes/rapplication/rapplication.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -MF CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o.d -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o -c /home/jose/robocomp/classes/rapplication/rapplication.cpp
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/classes/rapplication/rapplication.cpp > CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.i
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/rapplication/rapplication.cpp > CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/classes/rapplication/rapplication.cpp -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.s
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/rapplication/rapplication.cpp -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o: /home/josep/robocomp/classes/sigwatch/sigwatch.cpp
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o -MF CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o.d -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o -c /home/josep/robocomp/classes/sigwatch/sigwatch.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: /home/jose/robocomp/classes/sigwatch/sigwatch.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -MF CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o.d -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o -c /home/jose/robocomp/classes/sigwatch/sigwatch.cpp
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/classes/sigwatch/sigwatch.cpp > CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/sigwatch/sigwatch.cpp > CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/classes/sigwatch/sigwatch.cpp -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/sigwatch/sigwatch.cpp -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -MF CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o.d -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -c /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -MF CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o.d -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o -c /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp > CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp > CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -MF CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o.d -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -c /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -MF CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o.d -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o -c /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp > CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp > CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
 
-generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp -o CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp -o CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
 
 generated/CMakeFiles/multiroom.dir/main.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/main.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/main.cpp
+generated/CMakeFiles/multiroom.dir/main.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/generated/main.cpp
 generated/CMakeFiles/multiroom.dir/main.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object generated/CMakeFiles/multiroom.dir/main.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/main.cpp.o -MF CMakeFiles/multiroom.dir/main.cpp.o.d -o CMakeFiles/multiroom.dir/main.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object generated/CMakeFiles/multiroom.dir/main.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/main.cpp.o -MF CMakeFiles/multiroom.dir/main.cpp.o.d -o CMakeFiles/multiroom.dir/main.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/generated/main.cpp
 
 generated/CMakeFiles/multiroom.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/main.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/main.cpp > CMakeFiles/multiroom.dir/main.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/generated/main.cpp > CMakeFiles/multiroom.dir/main.cpp.i
 
 generated/CMakeFiles/multiroom.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/main.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/main.cpp -o CMakeFiles/multiroom.dir/main.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/generated/main.cpp -o CMakeFiles/multiroom.dir/main.cpp.s
 
 generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
-generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp
+generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp
 generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object generated/CMakeFiles/multiroom.dir/genericworker.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/genericworker.cpp.o -MF CMakeFiles/multiroom.dir/genericworker.cpp.o.d -o CMakeFiles/multiroom.dir/genericworker.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object generated/CMakeFiles/multiroom.dir/genericworker.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/genericworker.cpp.o -MF CMakeFiles/multiroom.dir/genericworker.cpp.o.d -o CMakeFiles/multiroom.dir/genericworker.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp
 
 generated/CMakeFiles/multiroom.dir/genericworker.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/genericworker.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp > CMakeFiles/multiroom.dir/genericworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp > CMakeFiles/multiroom.dir/genericworker.cpp.i
 
 generated/CMakeFiles/multiroom.dir/genericworker.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/genericworker.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp -o CMakeFiles/multiroom.dir/genericworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp -o CMakeFiles/multiroom.dir/genericworker.cpp.s
 
 generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o: generated/Lidar3D.cpp
 generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o -MF CMakeFiles/multiroom.dir/Lidar3D.cpp.o.d -o CMakeFiles/multiroom.dir/Lidar3D.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o -MF CMakeFiles/multiroom.dir/Lidar3D.cpp.o.d -o CMakeFiles/multiroom.dir/Lidar3D.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.cpp
 
 generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/Lidar3D.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.cpp > CMakeFiles/multiroom.dir/Lidar3D.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.cpp > CMakeFiles/multiroom.dir/Lidar3D.cpp.i
 
 generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/Lidar3D.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.cpp -o CMakeFiles/multiroom.dir/Lidar3D.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.cpp -o CMakeFiles/multiroom.dir/Lidar3D.cpp.s
 
 generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o: generated/OmniRobot.cpp
 generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o -MF CMakeFiles/multiroom.dir/OmniRobot.cpp.o.d -o CMakeFiles/multiroom.dir/OmniRobot.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o -MF CMakeFiles/multiroom.dir/OmniRobot.cpp.o.d -o CMakeFiles/multiroom.dir/OmniRobot.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.cpp
 
 generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/OmniRobot.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.cpp > CMakeFiles/multiroom.dir/OmniRobot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.cpp > CMakeFiles/multiroom.dir/OmniRobot.cpp.i
 
 generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/OmniRobot.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.cpp -o CMakeFiles/multiroom.dir/OmniRobot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.cpp -o CMakeFiles/multiroom.dir/OmniRobot.cpp.s
 
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o: generated/Camera360RGB.cpp
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o -MF CMakeFiles/multiroom.dir/Camera360RGB.cpp.o.d -o CMakeFiles/multiroom.dir/Camera360RGB.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o -MF CMakeFiles/multiroom.dir/Camera360RGB.cpp.o.d -o CMakeFiles/multiroom.dir/Camera360RGB.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp
 
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/Camera360RGB.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp > CMakeFiles/multiroom.dir/Camera360RGB.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp > CMakeFiles/multiroom.dir/Camera360RGB.cpp.i
 
 generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/Camera360RGB.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp -o CMakeFiles/multiroom.dir/Camera360RGB.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp -o CMakeFiles/multiroom.dir/Camera360RGB.cpp.s
 
 generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o: generated/GenericBase.cpp
 generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o -MF CMakeFiles/multiroom.dir/GenericBase.cpp.o.d -o CMakeFiles/multiroom.dir/GenericBase.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o -MF CMakeFiles/multiroom.dir/GenericBase.cpp.o.d -o CMakeFiles/multiroom.dir/GenericBase.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.cpp
 
 generated/CMakeFiles/multiroom.dir/GenericBase.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/GenericBase.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.cpp > CMakeFiles/multiroom.dir/GenericBase.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.cpp > CMakeFiles/multiroom.dir/GenericBase.cpp.i
 
 generated/CMakeFiles/multiroom.dir/GenericBase.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/GenericBase.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.cpp -o CMakeFiles/multiroom.dir/GenericBase.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.cpp -o CMakeFiles/multiroom.dir/GenericBase.cpp.s
 
 generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o: generated/CMakeFiles/multiroom.dir/flags.make
 generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o: generated/JoystickAdapter.cpp
 generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o: generated/CMakeFiles/multiroom.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o -MF CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o.d -o CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o -c /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o -MF CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o.d -o CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o -c /home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.cpp
 
 generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.cpp > CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.cpp > CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i
 
 generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.cpp -o CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.cpp -o CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s
 
 # Object files for target multiroom
 multiroom_OBJECTS = \
 "CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o" \
-"CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o" \
+"CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o" \
 "CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o" \
 "CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o" \
 "CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o" \
@@ -402,10 +402,10 @@ multiroom_OBJECTS = \
 "CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o" \
 "CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o" \
 "CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o" \
-"CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o" \
-"CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o" \
-"CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o" \
-"CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o" \
+"CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o" \
+"CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o" \
+"CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o" \
+"CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o" \
 "CMakeFiles/multiroom.dir/main.cpp.o" \
 "CMakeFiles/multiroom.dir/genericworker.cpp.o" \
 "CMakeFiles/multiroom.dir/Lidar3D.cpp.o" \
@@ -417,104 +417,104 @@ multiroom_OBJECTS = \
 # External object files for target multiroom
 multiroom_EXTERNAL_OBJECTS =
 
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/main.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/genericworker.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/build.make
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_alphamat.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_barcode.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_cvv.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dpm.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_face.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_freetype.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_hdf.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_hfs.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_intensity_transform.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_mcc.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_quality.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_rapid.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_reg.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_saliency.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_shape.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_stereo.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_superres.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_tracking.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_videostab.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_wechat_qrcode.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Xml.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6StateMachine.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIce++11.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIceStorm++11.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIce.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIceStorm.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_highgui.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_datasets.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_plot.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_text.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ml.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_optflow.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_video.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libGLX.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libOpenGL.so
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Linking CXX executable /home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/multiroom.dir/link.txt --verbose=$(VERBOSE)
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/main.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/genericworker.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/build.make
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_stitching.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_alphamat.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_aruco.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_barcode.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_cvv.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn_superres.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dpm.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_face.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_freetype.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_hdf.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_hfs.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_intensity_transform.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_mcc.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_quality.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_rapid.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_reg.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_saliency.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_shape.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_stereo.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_superres.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_tracking.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_videostab.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_wechat_qrcode.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Xml.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6StateMachine.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIce++11.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIceStorm++11.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIce.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libIceStorm.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_highgui.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_datasets.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_plot.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_text.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ml.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_optflow.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_video.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_videoio.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_dnn.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_features2d.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_flann.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_photo.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libopencv_core.so.4.6.0
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libGLX.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: /usr/lib/x86_64-linux-gnu/libOpenGL.so
+/home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom: generated/CMakeFiles/multiroom.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Linking CXX executable /home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/multiroom.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-generated/CMakeFiles/multiroom.dir/build: /home/josep/robocomp/components/ODFE_robotica/multiRoom/bin/multiroom
+generated/CMakeFiles/multiroom.dir/build: /home/jose/robocomp/components/ODFE/multiRoom/bin/multiroom
 .PHONY : generated/CMakeFiles/multiroom.dir/build
 
 generated/CMakeFiles/multiroom.dir/clean:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/multiroom.dir/cmake_clean.cmake
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/multiroom.dir/cmake_clean.cmake
 .PHONY : generated/CMakeFiles/multiroom.dir/clean
 
 generated/CMakeFiles/multiroom.dir/depend: generated/Camera360RGB.cpp
@@ -528,6 +528,6 @@ generated/CMakeFiles/multiroom.dir/depend: generated/Lidar3D.h
 generated/CMakeFiles/multiroom.dir/depend: generated/OmniRobot.cpp
 generated/CMakeFiles/multiroom.dir/depend: generated/OmniRobot.h
 generated/CMakeFiles/multiroom.dir/depend: generated/multiroom_autogen/timestamp
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/josep/robocomp/components/ODFE_robotica/multiRoom /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/multiroom.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/multiRoom /home/jose/robocomp/components/ODFE/multiRoom/generated /home/jose/robocomp/components/ODFE/multiRoom/build /home/jose/robocomp/components/ODFE/multiRoom/build/generated /home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/multiroom.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : generated/CMakeFiles/multiroom.dir/depend
 

@@ -1,14 +1,14 @@
 {
-	"BUILD_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen",
-	"CMAKE_BINARY_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated",
+	"BUILD_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen",
+	"CMAKE_BINARY_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom/generated",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/CMakeLists.txt",
-		"/home/josep/robocomp/cmake/robocomp.cmake",
-		"/home/josep/robocomp/cmake/modules/qt.cmake",
+		"/home/jose/robocomp/components/ODFE/multiRoom/generated/CMakeLists.txt",
+		"/home/jose/robocomp/cmake/robocomp.cmake",
+		"/home/jose/robocomp/cmake/modules/qt.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6/Qt6ConfigVersion.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6/Qt6ConfigVersionImpl.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6/Qt6Config.cmake",
@@ -195,14 +195,14 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6StateMachine/Qt6StateMachineTargets-none.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6StateMachine/Qt6StateMachineAdditionalTargetInfo.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt6StateMachine/Qt6StateMachineVersionlessTargets.cmake",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/CMakeLists.txt",
+		"/home/jose/robocomp/components/ODFE/multiRoom/src/CMakeLists.txt",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig-version.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake",
 		"/usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake",
 		"/usr/share/cmake-3.28/Modules/FindPackageMessage.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVModules.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVModules-release.cmake",
-		"/home/josep/robocomp/cmake/modules/opencv4.cmake",
+		"/home/jose/robocomp/cmake/modules/opencv4.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig-version.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake",
 		"/usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake",
@@ -225,93 +225,93 @@
 		"/usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake",
 		"/usr/share/cmake-3.28/Modules/FindPackageMessage.cmake"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom",
-	"DEP_FILE" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/deps",
+	"CMAKE_SOURCE_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom",
+	"DEP_FILE" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "multiroom_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.h",
+			"/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h",
 			"MU",
-			"YLRMWDL3YO/moc_ConfigLoader.cpp",
+			"BHUTUXF3JQ/moc_ConfigLoader.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h",
+			"/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h",
 			"MU",
-			"RUEF4YOAIK/moc_abstract_graphic_viewer.cpp",
+			"HBT6FBNZFA/moc_abstract_graphic_viewer.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.h",
+			"/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h",
 			"MU",
-			"3DGH5Z4NNY/moc_GRAFCETStep.cpp",
+			"U2T7NSCTX3/moc_GRAFCETStep.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/rapplication/rapplication.h",
+			"/home/jose/robocomp/classes/rapplication/rapplication.h",
 			"MU",
-			"FCJORE5OBS/moc_rapplication.cpp",
+			"Q7KAVT67BD/moc_rapplication.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/sigwatch/sigwatch.h",
+			"/home/jose/robocomp/classes/sigwatch/sigwatch.h",
 			"MU",
-			"ILU4QMZZCN/moc_sigwatch.cpp",
+			"V4AXFKS5B6/moc_sigwatch.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.h",
 			"MU",
 			"EWIEGA46WW/moc_genericworker.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.h",
 			"MU",
 			"VNU7RW3YIC/moc_door_detector.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.h",
 			"MU",
 			"VNU7RW3YIC/moc_hungarian.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.h",
 			"MU",
 			"VNU7RW3YIC/moc_qcustomplot.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.h",
 			"MU",
 			"VNU7RW3YIC/moc_ransac_line_detector.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.h",
 			"MU",
 			"VNU7RW3YIC/moc_room_detector.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.h",
 			"MU",
 			"VNU7RW3YIC/moc_specificworker.cpp",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.h",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.h",
 			"MU",
 			"VNU7RW3YIC/moc_time_series_plotter.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/include",
-	"MOC_COMPILATION_FILE" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : 
 	[
 		"ICE_CPP11_MAPPING",
@@ -332,15 +332,15 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated",
+		"/home/jose/robocomp/components/ODFE/multiRoom/generated",
 		"/opt/robocomp/include",
 		"/classes",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build",
-		"/home/josep/robocomp/classes/abstract_graphic_viewer",
-		"/home/josep/robocomp/classes",
-		"/home/josep/robocomp/libs",
-		"/home/josep/robocomp/interfaces",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build",
+		"/home/jose/robocomp/classes/abstract_graphic_viewer",
+		"/home/jose/robocomp/classes",
+		"/home/jose/robocomp/libs",
+		"/home/jose/robocomp/interfaces",
 		"/include",
 		"/usr/include/opencv4",
 		"/usr/include/x86_64-linux-gnu/qt6/QtGui",
@@ -378,102 +378,98 @@
 		"-c",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.cpp"
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.cpp"
 	],
 	"MULTI_CONFIG" : false,
-	"PARALLEL" : 4,
-	"PARSE_CACHE_FILE" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/ParseCache.txt",
+	"PARALLEL" : 8,
+	"PARSE_CACHE_FILE" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/usr/lib/qt6/libexec/moc",
 	"QT_UIC_EXECUTABLE" : "/usr/lib/qt6/libexec/uic",
 	"QT_VERSION_MAJOR" : 6,
 	"QT_VERSION_MINOR" : 4,
-	"SETTINGS_FILE" : "/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/multiroom_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp",
+			"/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp",
+			"/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp",
+			"MU",
+			null
+		],
+		[ "/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp", "MU", null ],
+		[
+			"/home/jose/robocomp/classes/rapplication/rapplication.cpp",
+			"MU",
+			null
+		],
+		[ "/home/jose/robocomp/classes/sigwatch/sigwatch.cpp", "MU", null ],
+		[
+			"/home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/generated/main.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/classes/rapplication/rapplication.cpp",
-			"MU",
-			null
-		],
-		[ "/home/josep/robocomp/classes/sigwatch/sigwatch.cpp", "MU", null ],
-		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/main.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/hungarian.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/hungarian.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/room_detector.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/specificworker.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/room_detector.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/specificworker.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp",
+			"/home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp",
 			"MU",
 			null
 		]
 	],
 	"UIC_OPTIONS" : [],
-	"UIC_SEARCH_PATHS" : [ "/home/josep/robocomp/components/ODFE_robotica/multiRoom/src" ],
+	"UIC_SEARCH_PATHS" : [ "/home/jose/robocomp/components/ODFE/multiRoom/src" ],
 	"UIC_SKIP" : 
 	[
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.cpp",
-		"/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.cpp"
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.cpp",
+		"/home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.cpp"
 	],
 	"UIC_UI_FILES" : [],
 	"VERBOSITY" : 0

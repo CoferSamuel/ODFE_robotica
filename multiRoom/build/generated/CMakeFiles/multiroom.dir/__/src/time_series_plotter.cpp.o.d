@@ -1,7 +1,7 @@
 generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/time_series_plotter.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/time_series_plotter.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
@@ -390,7 +390,7 @@ generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qvector.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qelapsedtimer.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointer \

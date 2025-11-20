@@ -1,8 +1,8 @@
 generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/door_detector.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/common_types.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/door_detector.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/common_types.h \
  /usr/include/c++/13/vector /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -629,7 +629,7 @@ generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qline.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h \
  /usr/include/Eigen/src/Geometry/ParametrizedLine.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/iostream /usr/include/c++/13/future \

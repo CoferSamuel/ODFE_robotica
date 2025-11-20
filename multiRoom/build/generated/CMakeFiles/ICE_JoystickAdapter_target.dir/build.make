@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/multiRoom
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom/build
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/multiRoom/build
 
 # Utility rule file for ICE_JoystickAdapter_target.
 
@@ -66,14 +66,14 @@ include generated/CMakeFiles/ICE_JoystickAdapter_target.dir/compiler_depend.make
 # Include the progress variables for this target.
 include generated/CMakeFiles/ICE_JoystickAdapter_target.dir/progress.make
 
-generated/CMakeFiles/ICE_JoystickAdapter_target: /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice
+generated/CMakeFiles/ICE_JoystickAdapter_target: /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice
 
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice: /home/josep/robocomp/interfaces/IDSLs/JoystickAdapter.idsl
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice from /home/josep/robocomp/interfaces/IDSLs/JoystickAdapter.idsl"
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && robocompdsl /home/josep/robocomp/interfaces/IDSLs/JoystickAdapter.idsl /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice
+/home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice: /home/jose/robocomp/interfaces/IDSLs/JoystickAdapter.idsl
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice from /home/jose/robocomp/interfaces/IDSLs/JoystickAdapter.idsl"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && robocompdsl /home/jose/robocomp/interfaces/IDSLs/JoystickAdapter.idsl /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice
 
 ICE_JoystickAdapter_target: generated/CMakeFiles/ICE_JoystickAdapter_target
-ICE_JoystickAdapter_target: /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/JoystickAdapter.ice
+ICE_JoystickAdapter_target: /home/jose/robocomp/components/ODFE/multiRoom/generated/JoystickAdapter.ice
 ICE_JoystickAdapter_target: generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build.make
 .PHONY : ICE_JoystickAdapter_target
 
@@ -82,10 +82,10 @@ generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build: ICE_JoystickAdapter_t
 .PHONY : generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build
 
 generated/CMakeFiles/ICE_JoystickAdapter_target.dir/clean:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/ICE_JoystickAdapter_target.dir/cmake_clean.cmake
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build/generated && $(CMAKE_COMMAND) -P CMakeFiles/ICE_JoystickAdapter_target.dir/cmake_clean.cmake
 .PHONY : generated/CMakeFiles/ICE_JoystickAdapter_target.dir/clean
 
 generated/CMakeFiles/ICE_JoystickAdapter_target.dir/depend:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/josep/robocomp/components/ODFE_robotica/multiRoom /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/CMakeFiles/ICE_JoystickAdapter_target.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jose/robocomp/components/ODFE/multiRoom /home/jose/robocomp/components/ODFE/multiRoom/generated /home/jose/robocomp/components/ODFE/multiRoom/build /home/jose/robocomp/components/ODFE/multiRoom/build/generated /home/jose/robocomp/components/ODFE/multiRoom/build/generated/CMakeFiles/ICE_JoystickAdapter_target.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : generated/CMakeFiles/ICE_JoystickAdapter_target.dir/depend
 

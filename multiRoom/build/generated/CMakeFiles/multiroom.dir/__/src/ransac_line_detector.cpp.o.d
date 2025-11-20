@@ -1,7 +1,7 @@
 generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/ransac_line_detector.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/ransac_line_detector.h \
  /usr/include/c++/13/vector /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -400,7 +400,7 @@ generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o: \
  /usr/include/Eigen/src/Geometry/AlignedBox.h \
  /usr/include/Eigen/src/Geometry/Umeyama.h \
  /usr/include/Eigen/src/Geometry/arch/Geometry_SIMD.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/common_types.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/src/common_types.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointF \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qnamespace.h \

@@ -1,7 +1,7 @@
 generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/RUEF4YOAIK/moc_abstract_graphic_viewer.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/HBT6FBNZFA/moc_abstract_graphic_viewer.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -196,7 +196,7 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/bits/ranges_algobase.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/RUEF4YOAIK/../../../../../../../classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/HBT6FBNZFA/../../../../../../../classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
@@ -452,8 +452,8 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgraphicsitem.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qpainterpath.h \
  /usr/include/c++/13/iostream \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/3DGH5Z4NNY/moc_GRAFCETStep.cpp \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/3DGH5Z4NNY/../../../../../../../classes/grafcetStep/GRAFCETStep.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/U2T7NSCTX3/moc_GRAFCETStep.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/U2T7NSCTX3/../../../../../../../classes/grafcetStep/GRAFCETStep.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QState \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetaobject.h \
@@ -465,8 +465,8 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qbasictimer.h \
  /usr/include/c++/13/mutex /usr/include/c++/13/bits/unique_lock.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/moc_genericworker.cpp \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/../../../../generated/genericworker.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/moc_genericworker.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/EWIEGA46WW/../../../../generated/genericworker.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGui \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QtGuiDepends \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
@@ -970,7 +970,7 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiversion.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/include/ui_mainUI.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/include/ui_mainUI.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFrame \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
@@ -986,8 +986,8 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSpacerItem \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
- /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.h \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.h \
+ /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /usr/include/c++/13/fstream \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
@@ -1043,15 +1043,15 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/local/include/toml++/impl/toml_formatter.inl \
  /usr/local/include/toml++/impl/json_formatter.inl \
  /usr/local/include/toml++/impl/yaml_formatter.inl \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.tpp \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.h \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.tpp \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QStateMachine \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstatemachine.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QEvent \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/cassert /usr/include/Ice/ProxyHandle.h \
@@ -1094,13 +1094,13 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/deque /usr/include/c++/13/bits/stl_deque.h \
  /usr/include/c++/13/bits/deque.tcc /usr/include/Ice/FactoryTableInit.h \
  /usr/include/Ice/DefaultValueFactory.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QScreen \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_qcustomplot.cpp \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/qcustomplot.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_qcustomplot.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/qcustomplot.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer \
@@ -1290,21 +1290,21 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtPrintSupport/qtprintsupportversion.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimeZone \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_specificworker.cpp \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/specificworker.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/./genericworker.h \
- /home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_specificworker.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/specificworker.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/generated/./genericworker.h \
+ /home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.h \
  /usr/include/c++/13/expected \
- /home/josep/robocomp/classes/doublebuffer/DoubleBuffer.h \
+ /home/jose/robocomp/classes/doublebuffer/DoubleBuffer.h \
  /usr/include/c++/13/shared_mutex \
- /home/josep/robocomp/classes/threadpool/threadpool.h \
+ /home/jose/robocomp/classes/threadpool/threadpool.h \
  /usr/include/c++/13/queue /usr/include/c++/13/bits/stl_queue.h \
  /usr/include/c++/13/thread \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/time_series_plotter.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/time_series_plotter.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QElapsedTimer \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/qcustomplot.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/qcustomplot.h \
  /usr/include/c++/13/execution \
  /usr/include/c++/13/pstl/glue_execution_defs.h \
  /usr/include/c++/13/pstl/algorithm_impl.h \
@@ -1363,7 +1363,7 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/pstl/numeric_fwd.h \
  /usr/include/c++/13/pstl/glue_numeric_impl.h \
  /usr/include/c++/13/pstl/glue_memory_impl.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/room_detector.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/room_detector.h \
  /usr/include/Eigen/Geometry /usr/include/Eigen/Core \
  /usr/include/Eigen/src/Core/util/DisableStupidWarnings.h \
  /usr/include/Eigen/src/Core/util/Macros.h \
@@ -1553,7 +1553,7 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/opencv4/opencv2/core/optim.hpp \
  /usr/include/opencv4/opencv2/core/ovx.hpp \
  /usr/include/opencv4/opencv2/core/cvdef.h /usr/include/c++/13/ranges \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/common_types.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/common_types.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointF \
  /usr/include/Eigen/Dense /usr/include/Eigen/Geometry \
  /usr/include/Eigen/Eigenvalues \
@@ -1733,11 +1733,11 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/boost/circular_buffer/space_optimized.hpp \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QLineF \
  /usr/include/Eigen/src/Geometry/ParametrizedLine.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/ransac_line_detector.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/hungarian.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/munkres.hpp \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/door_detector.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/image_processor.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/ransac_line_detector.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/hungarian.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/munkres.hpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/door_detector.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/image_processor.h \
  /usr/include/opencv4/opencv2/opencv.hpp \
  /usr/include/opencv4/opencv2/calib3d.hpp \
  /usr/include/opencv4/opencv2/features2d.hpp \
@@ -1820,5 +1820,5 @@ generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QImage \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QPixmap \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/nominal_room.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/../../../../src/nominal_room.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QRectF

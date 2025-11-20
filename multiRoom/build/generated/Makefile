@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom
+CMAKE_SOURCE_DIR = /home/jose/robocomp/components/ODFE/multiRoom
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/josep/robocomp/components/ODFE_robotica/multiRoom/build
+CMAKE_BINARY_DIR = /home/jose/robocomp/components/ODFE/multiRoom/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated//CMakeFiles/progress.marks
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/CMakeFiles 0
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles /home/jose/robocomp/components/ODFE/multiRoom/build/generated//CMakeFiles/progress.marks
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jose/robocomp/components/ODFE/multiRoom/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/clean
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,36 +148,36 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
-generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/rule
-.PHONY : generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/rule
+generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/rule:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/rule
+.PHONY : generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/rule
 
 # Convenience name for target.
-ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated: generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/rule
-.PHONY : ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated
+ICES__home_jose_robocomp_components_ODFE_multiRoom_generated: generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/rule
+.PHONY : ICES__home_jose_robocomp_components_ODFE_multiRoom_generated
 
 # fast build rule for target.
-ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/build.make generated/CMakeFiles/ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated.dir/build
-.PHONY : ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated/fast
+ICES__home_jose_robocomp_components_ODFE_multiRoom_generated/fast:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/build.make generated/CMakeFiles/ICES__home_jose_robocomp_components_ODFE_multiRoom_generated.dir/build
+.PHONY : ICES__home_jose_robocomp_components_ODFE_multiRoom_generated/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_Lidar3D_target.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
 
 # Convenience name for target.
@@ -186,12 +186,12 @@ ICE_Lidar3D_target: generated/CMakeFiles/ICE_Lidar3D_target.dir/rule
 
 # fast build rule for target.
 ICE_Lidar3D_target/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Lidar3D_target.dir/build.make generated/CMakeFiles/ICE_Lidar3D_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Lidar3D_target.dir/build.make generated/CMakeFiles/ICE_Lidar3D_target.dir/build
 .PHONY : ICE_Lidar3D_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 
 # Convenience name for target.
@@ -200,12 +200,12 @@ ICE_OmniRobot_target: generated/CMakeFiles/ICE_OmniRobot_target.dir/rule
 
 # fast build rule for target.
 ICE_OmniRobot_target/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_OmniRobot_target.dir/build.make generated/CMakeFiles/ICE_OmniRobot_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_OmniRobot_target.dir/build.make generated/CMakeFiles/ICE_OmniRobot_target.dir/build
 .PHONY : ICE_OmniRobot_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_Camera360RGB_target.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_Camera360RGB_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_Camera360RGB_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_Camera360RGB_target.dir/rule
 
 # Convenience name for target.
@@ -214,12 +214,12 @@ ICE_Camera360RGB_target: generated/CMakeFiles/ICE_Camera360RGB_target.dir/rule
 
 # fast build rule for target.
 ICE_Camera360RGB_target/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Camera360RGB_target.dir/build.make generated/CMakeFiles/ICE_Camera360RGB_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_Camera360RGB_target.dir/build.make generated/CMakeFiles/ICE_Camera360RGB_target.dir/build
 .PHONY : ICE_Camera360RGB_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_GenericBase_target.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_GenericBase_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 
 # Convenience name for target.
@@ -228,12 +228,12 @@ ICE_GenericBase_target: generated/CMakeFiles/ICE_GenericBase_target.dir/rule
 
 # fast build rule for target.
 ICE_GenericBase_target/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_GenericBase_target.dir/build.make generated/CMakeFiles/ICE_GenericBase_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_GenericBase_target.dir/build.make generated/CMakeFiles/ICE_GenericBase_target.dir/build
 .PHONY : ICE_GenericBase_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/ICE_JoystickAdapter_target.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_JoystickAdapter_target.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/ICE_JoystickAdapter_target.dir/rule
 .PHONY : generated/CMakeFiles/ICE_JoystickAdapter_target.dir/rule
 
 # Convenience name for target.
@@ -242,12 +242,12 @@ ICE_JoystickAdapter_target: generated/CMakeFiles/ICE_JoystickAdapter_target.dir/
 
 # fast build rule for target.
 ICE_JoystickAdapter_target/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build.make generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build.make generated/CMakeFiles/ICE_JoystickAdapter_target.dir/build
 .PHONY : ICE_JoystickAdapter_target/fast
 
 # Convenience name for target.
 generated/CMakeFiles/multiroom.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom.dir/rule
 .PHONY : generated/CMakeFiles/multiroom.dir/rule
 
 # Convenience name for target.
@@ -256,12 +256,12 @@ multiroom: generated/CMakeFiles/multiroom.dir/rule
 
 # fast build rule for target.
 multiroom/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/build
 .PHONY : multiroom/fast
 
 # Convenience name for target.
 generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/rule
 .PHONY : generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/rule
 
 # Convenience name for target.
@@ -270,12 +270,12 @@ multiroom_autogen_timestamp_deps: generated/CMakeFiles/multiroom_autogen_timesta
 
 # fast build rule for target.
 multiroom_autogen_timestamp_deps/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build.make generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build
 .PHONY : multiroom_autogen_timestamp_deps/fast
 
 # Convenience name for target.
 generated/CMakeFiles/multiroom_autogen.dir/rule:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom_autogen.dir/rule
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 generated/CMakeFiles/multiroom_autogen.dir/rule
 .PHONY : generated/CMakeFiles/multiroom_autogen.dir/rule
 
 # Convenience name for target.
@@ -284,7 +284,7 @@ multiroom_autogen: generated/CMakeFiles/multiroom_autogen.dir/rule
 
 # fast build rule for target.
 multiroom_autogen/fast:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom_autogen.dir/build.make generated/CMakeFiles/multiroom_autogen.dir/build
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom_autogen.dir/build.make generated/CMakeFiles/multiroom_autogen.dir/build
 .PHONY : multiroom_autogen/fast
 
 Camera360RGB.o: Camera360RGB.cpp.o
@@ -292,7 +292,7 @@ Camera360RGB.o: Camera360RGB.cpp.o
 
 # target to build an object file
 Camera360RGB.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o
 .PHONY : Camera360RGB.cpp.o
 
 Camera360RGB.i: Camera360RGB.cpp.i
@@ -300,7 +300,7 @@ Camera360RGB.i: Camera360RGB.cpp.i
 
 # target to preprocess a source file
 Camera360RGB.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.i
 .PHONY : Camera360RGB.cpp.i
 
 Camera360RGB.s: Camera360RGB.cpp.s
@@ -308,7 +308,7 @@ Camera360RGB.s: Camera360RGB.cpp.s
 
 # target to generate assembly for a file
 Camera360RGB.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.s
 .PHONY : Camera360RGB.cpp.s
 
 GenericBase.o: GenericBase.cpp.o
@@ -316,7 +316,7 @@ GenericBase.o: GenericBase.cpp.o
 
 # target to build an object file
 GenericBase.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o
 .PHONY : GenericBase.cpp.o
 
 GenericBase.i: GenericBase.cpp.i
@@ -324,7 +324,7 @@ GenericBase.i: GenericBase.cpp.i
 
 # target to preprocess a source file
 GenericBase.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.i
 .PHONY : GenericBase.cpp.i
 
 GenericBase.s: GenericBase.cpp.s
@@ -332,7 +332,7 @@ GenericBase.s: GenericBase.cpp.s
 
 # target to generate assembly for a file
 GenericBase.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/GenericBase.cpp.s
 .PHONY : GenericBase.cpp.s
 
 JoystickAdapter.o: JoystickAdapter.cpp.o
@@ -340,7 +340,7 @@ JoystickAdapter.o: JoystickAdapter.cpp.o
 
 # target to build an object file
 JoystickAdapter.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o
 .PHONY : JoystickAdapter.cpp.o
 
 JoystickAdapter.i: JoystickAdapter.cpp.i
@@ -348,7 +348,7 @@ JoystickAdapter.i: JoystickAdapter.cpp.i
 
 # target to preprocess a source file
 JoystickAdapter.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.i
 .PHONY : JoystickAdapter.cpp.i
 
 JoystickAdapter.s: JoystickAdapter.cpp.s
@@ -356,7 +356,7 @@ JoystickAdapter.s: JoystickAdapter.cpp.s
 
 # target to generate assembly for a file
 JoystickAdapter.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.s
 .PHONY : JoystickAdapter.cpp.s
 
 Lidar3D.o: Lidar3D.cpp.o
@@ -364,7 +364,7 @@ Lidar3D.o: Lidar3D.cpp.o
 
 # target to build an object file
 Lidar3D.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o
 .PHONY : Lidar3D.cpp.o
 
 Lidar3D.i: Lidar3D.cpp.i
@@ -372,7 +372,7 @@ Lidar3D.i: Lidar3D.cpp.i
 
 # target to preprocess a source file
 Lidar3D.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.i
 .PHONY : Lidar3D.cpp.i
 
 Lidar3D.s: Lidar3D.cpp.s
@@ -380,7 +380,7 @@ Lidar3D.s: Lidar3D.cpp.s
 
 # target to generate assembly for a file
 Lidar3D.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.s
 .PHONY : Lidar3D.cpp.s
 
 OmniRobot.o: OmniRobot.cpp.o
@@ -388,7 +388,7 @@ OmniRobot.o: OmniRobot.cpp.o
 
 # target to build an object file
 OmniRobot.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o
 .PHONY : OmniRobot.cpp.o
 
 OmniRobot.i: OmniRobot.cpp.i
@@ -396,7 +396,7 @@ OmniRobot.i: OmniRobot.cpp.i
 
 # target to preprocess a source file
 OmniRobot.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.i
 .PHONY : OmniRobot.cpp.i
 
 OmniRobot.s: OmniRobot.cpp.s
@@ -404,7 +404,7 @@ OmniRobot.s: OmniRobot.cpp.s
 
 # target to generate assembly for a file
 OmniRobot.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.s
 .PHONY : OmniRobot.cpp.s
 
 __/src/door_detector.o: __/src/door_detector.cpp.o
@@ -412,7 +412,7 @@ __/src/door_detector.o: __/src/door_detector.cpp.o
 
 # target to build an object file
 __/src/door_detector.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o
 .PHONY : __/src/door_detector.cpp.o
 
 __/src/door_detector.i: __/src/door_detector.cpp.i
@@ -420,7 +420,7 @@ __/src/door_detector.i: __/src/door_detector.cpp.i
 
 # target to preprocess a source file
 __/src/door_detector.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.i
 .PHONY : __/src/door_detector.cpp.i
 
 __/src/door_detector.s: __/src/door_detector.cpp.s
@@ -428,7 +428,7 @@ __/src/door_detector.s: __/src/door_detector.cpp.s
 
 # target to generate assembly for a file
 __/src/door_detector.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.s
 .PHONY : __/src/door_detector.cpp.s
 
 __/src/hungarian.o: __/src/hungarian.cpp.o
@@ -436,7 +436,7 @@ __/src/hungarian.o: __/src/hungarian.cpp.o
 
 # target to build an object file
 __/src/hungarian.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o
 .PHONY : __/src/hungarian.cpp.o
 
 __/src/hungarian.i: __/src/hungarian.cpp.i
@@ -444,7 +444,7 @@ __/src/hungarian.i: __/src/hungarian.cpp.i
 
 # target to preprocess a source file
 __/src/hungarian.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.i
 .PHONY : __/src/hungarian.cpp.i
 
 __/src/hungarian.s: __/src/hungarian.cpp.s
@@ -452,7 +452,7 @@ __/src/hungarian.s: __/src/hungarian.cpp.s
 
 # target to generate assembly for a file
 __/src/hungarian.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.s
 .PHONY : __/src/hungarian.cpp.s
 
 __/src/qcustomplot.o: __/src/qcustomplot.cpp.o
@@ -460,7 +460,7 @@ __/src/qcustomplot.o: __/src/qcustomplot.cpp.o
 
 # target to build an object file
 __/src/qcustomplot.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o
 .PHONY : __/src/qcustomplot.cpp.o
 
 __/src/qcustomplot.i: __/src/qcustomplot.cpp.i
@@ -468,7 +468,7 @@ __/src/qcustomplot.i: __/src/qcustomplot.cpp.i
 
 # target to preprocess a source file
 __/src/qcustomplot.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.i
 .PHONY : __/src/qcustomplot.cpp.i
 
 __/src/qcustomplot.s: __/src/qcustomplot.cpp.s
@@ -476,7 +476,7 @@ __/src/qcustomplot.s: __/src/qcustomplot.cpp.s
 
 # target to generate assembly for a file
 __/src/qcustomplot.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.s
 .PHONY : __/src/qcustomplot.cpp.s
 
 __/src/ransac_line_detector.o: __/src/ransac_line_detector.cpp.o
@@ -484,7 +484,7 @@ __/src/ransac_line_detector.o: __/src/ransac_line_detector.cpp.o
 
 # target to build an object file
 __/src/ransac_line_detector.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o
 .PHONY : __/src/ransac_line_detector.cpp.o
 
 __/src/ransac_line_detector.i: __/src/ransac_line_detector.cpp.i
@@ -492,7 +492,7 @@ __/src/ransac_line_detector.i: __/src/ransac_line_detector.cpp.i
 
 # target to preprocess a source file
 __/src/ransac_line_detector.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.i
 .PHONY : __/src/ransac_line_detector.cpp.i
 
 __/src/ransac_line_detector.s: __/src/ransac_line_detector.cpp.s
@@ -500,7 +500,7 @@ __/src/ransac_line_detector.s: __/src/ransac_line_detector.cpp.s
 
 # target to generate assembly for a file
 __/src/ransac_line_detector.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.s
 .PHONY : __/src/ransac_line_detector.cpp.s
 
 __/src/room_detector.o: __/src/room_detector.cpp.o
@@ -508,7 +508,7 @@ __/src/room_detector.o: __/src/room_detector.cpp.o
 
 # target to build an object file
 __/src/room_detector.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o
 .PHONY : __/src/room_detector.cpp.o
 
 __/src/room_detector.i: __/src/room_detector.cpp.i
@@ -516,7 +516,7 @@ __/src/room_detector.i: __/src/room_detector.cpp.i
 
 # target to preprocess a source file
 __/src/room_detector.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.i
 .PHONY : __/src/room_detector.cpp.i
 
 __/src/room_detector.s: __/src/room_detector.cpp.s
@@ -524,7 +524,7 @@ __/src/room_detector.s: __/src/room_detector.cpp.s
 
 # target to generate assembly for a file
 __/src/room_detector.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.s
 .PHONY : __/src/room_detector.cpp.s
 
 __/src/specificworker.o: __/src/specificworker.cpp.o
@@ -532,7 +532,7 @@ __/src/specificworker.o: __/src/specificworker.cpp.o
 
 # target to build an object file
 __/src/specificworker.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o
 .PHONY : __/src/specificworker.cpp.o
 
 __/src/specificworker.i: __/src/specificworker.cpp.i
@@ -540,7 +540,7 @@ __/src/specificworker.i: __/src/specificworker.cpp.i
 
 # target to preprocess a source file
 __/src/specificworker.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.i
 .PHONY : __/src/specificworker.cpp.i
 
 __/src/specificworker.s: __/src/specificworker.cpp.s
@@ -548,7 +548,7 @@ __/src/specificworker.s: __/src/specificworker.cpp.s
 
 # target to generate assembly for a file
 __/src/specificworker.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.s
 .PHONY : __/src/specificworker.cpp.s
 
 __/src/time_series_plotter.o: __/src/time_series_plotter.cpp.o
@@ -556,7 +556,7 @@ __/src/time_series_plotter.o: __/src/time_series_plotter.cpp.o
 
 # target to build an object file
 __/src/time_series_plotter.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o
 .PHONY : __/src/time_series_plotter.cpp.o
 
 __/src/time_series_plotter.i: __/src/time_series_plotter.cpp.i
@@ -564,7 +564,7 @@ __/src/time_series_plotter.i: __/src/time_series_plotter.cpp.i
 
 # target to preprocess a source file
 __/src/time_series_plotter.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.i
 .PHONY : __/src/time_series_plotter.cpp.i
 
 __/src/time_series_plotter.s: __/src/time_series_plotter.cpp.s
@@ -572,7 +572,7 @@ __/src/time_series_plotter.s: __/src/time_series_plotter.cpp.s
 
 # target to generate assembly for a file
 __/src/time_series_plotter.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.s
 .PHONY : __/src/time_series_plotter.cpp.s
 
 genericworker.o: genericworker.cpp.o
@@ -580,7 +580,7 @@ genericworker.o: genericworker.cpp.o
 
 # target to build an object file
 genericworker.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.o
 .PHONY : genericworker.cpp.o
 
 genericworker.i: genericworker.cpp.i
@@ -588,7 +588,7 @@ genericworker.i: genericworker.cpp.i
 
 # target to preprocess a source file
 genericworker.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.i
 .PHONY : genericworker.cpp.i
 
 genericworker.s: genericworker.cpp.s
@@ -596,135 +596,135 @@ genericworker.s: genericworker.cpp.s
 
 # target to generate assembly for a file
 genericworker.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/genericworker.cpp.s
 .PHONY : genericworker.cpp.s
 
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.o: home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.o
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.o: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.o
 
 # target to build an object file
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o
 
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.i: home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.i
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.i: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.i
 
 # target to preprocess a source file
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.i
 
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.s: home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.s
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.s: home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.s
 
 # target to generate assembly for a file
-home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
-.PHONY : home/josep/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
+.PHONY : home/jose/robocomp/classes/ConfigLoader/ConfigLoader.cpp.s
 
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o: home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o
 
 # target to build an object file
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o
 
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i: home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i
 
 # target to preprocess a source file
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.i
 
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s: home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s: home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s
 
 # target to generate assembly for a file
-home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
-.PHONY : home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
+.PHONY : home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.s
 
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.o: home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.o
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.o: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.o
 
 # target to build an object file
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o
 
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.i: home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.i
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.i: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.i
 
 # target to preprocess a source file
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.i
 
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.s: home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.s
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.s: home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.s
 
 # target to generate assembly for a file
-home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
-.PHONY : home/josep/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
+.PHONY : home/jose/robocomp/classes/grafcetStep/GRAFCETStep.cpp.s
 
-home/josep/robocomp/classes/rapplication/rapplication.o: home/josep/robocomp/classes/rapplication/rapplication.cpp.o
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.o
+home/jose/robocomp/classes/rapplication/rapplication.o: home/jose/robocomp/classes/rapplication/rapplication.cpp.o
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.o
 
 # target to build an object file
-home/josep/robocomp/classes/rapplication/rapplication.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.o
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.cpp.o
+home/jose/robocomp/classes/rapplication/rapplication.cpp.o:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.o
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.o
 
-home/josep/robocomp/classes/rapplication/rapplication.i: home/josep/robocomp/classes/rapplication/rapplication.cpp.i
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.i
+home/jose/robocomp/classes/rapplication/rapplication.i: home/jose/robocomp/classes/rapplication/rapplication.cpp.i
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.i
 
 # target to preprocess a source file
-home/josep/robocomp/classes/rapplication/rapplication.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.i
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.cpp.i
+home/jose/robocomp/classes/rapplication/rapplication.cpp.i:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.i
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.i
 
-home/josep/robocomp/classes/rapplication/rapplication.s: home/josep/robocomp/classes/rapplication/rapplication.cpp.s
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.s
+home/jose/robocomp/classes/rapplication/rapplication.s: home/jose/robocomp/classes/rapplication/rapplication.cpp.s
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.s
 
 # target to generate assembly for a file
-home/josep/robocomp/classes/rapplication/rapplication.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/rapplication/rapplication.cpp.s
-.PHONY : home/josep/robocomp/classes/rapplication/rapplication.cpp.s
+home/jose/robocomp/classes/rapplication/rapplication.cpp.s:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/rapplication/rapplication.cpp.s
+.PHONY : home/jose/robocomp/classes/rapplication/rapplication.cpp.s
 
-home/josep/robocomp/classes/sigwatch/sigwatch.o: home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.o
+home/jose/robocomp/classes/sigwatch/sigwatch.o: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.o
 
 # target to build an object file
-home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.cpp.o
+home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.o
 
-home/josep/robocomp/classes/sigwatch/sigwatch.i: home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.i
+home/jose/robocomp/classes/sigwatch/sigwatch.i: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.i
 
 # target to preprocess a source file
-home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.cpp.i
+home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.i
 
-home/josep/robocomp/classes/sigwatch/sigwatch.s: home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.s
+home/jose/robocomp/classes/sigwatch/sigwatch.s: home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.s
 
 # target to generate assembly for a file
-home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s
-.PHONY : home/josep/robocomp/classes/sigwatch/sigwatch.cpp.s
+home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s:
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
+.PHONY : home/jose/robocomp/classes/sigwatch/sigwatch.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
 
 # target to build an object file
 main.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -732,7 +732,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -740,7 +740,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 multiroom_autogen/mocs_compilation.o: multiroom_autogen/mocs_compilation.cpp.o
@@ -748,7 +748,7 @@ multiroom_autogen/mocs_compilation.o: multiroom_autogen/mocs_compilation.cpp.o
 
 # target to build an object file
 multiroom_autogen/mocs_compilation.cpp.o:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o
 .PHONY : multiroom_autogen/mocs_compilation.cpp.o
 
 multiroom_autogen/mocs_compilation.i: multiroom_autogen/mocs_compilation.cpp.i
@@ -756,7 +756,7 @@ multiroom_autogen/mocs_compilation.i: multiroom_autogen/mocs_compilation.cpp.i
 
 # target to preprocess a source file
 multiroom_autogen/mocs_compilation.cpp.i:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.i
 .PHONY : multiroom_autogen/mocs_compilation.cpp.i
 
 multiroom_autogen/mocs_compilation.s: multiroom_autogen/mocs_compilation.cpp.s
@@ -764,7 +764,7 @@ multiroom_autogen/mocs_compilation.s: multiroom_autogen/mocs_compilation.cpp.s
 
 # target to generate assembly for a file
 multiroom_autogen/mocs_compilation.cpp.s:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(MAKE) $(MAKESILENT) -f generated/CMakeFiles/multiroom.dir/build.make generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.s
 .PHONY : multiroom_autogen/mocs_compilation.cpp.s
 
 # Help Target
@@ -779,7 +779,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... ICES__home_josep_robocomp_components_ODFE_robotica_multiRoom_generated"
+	@echo "... ICES__home_jose_robocomp_components_ODFE_multiRoom_generated"
 	@echo "... ICE_Camera360RGB_target"
 	@echo "... ICE_GenericBase_target"
 	@echo "... ICE_JoystickAdapter_target"
@@ -827,21 +827,21 @@ help:
 	@echo "... genericworker.o"
 	@echo "... genericworker.i"
 	@echo "... genericworker.s"
-	@echo "... home/josep/robocomp/classes/ConfigLoader/ConfigLoader.o"
-	@echo "... home/josep/robocomp/classes/ConfigLoader/ConfigLoader.i"
-	@echo "... home/josep/robocomp/classes/ConfigLoader/ConfigLoader.s"
-	@echo "... home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o"
-	@echo "... home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i"
-	@echo "... home/josep/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s"
-	@echo "... home/josep/robocomp/classes/grafcetStep/GRAFCETStep.o"
-	@echo "... home/josep/robocomp/classes/grafcetStep/GRAFCETStep.i"
-	@echo "... home/josep/robocomp/classes/grafcetStep/GRAFCETStep.s"
-	@echo "... home/josep/robocomp/classes/rapplication/rapplication.o"
-	@echo "... home/josep/robocomp/classes/rapplication/rapplication.i"
-	@echo "... home/josep/robocomp/classes/rapplication/rapplication.s"
-	@echo "... home/josep/robocomp/classes/sigwatch/sigwatch.o"
-	@echo "... home/josep/robocomp/classes/sigwatch/sigwatch.i"
-	@echo "... home/josep/robocomp/classes/sigwatch/sigwatch.s"
+	@echo "... home/jose/robocomp/classes/ConfigLoader/ConfigLoader.o"
+	@echo "... home/jose/robocomp/classes/ConfigLoader/ConfigLoader.i"
+	@echo "... home/jose/robocomp/classes/ConfigLoader/ConfigLoader.s"
+	@echo "... home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.o"
+	@echo "... home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.i"
+	@echo "... home/jose/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.s"
+	@echo "... home/jose/robocomp/classes/grafcetStep/GRAFCETStep.o"
+	@echo "... home/jose/robocomp/classes/grafcetStep/GRAFCETStep.i"
+	@echo "... home/jose/robocomp/classes/grafcetStep/GRAFCETStep.s"
+	@echo "... home/jose/robocomp/classes/rapplication/rapplication.o"
+	@echo "... home/jose/robocomp/classes/rapplication/rapplication.i"
+	@echo "... home/jose/robocomp/classes/rapplication/rapplication.s"
+	@echo "... home/jose/robocomp/classes/sigwatch/sigwatch.o"
+	@echo "... home/jose/robocomp/classes/sigwatch/sigwatch.i"
+	@echo "... home/jose/robocomp/classes/sigwatch/sigwatch.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
@@ -859,6 +859,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/josep/robocomp/components/ODFE_robotica/multiRoom/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/jose/robocomp/components/ODFE/multiRoom/build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

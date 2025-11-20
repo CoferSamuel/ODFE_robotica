@@ -1,7 +1,7 @@
 generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.cpp \
+ /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.cpp \
  /usr/include/stdc-predef.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/generated/genericworker.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/generated/genericworker.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -920,7 +920,7 @@ generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtguiversion.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/include/ui_mainUI.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/include/ui_mainUI.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qapplication.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \
@@ -950,7 +950,7 @@ generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
- /home/josep/robocomp/classes/grafcetStep/GRAFCETStep.h \
+ /home/jose/robocomp/classes/grafcetStep/GRAFCETStep.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QState \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qmetaobject.h \
@@ -960,7 +960,7 @@ generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qtstatemachineexports.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer \
  /usr/include/c++/13/iostream \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.h \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /usr/include/c++/13/fstream \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
@@ -1016,15 +1016,15 @@ generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
  /usr/local/include/toml++/impl/toml_formatter.inl \
  /usr/local/include/toml++/impl/json_formatter.inl \
  /usr/local/include/toml++/impl/yaml_formatter.inl \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.tpp \
- /home/josep/robocomp/classes/ConfigLoader/ConfigLoader.h \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.tpp \
+ /home/jose/robocomp/classes/ConfigLoader/ConfigLoader.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/QStateMachine \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstatemachine.h \
  /usr/include/x86_64-linux-gnu/qt6/QtStateMachine/qstate.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QEvent \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QtCore \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Camera360RGB.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Camera360RGB.h \
  /usr/include/IceUtil/PushDisableWarnings.h /usr/include/Ice/ProxyF.h \
  /usr/include/Ice/Config.h /usr/include/IceUtil/Config.h \
  /usr/include/c++/13/cassert /usr/include/Ice/ProxyHandle.h \
@@ -1067,7 +1067,7 @@ generated/CMakeFiles/multiroom.dir/genericworker.cpp.o: \
  /usr/include/c++/13/deque /usr/include/c++/13/bits/stl_deque.h \
  /usr/include/c++/13/bits/deque.tcc /usr/include/Ice/FactoryTableInit.h \
  /usr/include/Ice/DefaultValueFactory.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/GenericBase.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/JoystickAdapter.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/Lidar3D.h \
- /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/OmniRobot.h
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/GenericBase.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/JoystickAdapter.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/Lidar3D.h \
+ /home/jose/robocomp/components/ODFE/multiRoom/build/generated/OmniRobot.h

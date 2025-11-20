@@ -1,5 +1,5 @@
-/home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_qcustomplot.cpp: /home/josep/robocomp/components/ODFE_robotica/multiRoom/src/qcustomplot.h \
-  /home/josep/robocomp/components/ODFE_robotica/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
+/home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/VNU7RW3YIC/moc_qcustomplot.cpp: /home/jose/robocomp/components/ODFE/multiRoom/src/qcustomplot.h \
+  /home/jose/robocomp/components/ODFE/multiRoom/build/generated/multiroom_autogen/moc_predefs.h \
   /usr/include/GL/gl.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
