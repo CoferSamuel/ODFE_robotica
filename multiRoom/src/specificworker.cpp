@@ -146,12 +146,12 @@ void SpecificWorker::initialize()
        plotConfig.autoScaleY = false;       // We will set a fixed range
        plotConfig.yMin = 0;
        plotConfig.yMax = 1000;
-    	//SpecificWorker::time_series_plotter = std::make_unique<TimeSeriesPlotter>(frame_plot_error, plotConfig);
-     	//match_error_graph = time_series_plotter->addGraph("", Qt::blue);
+    	
+	   SpecificWorker::time_series_plotter = std::make_unique<TimeSeriesPlotter>(frame_plot_error, plotConfig);
+       match_error_graph = time_series_plotter->addGraph("", Qt::blue);
 
-
-       // stop robot
-       //move_robot(0, 0, 0);
+	   //stop robot
+	   move_robot(0,0,0);
    }
 }
 
@@ -219,10 +219,10 @@ void SpecificWorker::compute()
        	time_series_plotter->addDataPoint(match_error_graph,max_match_error);
        	//print_match(match, max_match_error); //debugging
    	}
-
+	Eigen::Vector3d pose = solve_pose(corners, matched_corners);
     // update robot pose
 	if (localised)
-		update_robot_pose(corners, matched_corners);
+		update_robot_pose(pose);
 
 	RetVal ret_val = process_state(data, corners, matched_corners, viewer);
    	auto [st, adv, rot] = ret_val;
@@ -443,7 +443,36 @@ void SpecificWorker::print_match(const Match &match, const float error) const
 {
 }
 
-bool SpecificWorker::update_robot_pose(const Corners &corners, const Match &match)
+
+bool SpecificWorker::update_robot_pose(Eigen::Vector3d pose)
+{
+
+	std::cout << "Nueva pose estimada: " << std::endl;
+	std::cout << "X: " << pose(0) << " Y: " << pose(1) << " Theta: " << pose(2) << std::endl;
+	qInfo() << "--------------------";
+
+
+	if (pose.array().isNaN().any())
+		return	false;
+
+	robot_pose.translate(Eigen::Vector2d(pose(0), pose(1)));
+	robot_pose.rotate(pose(2));
+
+	return true;
+}
+
+void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
+{
+	//TODO comprobar si el error es muy grande y no mover el robot
+	if (max_match_error>500){
+		std::cout << "Error muy grande, no muevo el robot" << std::endl;
+		return;
+	}
+	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
+	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+}
+
+Eigen::Vector3d SpecificWorker::solve_pose(const Corners &corners, const Match &match)
 {
 	Eigen::MatrixXd W(match.size() * 2, 3);
 	Eigen::VectorXd b(match.size() * 2);
@@ -461,29 +490,7 @@ bool SpecificWorker::update_robot_pose(const Corners &corners, const Match &matc
 	}
 	// estimate new pose with pseudoinverse
 	const Eigen::Vector3d r = (W.transpose() * W).inverse() * W.transpose() * b;
-	std::cout << "Nueva pose estimada: " << std::endl;
-	std::cout << "X: " << r(0) << " Y: " << r(1) << " Theta: " << r(2) << std::endl;
-	qInfo() << "--------------------";
-
-
-	if (r.array().isNaN().any())
-		return	false;
-	
-	robot_pose.translate(Eigen::Vector2d(r(0), r(1)));
-	robot_pose.rotate(r[2]);
-
-	return true;
-}
-
-void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
-{
-	//TODO comprobar si el error es muy grande y no mover el robot
-	if (max_match_error>500){
-		std::cout << "Error muy grande, no muevo el robot" << std::endl;
-		return;
-	}
-	try{ omnirobot_proxy->setSpeedBase(0, adv, rot);}
-	catch (const Ice::Exception &e){ std::cout << e << " " << "Conexión con Laser" << std::endl; return;}
+    return r;
 }
 
 std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
@@ -493,39 +500,7 @@ std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(co
     return {SpecificWorker::STATE::TURN, 0.0f, 0.5f};
 }
 
-/*
-	Fordward -> Basicamente set velocidad
 
-		Codigo para avanzar rapido si no hay obstaculo cerca
-					auto point = points.front();
-					// point.distance2d es la distancia euclidiana al punto (por ejemplo, sqrt(x² + z²)).
-					// 		si distance2d es grande, el resultado es grande;
-					//		si es pequeño (obstáculo cerca), el resultado es pequeño.
-					// std::clamp(valor, 1.f, 0.f) → limita el valor al rango [0, 1].
-					// Por lo tanto, break_adv será 1 cuando no haya obstáculos cerca y 0 cuando estén muy cerca.
-					float break_adv = std::clamp(point.distance2d * (1/MIN_THRESHOLD), 1.f, 0.f);
-					// atan2(y, x) devuelve el ángulo en radianes entre el eje X y el punto (x, y).
-					// Calcula el ángulo de rotación hacia el obstáculo:
-					float rot = atan2(point.x, point.z);
-
-					// Este término controla cuánto debe frenar la rotación en función del ángulo.
-					// Si rot es positivo (obstáculo a la derecha), brake_rot disminuye con rot.
-					// Si rot es negativo (obstáculo a la izquierda), brake_rot aumenta con rot
-					float brake_rot = rot>=0 ? std::clamp(rot+1, 1.f, 0.f) : std::clamp(1-rot, 0.f, 1.f);
-
-					// Combina los dos factores anteriores:
-					// 		MAX_ADV: velocidad máxima (por ejemplo, 200 mm/s)
-					//		break_adv: freno por distancia
-					// 		brake_rot: freno por dirección
-					float adv_speed = MAX_ADV * break_adv * brake_rot;
-
-	Turn -> Basicamente set rotation,
-							rotation se le mete velocidad y rota hasta que no encuentre una pared (lo hace solo)
-	FollowWall -> El más complicado, al lidar ser una mierda debes de ir reajustando el angulo del robot
-									 porque no es capaz de seguir recto correctamente
-									 A todo esto tiene que ir detectando la pared
-	Spining -> En teoria no es muy complicado
-*/
 
 
 

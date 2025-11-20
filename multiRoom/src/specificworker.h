@@ -191,7 +191,7 @@ class SpecificWorker final : public GenericWorker
         bool relocal_centered = false;
         bool localised = false;
 
-        bool update_robot_pose(const Corners &corners, const Match &match);
+        bool update_robot_pose(Eigen::Vector3d pose);
         void move_robot(float adv, float rot, float max_match_error);
         Eigen::Vector3d solve_pose(const Corners &corners, const Match &match);
         void predict_robot_pose();
