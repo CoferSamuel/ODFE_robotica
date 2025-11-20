@@ -1,7 +1,7 @@
 # Proxies for required interfaces
 Proxies.Camera360RGB = "camera360rgb:tcp -h localhost -p 10098"
 Proxies.JoystickAdapter = "joystickadapter:tcp -h localhost -p 11230"
-Proxies.Lidar3D = "lidar3d:tcp -h localhost -p 11988"
+Proxies.Lidar3D = "lidar3d:tcp -h localhost -p 11989"
 Proxies.OmniRobot = "omnirobot:tcp -h localhost -p 10004"
 
 
