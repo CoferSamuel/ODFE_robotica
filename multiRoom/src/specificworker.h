@@ -78,6 +78,34 @@ class SpecificWorker final : public GenericWorker
 
     private:
         bool startup_check_flag;
+        
+        // Visualization methods
+
+        /**
+         * @brief Draws the main viewer with LiDAR data, detected corners, and room center.
+         * 
+         * This method performs the complete visualization pipeline:
+         * 1. Acquires LiDAR data from the sensor
+         * 2. Filters the data (basic filtering and door detection)
+         * 3. Detects corners and lines using RANSAC
+         * 4. Estimates room center from detected walls
+         * 5. Draws all elements in the main viewer
+         */
+        void draw_mainViewer();
+
+        /**
+         * @brief Draws the right viewer with corner matching, pose estimation, and robot visualization.
+         * 
+         * This method performs the following operations:
+         * 1. Transforms nominal room corners to robot frame for matching
+         * 2. Matches detected corners to nominal room corners using Hungarian algorithm
+         * 3. Computes maximum match error and updates time series plot
+         * 4. Solves robot pose from matched corners
+         * 5. Updates robot pose if localized
+         * 6. Processes state machine logic
+         * 7. Updates robot graphic position in the room viewer
+         */
+        void draw_rightViewer();
 
     struct Params
         {
@@ -127,6 +155,10 @@ class SpecificWorker final : public GenericWorker
         rc::Room_Detector room_detector;
         rc::Hungarian hungarian;
 
+        // LiDAR data and detected features
+        RoboCompLidar3D::TData data;
+        Corners corners;
+
         // state machine
         enum class State { IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL };
         enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
@@ -157,8 +189,11 @@ class SpecificWorker final : public GenericWorker
 
         // draw
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
+        void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
+        void draw_points(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
         std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
+        RoboCompLidar3D::TPoints filter_data_basic(const RoboCompLidar3D::TPoints &data);
 
         // aux
         RoboCompLidar3D::TPoints read_data();
