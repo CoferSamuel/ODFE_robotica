@@ -132,19 +132,30 @@ def expand_path(p):
 
 # Start all components
 def launch_process(command, cwd=None, name=None):
-    stdout_path = os.path.expanduser(f"~/.local/logs/{name}.out") if name else os.devnull
-    stderr_path = os.path.expanduser(f"~/.local/logs/{name}.err") if name else os.devnull
-    os.makedirs(os.path.dirname(stdout_path), exist_ok=True)
+    # Create output directory in the project folder
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(script_dir, "output")
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Only capture stderr for errors, discard stdout to prevent huge files
+    stdout_path = os.devnull  # Discard stdout to prevent massive log files
+    stderr_path = os.path.join(output_dir, f"{name}.err") if name else os.devnull
 
     stdout = open(stdout_path, "w")
     stderr = open(stderr_path, "w")
+
+    # Replace 'rcnode' alias with actual script path
+    if 'rcnode' in command and not command.startswith('bash /'):
+        command = command.replace('rcnode', 'bash /home/cofer/robocomp/tools/rcnode/rcnode.sh')
 
     proc = subprocess.Popen(
         command,
         cwd=cwd,
         shell=True,
         stdout=stdout,
-        stderr=stderr
+        stderr=stderr,
+        env=os.environ.copy(),
+        executable='/bin/bash'  # Use bash instead of sh to handle the command properly
     )
     time.sleep(0.3)  # wait for child process to start
     try:
@@ -272,10 +283,30 @@ try:
             live.update(build_table())
 except KeyboardInterrupt:
     console.print("\n[yellow]Exiting. Terminating all processes...[/yellow]")
+    
+    # First, try graceful termination
     for name, info in processes.items():
         if info["process"]:  # Only terminate if we have a subprocess object
-            info["process"].terminate()
+            try:
+                info["process"].terminate()
+                console.print(f"[dim]Terminating {name}...[/dim]")
+            except Exception as e:
+                console.print(f"[dim red]Error terminating {name}: {e}[/dim red]")
+    
+    # Wait up to 3 seconds for processes to terminate
     for name, info in processes.items():
-        if info["process"]:  # Only wait if we have a subprocess object
-            info["process"].wait()
+        if info["process"]:
+            try:
+                info["process"].wait(timeout=3)
+                console.print(f"[dim green]✓ {name} terminated[/dim green]")
+            except subprocess.TimeoutExpired:
+                console.print(f"[yellow]⚠ {name} didn't respond, force killing...[/yellow]")
+                try:
+                    info["process"].kill()
+                    info["process"].wait(timeout=1)
+                    console.print(f"[dim green]✓ {name} killed[/dim green]")
+                except Exception as e:
+                    console.print(f"[red]✗ Failed to kill {name}: {e}[/red]")
+    
+    console.print("[green]All processes terminated.[/green]")
 
