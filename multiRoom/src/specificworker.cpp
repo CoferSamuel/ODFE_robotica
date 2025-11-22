@@ -182,7 +182,16 @@ void SpecificWorker::compute()
 
 	draw_mainViewer();
 
-	draw_rightViewer();
+	// Execute state machine
+	RetVal ret_val = process_state(data.points, corners, Match{}, viewer);
+	auto [next_state, adv, rot] = ret_val;
+	
+	// Update state
+	if (state != next_state)
+	{
+		qInfo() << "State changed:" << to_string(state) << "->" << to_string(next_state);
+	}
+	state = next_state;
 }
 
 void SpecificWorker::emergency()
@@ -234,6 +243,7 @@ void SpecificWorker::draw_mainViewer()
 	
 	// Draw the room center as a separate visual indicator if it exists
 	if (center_opt.has_value()) {
+		target_room_center = center_opt.value();  // Store for controller
 		draw_room_center(center_opt.value(), &viewer->scene);
 	}
 }
@@ -555,11 +565,108 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		return r;
 	}
 
+	/**
+	 * @brief Angle-distance controller to navigate robot to room center.
+	 * 
+	 * Implements the controller from RoboLab Technical Report RL0021:
+	 * - PD controller for rotation (angular velocity ω)
+	 * - Gaussian angle-brake for smooth turns
+	 * - Sigmoid distance-brake for smooth stopping
+	 * 
+	 * @param points LiDAR points (unused in current implementation)
+	 * @return RetVal {next_state, advance_velocity, rotation_velocity}
+	 */
+	SpecificWorker::RetVal SpecificWorker::goto_room_center(const RoboCompLidar3D::TPoints &points)
+	{
+		// Check if we have a valid target
+		if (!target_room_center.has_value())
+		{
+			qInfo() << "GOTO_ROOM_CENTER: No target available, returning to IDLE";
+			omnirobot_proxy->setSpeedBase(0, 0, 0);
+			return {STATE::IDLE, 0.0f, 0.0f};
+		}
+		
+		const auto& target = target_room_center.value();
+		
+		// 1. Calculate distance and angle to target (robot frame coordinates)
+		float d = target.norm();  // sqrt(x_t² + y_t²)
+		float theta_e = std::atan2(target.x(), target.y());  // angle error
+		
+		// 2. Check if we've arrived at the target
+		if (d < params.RELOCAL_CENTER_EPS)
+		{
+			qInfo() << "GOTO_ROOM_CENTER: Target reached! d=" << d << "mm";
+			omnirobot_proxy->setSpeedBase(0, 0, 0);
+			return {STATE::IDLE, 0.0f, 0.0f};
+		}
+		
+		// 3. Compute derivative of angle error (finite difference)
+		// Assuming ~100ms cycle time
+		float theta_dot_e = (theta_e - prev_angle_error) / 0.1f;
+		prev_angle_error = theta_e;
+		
+		// 4. PD controller for rotation: ω = K_p*θ_e + K_d*θ_dot_e
+		float omega = controller_params.K_p * theta_e + controller_params.K_d * theta_dot_e;
+		
+		// 5. Gaussian angle brake: f_θ = exp(-θ_e²/(2σ²))
+		// Reduces speed during large turns to prevent skidding
+		float f_theta = std::exp(-std::pow(theta_e, 2) / 
+								  (2.0f * std::pow(controller_params.sigma, 2)));
+		
+		// 6. Sigmoid distance brake: f_d = 1/(1 + exp(-k(d - d_stop)))
+		// Smoothly decelerates as robot approaches target
+		float f_d = 1.0f / (1.0f + std::exp(-controller_params.k * 
+											 (d - controller_params.d_stop)));
+		
+		// 7. Final velocity: v = v_max * f_θ * f_d
+		float v = controller_params.v_max * f_theta * f_d;
+		
+		// 8. Send velocities to robot
+		try {
+			omnirobot_proxy->setSpeedBase(v, 0, omega);
+		}
+		catch (const Ice::Exception &e) {
+			qWarning() << "Error sending velocities to robot:" << e.what();
+			return {STATE::IDLE, 0.0f, 0.0f};
+		}
+		
+		// 9. Debug output
+		qInfo() << "GOTO_ROOM_CENTER: d=" << d << "mm, θ_e=" << qRadiansToDegrees(theta_e) 
+				<< "°, f_θ=" << f_theta << ", f_d=" << f_d 
+				<< ", v=" << v << "mm/s, ω=" << omega << "rad/s";
+		
+		return {STATE::GOTO_ROOM_CENTER, v, omega};
+	}
+
 	std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 	{
-
-		// TURN
-		return {SpecificWorker::STATE::TURN, 0.0f, 0.5f};
+		// State machine for robot navigation
+		switch(state)
+		{
+			case STATE::IDLE:
+				// Check if we should transition to GOTO_ROOM_CENTER
+				if (target_room_center.has_value())
+				{
+					qInfo() << "State transition: IDLE -> GOTO_ROOM_CENTER";
+					return goto_room_center(data);
+				}
+				// Stay in IDLE, do nothing
+				return {STATE::IDLE, 0.0f, 0.0f};
+				
+			case STATE::GOTO_ROOM_CENTER:
+				// Execute navigation to room center
+				return goto_room_center(data);
+				
+			// Other states can be added here in the future
+			case STATE::LOCALISE:
+			case STATE::GOTO_DOOR:
+			case STATE::ORIENT_TO_DOOR:
+			case STATE::TURN:
+			case STATE::CROSS_DOOR:
+			default:
+				qWarning() << "Unimplemented state:" << to_string(state) << ", returning to IDLE";
+				return {STATE::IDLE, 0.0f, 0.0f};
+		}
 	}
 
 	/**************************************/

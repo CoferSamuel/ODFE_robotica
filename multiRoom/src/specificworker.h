@@ -159,6 +159,20 @@ class SpecificWorker final : public GenericWorker
         RoboCompLidar3D::TData data;
         Corners corners;
 
+        // Angle-distance controller state
+        std::optional<Eigen::Vector2d> target_room_center;
+        float prev_angle_error = 0.0f;
+
+        // Controller parameters (angle-distance controller from RL0021)
+        struct ControllerParams {
+            float K_p = 1.0f;              // Proportional gain
+            float K_d = 0.5f;              // Derivative gain
+            float sigma = M_PI/3.0f;       // Angle brake sensitivity (60° - permissive)
+            float d_stop = 500.0f;         // Distance brake start (mm)
+            float k = 10.0f;               // Sigmoid steepness
+            float v_max = 600.0f;          // Maximum velocity (mm/s)
+        } controller_params;
+
         // state machine
         enum class State { IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL };
         enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
@@ -175,7 +189,7 @@ class SpecificWorker final : public GenericWorker
                 default:                        return "UNKNOWN";
             }
         }
-        STATE state = STATE::LOCALISE;
+        STATE state = STATE::IDLE;  // Start in IDLE state
         using RetVal = std::tuple<STATE, float, float>;
 
         RetVal goto_door(const RoboCompLidar3D::TPoints &points);
