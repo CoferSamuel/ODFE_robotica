@@ -66,6 +66,57 @@ def check_and_start_webots():
 
 webots_process = check_and_start_webots()
 
+# Check if rcnode is running, start it if not
+def check_and_start_rcnode():
+    rcnode_running = False
+    rcnode_proc = None
+    
+    # Check if rcnode (icebox) is already running
+    for proc in psutil.process_iter(['name', 'cmdline', 'pid']):
+        try:
+            if 'icebox' in proc.info['name'].lower() and proc.info['cmdline']:
+                # Check if it's the rcnode icebox process
+                cmdline_str = ' '.join(proc.info['cmdline'])
+                if 'rcnode' in cmdline_str.lower():
+                    rcnode_running = True
+                    rcnode_proc = proc
+                    break
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+    
+    if not rcnode_running:
+        console.print("[yellow]rcnode not detected. Starting rcnode...[/yellow]")
+        try:
+            # Start rcnode detached
+            proc = subprocess.Popen(
+                ["bash", "/home/cofer/robocomp/tools/rcnode/rcnode.sh"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True
+            )
+            console.print("[green]✓ rcnode started successfully[/green]")
+            time.sleep(2)  # Give rcnode time to initialize
+            
+            # Find the actual icebox process
+            for p in psutil.process_iter(['name', 'cmdline', 'pid']):
+                try:
+                    if 'icebox' in p.info['name'].lower() and p.info['cmdline']:
+                        cmdline_str = ' '.join(p.info['cmdline'])
+                        if 'rcnode' in cmdline_str.lower():
+                            rcnode_proc = p
+                            break
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+        except Exception as e:
+            console.print(f"[red]Failed to start rcnode: {e}[/red]")
+            return None
+    else:
+        console.print("[green]✓ rcnode is already running[/green]")
+    
+    return rcnode_proc
+
+rcnode_process = check_and_start_rcnode()
+
 def cpu_usage_bar(cpu_percent, width=10):
     """Return a colored CPU usage bar."""
     filled = int((cpu_percent / 100) * width)
@@ -123,6 +174,20 @@ if webots_process:
             "ice_name": None,
             "start_time": time.time(),
             "is_webots": True
+        }
+    except Exception:
+        pass
+
+# Add rcnode to monitoring if it's running
+if rcnode_process:
+    try:
+        rcnode_process.cpu_percent(interval=None)  # Initialize CPU tracking
+        processes["rcnode"] = {
+            "process": None,  # We don't have a subprocess.Popen object for rcnode
+            "psutil_proc": rcnode_process,
+            "ice_name": None,
+            "start_time": time.time(),
+            "is_rcnode": True
         }
     except Exception:
         pass
@@ -212,8 +277,8 @@ def build_table():
         ice_name = info["ice_name"]
         status = "[yellow]⏳ Checking...[/yellow]"
         
-        # Special handling for Webots
-        if info.get("is_webots", False):
+        # Special handling for Webots and rcnode (system processes we don't control directly)
+        if info.get("is_webots", False) or info.get("is_rcnode", False):
             try:
                 if info["psutil_proc"].is_running():
                     status = "[green]✅ Running[/green]"
