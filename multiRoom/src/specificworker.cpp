@@ -601,25 +601,35 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		}
 		
 		// 3. Compute derivative of angle error (finite difference)
-		// Assuming ~100ms cycle time
 		float theta_dot_e = (theta_e - prev_angle_error) / 0.1f;
 		prev_angle_error = theta_e;
 		
 		// 4. PD controller for rotation: ω = K_p*θ_e + K_d*θ_dot_e
 		float omega = controller_params.K_p * theta_e + controller_params.K_d * theta_dot_e;
 		
-		// 5. Gaussian angle brake: f_θ = exp(-θ_e²/(2σ²))
-		// Reduces speed during large turns to prevent skidding
-		float f_theta = std::exp(-std::pow(theta_e, 2) / 
-								  (2.0f * std::pow(controller_params.sigma, 2)));
+		// Clamp rotation speed to avoid "crazy" behavior
+		omega = std::clamp(omega, -0.5f, 0.5f);
 		
-		// 6. Sigmoid distance brake: f_d = 1/(1 + exp(-k(d - d_stop)))
-		// Smoothly decelerates as robot approaches target
-		float f_d = 1.0f / (1.0f + std::exp(-controller_params.k * 
-											 (d - controller_params.d_stop)));
+		// 5. Rotate then Move Logic
+		float v = 0.0f;
+		const float ANGLE_THRESHOLD = 0.1f; // ~5.7 degrees
 		
-		// 7. Final velocity: v = v_max * f_θ * f_d
-		float v = controller_params.v_max * f_theta * f_d;
+		if (std::abs(theta_e) > ANGLE_THRESHOLD)
+		{
+			// Rotate in place
+			v = 0.0f;
+		}
+		else
+		{
+			// Aligned, move forward
+			// Use a moderate constant speed or the sigmoid brake, but ensure it's "affordable"
+			// Let's use the sigmoid brake but cap it at a lower max speed if needed
+			float f_d = 1.0f / (1.0f + std::exp(-controller_params.k * (d - controller_params.d_stop)));
+			v = controller_params.v_max * f_d;
+			
+			// Optional: Reduce speed if we are still correcting small angle errors
+			// v *= std::cos(theta_e); 
+		}
 		
 		// 8. Send velocities to robot
 		try {
@@ -632,8 +642,7 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		
 		// 9. Debug output
 		qInfo() << "GOTO_ROOM_CENTER: d=" << d << "mm, θ_e=" << qRadiansToDegrees(theta_e) 
-				<< "°, f_θ=" << f_theta << ", f_d=" << f_d 
-				<< ", v=" << v << "mm/s, ω=" << omega << "rad/s";
+				<< "°, v=" << v << "mm/s, ω=" << omega << "rad/s";
 		
 		return {STATE::GOTO_ROOM_CENTER, v, omega};
 	}
