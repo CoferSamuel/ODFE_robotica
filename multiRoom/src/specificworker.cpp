@@ -638,7 +638,41 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		return {STATE::GOTO_ROOM_CENTER, v, omega};
 	}
 
-	std::tuple<SpecificWorker::STATE, float, float> SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
+	SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners)
+	{
+		bool detected = false;
+		int direction = 1;
+
+		if (search_green)
+		{
+			// Check for Green Panel
+			auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(camera360rgb_proxy, rc::ImageProcessor::Color::GREEN, nullptr);
+			detected = det;
+			direction = dir;
+		}
+		else
+		{
+			// Check for Red Panel
+			auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(camera360rgb_proxy, rc::ImageProcessor::Color::RED, nullptr);
+			detected = det;
+			direction = dir;
+		}
+
+		// Logic to handle detection
+		if (detected)
+		{
+			qInfo() << "TURN: Panel centered! Stopping.";
+			omnirobot_proxy->setSpeedBase(0, 0, 0);
+			return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
+		}
+
+		// If not detected or not centered, rotate
+		float rot_speed = 0.2f; 
+		omnirobot_proxy->setSpeedBase(0, 0, rot_speed);
+		return {STATE::TURN, 0.0f, rot_speed};
+	}
+
+	SpecificWorker::RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 	{
 		// State machine for robot navigation
 		switch(state)
@@ -654,14 +688,29 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 				return {STATE::IDLE, 0.0f, 0.0f};
 				
 			case STATE::GOTO_ROOM_CENTER:
-				// Execute navigation to room center
-				return goto_room_center(data);
+			{
+				auto [next_s, v, w] = goto_room_center(data);
+				if (next_s == STATE::IDLE && target_room_center.has_value()) // Reached center (and we had a target)
+				{
+					// We reached the center, now we should turn to find the panel
+					// But wait, goto_room_center returns IDLE when done. 
+					// We need to intercept this transition.
+					// Actually, let's modify goto_room_center to return TURN when done.
+					// Or handle it here.
+					// If goto_room_center returns IDLE, it means it finished.
+					qInfo() << "State transition: GOTO_ROOM_CENTER -> TURN";
+					return {STATE::TURN, 0.0f, 0.0f};
+				}
+				return {next_s, v, w};
+			}
+
+			case STATE::TURN:
+				return turn(corners);
 				
 			// Other states can be added here in the future
 			case STATE::LOCALISE:
 			case STATE::GOTO_DOOR:
 			case STATE::ORIENT_TO_DOOR:
-			case STATE::TURN:
 			case STATE::CROSS_DOOR:
 			default:
 				qWarning() << "Unimplemented state:" << to_string(state) << ", returning to IDLE";

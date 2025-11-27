@@ -239,6 +239,10 @@ class SpecificWorker final : public GenericWorker
         // relocalization
         bool relocal_centered = false;
         bool localised = false;
+        bool search_green = false;
+
+    public:
+        void set_search_green(bool val) { search_green = val; }
 
         bool update_robot_pose(Eigen::Vector3d pose);
         void move_robot(float adv, float rot, float max_match_error);

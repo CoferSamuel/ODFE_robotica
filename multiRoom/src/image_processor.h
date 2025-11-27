@@ -23,7 +23,16 @@ namespace rc
         // - min_nonzero: minimum number of red pixels required to consider detection valid
         // Returns: (detected, left_right) where left_right = -1 (left) or 1 (right)
 
-        static std::tuple<bool, int> check_red_patch_in_image(RoboCompCamera360RGB::Camera360RGBPrxPtr proxy, QLabel *label_img = nullptr, int min_nonzero = 1000)
+        enum class Color { RED, GREEN };
+
+        // Detect a large colored patch in the given BGR image.
+        // - img: input image in BGR color order (OpenCV default)
+        // - color: Color::RED or Color::GREEN
+        // - label_img: optional QLabel to update for visualization (can be nullptr)
+        // - min_nonzero: minimum number of pixels required to consider detection valid
+        // Returns: (detected, left_right) where left_right = -1 (left) or 1 (right)
+
+        static std::tuple<bool, int> check_color_patch_in_image(RoboCompCamera360RGB::Camera360RGBPrxPtr proxy, Color color, QLabel *label_img = nullptr, int min_nonzero = 1000)
         {
             RoboCompCamera360RGB::TImage img;
             try{ img = proxy->getROI(-1, -1, -1, -1, -1, -1);}
@@ -47,11 +56,20 @@ namespace rc
             cv::Mat hsv_img;
             cv::cvtColor(display_img, hsv_img, cv::COLOR_RGB2HSV);
 
-            // Red ranges (two intervals)
-            cv::Mat mask1, mask2;
-            cv::inRange(hsv_img, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask1);
-            cv::inRange(hsv_img, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), mask2);
-            cv::Mat mask = mask1 | mask2;
+            cv::Mat mask;
+            if (color == Color::RED)
+            {
+                // Red ranges (two intervals)
+                cv::Mat mask1, mask2;
+                cv::inRange(hsv_img, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask1);
+                cv::inRange(hsv_img, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), mask2);
+                mask = mask1 | mask2;
+            }
+            else if (color == Color::GREEN)
+            {
+                // Green range (approx 40-80 hue)
+                cv::inRange(hsv_img, cv::Scalar(40, 100, 100), cv::Scalar(80, 255, 255), mask);
+            }
 
             const int nonZeroCount = cv::countNonZero(mask);
             if (nonZeroCount < min_nonzero)
@@ -65,7 +83,7 @@ namespace rc
                 return {false, 1};
             }
 
-            // compute moments and center of red patch
+            // compute moments and center of patch
             const cv::Moments mu = cv::moments(mask, true);
             if (mu.m00 < 1.0) return {false, 1};
 
