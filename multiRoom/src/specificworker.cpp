@@ -607,9 +607,6 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		// 4. PD controller for rotation: ω = K_p*θ_e + K_d*θ_dot_e
 		float omega = controller_params.K_p * theta_e + controller_params.K_d * theta_dot_e;
 		
-		// Clamp rotation speed to avoid "crazy" behavior
-		omega = std::clamp(omega, -0.5f, 0.5f);
-		
 		// 5. Rotate then Move Logic
 		float v = 0.0f;
 		const float ANGLE_THRESHOLD = 0.1f; // ~5.7 degrees
