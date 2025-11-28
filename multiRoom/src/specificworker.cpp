@@ -576,6 +576,26 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 	 * @param points LiDAR points (unused in current implementation)
 	 * @return RetVal {next_state, advance_velocity, rotation_velocity}
 	 */
+	std::tuple<float, float> SpecificWorker::robot_controller(const Eigen::Vector2f &target)
+	{
+		// 1. Calculate distance and angle to target (robot frame coordinates)
+		float d = target.norm();  // sqrt(x_t² + y_t²)
+		if (d < 100.f) return {0.f, 0.f};
+		float theta_e = std::atan2(target.x(), target.y());  // angle error (x, y) for standard robot frame
+		
+		float theta_dot_e = 0.5f * theta_e;
+
+		float omega = exp((-theta_e * theta_e)/(M_PI/6.f));
+		
+
+		float v = 1000.f * omega;
+		
+
+		return {v, theta_dot_e};
+
+
+	}
+
 	SpecificWorker::RetVal SpecificWorker::goto_room_center(const RoboCompLidar3D::TPoints &points)
 	{
 		// Check if we have a valid target
@@ -588,59 +608,24 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		
 		const auto& target = target_room_center.value();
 		
-		// 1. Calculate distance and angle to target (robot frame coordinates)
-		float d = target.norm();  // sqrt(x_t² + y_t²)
-		float theta_e = std::atan2(target.x(), target.y());  // angle error
+		// 1. Calculate distance
+		float d = target.norm();
+		//float theta_e = std::atan2(target.y(), target.x());
 		
+
 		// 2. Check if we've arrived at the target
-		if (d < params.RELOCAL_CENTER_EPS)
+		if (d < 100.f)
 		{
 			qInfo() << "GOTO_ROOM_CENTER: Target reached! d=" << d << "mm";
 			omnirobot_proxy->setSpeedBase(0, 0, 0);
-			return {STATE::IDLE, 0.0f, 0.0f};
+			return {STATE::TURN, 0.0f, 0.0f};
 		}
+
+		auto [v, omega] = robot_controller(target.cast<float>());
 		
-		// 3. Compute derivative of angle error (finite difference)
-		float theta_dot_e = (theta_e - prev_angle_error) / 0.1f;
-		prev_angle_error = theta_e;
-		
-		// 4. PD controller for rotation: ω = K_p*θ_e + K_d*θ_dot_e
-		float omega = controller_params.K_p * theta_e + controller_params.K_d * theta_dot_e;
-		
-		// 5. Rotate then Move Logic
-		float v = 0.0f;
-		const float ANGLE_THRESHOLD = 0.1f; // ~5.7 degrees
-		
-		if (std::abs(theta_e) > ANGLE_THRESHOLD)
-		{
-			// Rotate in place
-			v = 0.0f;
-		}
-		else
-		{
-			// Aligned, move forward
-			// Use a moderate constant speed or the sigmoid brake, but ensure it's "affordable"
-			// Let's use the sigmoid brake but cap it at a lower max speed if needed
-			float f_d = 1.0f / (1.0f + std::exp(-controller_params.k * (d - controller_params.d_stop)));
-			v = controller_params.v_max * f_d;
-			
-			// Optional: Reduce speed if we are still correcting small angle errors
-			// v *= std::cos(theta_e); 
-		}
-		
-		// 8. Send velocities to robot
-		try {
-			omnirobot_proxy->setSpeedBase(v, 0, omega);
-		}
-		catch (const Ice::Exception &e) {
-			qWarning() << "Error sending velocities to robot:" << e.what();
-			return {STATE::IDLE, 0.0f, 0.0f};
-		}
-		
-		// 9. Debug output
-		qInfo() << "GOTO_ROOM_CENTER: d=" << d << "mm, θ_e=" << qRadiansToDegrees(theta_e) 
-				<< "°, v=" << v << "mm/s, ω=" << omega << "rad/s";
-		
+		qInfo() << "GOTO_ROOM_CENTER: v=" << v << " omega=" << omega;
+omnirobot_proxy->setSpeedBase(0, v, omega);
+
 		return {STATE::GOTO_ROOM_CENTER, v, omega};
 	}
 
@@ -678,6 +663,80 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		return {STATE::TURN, 0.0f, rot_speed};
 	}
 
+	SpecificWorker::RetVal SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points)
+	{
+		auto doors = door_detector.doors();
+		if (doors.empty())
+		{
+			qInfo() << "GOTO_DOOR: No door found. Rotating.";
+			omnirobot_proxy->setSpeedBase(0, 0, 0.2);
+			return {STATE::GOTO_DOOR, 0.0f, 0.2f};
+		}
+
+		const auto &door = doors[0];
+		Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0));
+
+		auto [v, w] = robot_controller(target);
+
+		if (v == 0.0f && w == 0.0f)
+		{
+			qInfo() << "GOTO_DOOR: Reached door approximation point.";
+			omnirobot_proxy->setSpeedBase(0, 0, 0);
+			return {STATE::ORIENT_TO_DOOR, 0.0f, 0.0f};
+		}
+
+		omnirobot_proxy->setSpeedBase(v, 0, w);
+		return {STATE::GOTO_DOOR, v, w};
+	}
+	SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points)
+	{
+		const auto doors = door_detector.doors();
+		if (doors.empty())
+		{
+			qWarning() << "ORIENT_TO_DOOR: No door detected";
+			return {STATE::IDLE, 0.0f, 0.0f};
+		}
+
+		const auto &door = doors[0];
+		Eigen::Vector2f door_vector = door.p2 - door.p1;
+		
+		// Ensure door vector points roughly "left" (positive Y) to have consistent sign for side error
+		if (door_vector.y() < 0)
+			door_vector = -door_vector;
+
+		Eigen::Vector2f robot_to_door = door.center();
+		
+		// Errors
+		float rot_error = std::atan2(robot_to_door.y(), robot_to_door.x());
+		float side_error = door_vector.x(); // We want this to be 0 (perpendicular to X)
+
+		qInfo() << "ORIENT_TO_DOOR: Rot error:" << rot_error << " Side error:" << side_error;
+
+		// Thresholds
+		if (std::abs(rot_error) < 0.05 && std::abs(side_error) < 50.0f) // ~3 deg, 5cm
+		{
+			qInfo() << "ORIENT_TO_DOOR: Aligned! Stopping.";
+			omnirobot_proxy->setSpeedBase(0, 0, 0);
+			return {STATE::IDLE, 0.0f, 0.0f};
+		}
+
+		// Gains
+		float K_rot = 1.0f;
+		float K_side = 0.5f;
+
+		// Control
+		float v_rot = K_rot * rot_error;
+		float v_side = K_side * side_error;
+
+		// Limits
+		v_rot = std::clamp(v_rot, -0.5f, 0.5f);
+		v_side = std::clamp(v_side, -200.0f, 200.0f);
+
+		omnirobot_proxy->setSpeedBase(0, v_side, v_rot);
+
+		return {STATE::ORIENT_TO_DOOR, 0.0f, v_rot};
+	}
+
 	SpecificWorker::RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 	{
 		// State machine for robot navigation
@@ -698,12 +757,6 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 				auto [next_s, v, w] = goto_room_center(data);
 				if (next_s == STATE::IDLE && target_room_center.has_value()) // Reached center (and we had a target)
 				{
-					// We reached the center, now we should turn to find the panel
-					// But wait, goto_room_center returns IDLE when done. 
-					// We need to intercept this transition.
-					// Actually, let's modify goto_room_center to return TURN when done.
-					// Or handle it here.
-					// If goto_room_center returns IDLE, it means it finished.
 					qInfo() << "State transition: GOTO_ROOM_CENTER -> TURN";
 					return {STATE::TURN, 0.0f, 0.0f};
 				}
@@ -711,12 +764,24 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 			}
 
 			case STATE::TURN:
-				return turn(corners);
+			{
+				auto [next_s, v, w] = turn(corners);
+				if (next_s == STATE::IDLE)
+				{
+					qInfo() << "State transition: TURN -> GOTO_DOOR";
+					return {STATE::GOTO_DOOR, 0.0f, 0.0f};
+				}
+				return {next_s, v, w};
+			}
+
+			case STATE::GOTO_DOOR:
+				return goto_door(data);
+
+			case STATE::ORIENT_TO_DOOR:
+				return orient_to_door(data);
 				
 			// Other states can be added here in the future
 			case STATE::LOCALISE:
-			case STATE::GOTO_DOOR:
-			case STATE::ORIENT_TO_DOOR:
 			case STATE::CROSS_DOOR:
 			default:
 				qWarning() << "Unimplemented state:" << to_string(state) << ", returning to IDLE";
