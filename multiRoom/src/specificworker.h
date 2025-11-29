@@ -45,6 +45,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <limits>
 #include "room_detector.h"
 #include "hungarian.h"
 #include "door_detector.h"
@@ -67,6 +68,8 @@ class SpecificWorker final : public GenericWorker
         SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check);
         void JoystickAdapter_sendData(RoboCompJoystickAdapter::TData data);
         ~SpecificWorker();
+        Match last_matched;
+        float last_match_error = std::numeric_limits<float>::infinity();
 
     public slots:
         void initialize();
@@ -94,7 +97,7 @@ class SpecificWorker final : public GenericWorker
         void draw_mainViewer();
 
         /**
-         * @brief Draws the right viewer with corner matching, pose estimation, and robot visualization.
+         * @brief Runs the localization algorithm and updates the robot's pose.
          * 
          * This method performs the following operations:
          * 1. Transforms nominal room corners to robot frame for matching
@@ -105,7 +108,7 @@ class SpecificWorker final : public GenericWorker
          * 6. Processes state machine logic
          * 7. Updates robot graphic position in the room viewer
          */
-        void draw_rightViewer();
+        void execute_localiser();
 
     struct Params
         {
@@ -161,7 +164,9 @@ class SpecificWorker final : public GenericWorker
 
         // Angle-distance controller state
         std::optional<Eigen::Vector2d> target_room_center;
+        std::optional<Eigen::Vector2f> target_door_point;
         float prev_angle_error = 0.0f;
+        std::optional<float> orient_target_angle;
 
         // Controller parameters (angle-distance controller from RL0021)
         struct ControllerParams {
@@ -190,6 +195,7 @@ class SpecificWorker final : public GenericWorker
             }
         }
         STATE state = STATE::IDLE;  // Start in IDLE state
+        bool auto_nav_sequence_running = true;
         using RetVal = std::tuple<STATE, float, float>;
 
         RetVal goto_door(const RoboCompLidar3D::TPoints &points);
@@ -204,6 +210,7 @@ class SpecificWorker final : public GenericWorker
         // draw
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
         void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
+        void draw_door_target(const Eigen::Vector2f &target, QGraphicsScene *scene);
         void draw_points(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
         std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
@@ -239,10 +246,15 @@ class SpecificWorker final : public GenericWorker
         // relocalization
         bool relocal_centered = false;
         bool localised = false;
+        bool badge_found = false;
         bool search_green = false;
+        // runtime debug flag - when true, detailed qInfo() logs are emitted
+        bool debug_runtime = true;
 
     public:
         void set_search_green(bool val) { search_green = val; }
+        // Enable/disable runtime debug logging (controlled via env var DEBUG_RUNTIME or programmatically)
+        void set_debug_runtime(bool val) { debug_runtime = val; }
 
         bool update_robot_pose(Eigen::Vector3d pose);
         void move_robot(float adv, float rot, float max_match_error);

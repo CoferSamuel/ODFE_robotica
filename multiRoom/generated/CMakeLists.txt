@@ -45,6 +45,8 @@ ROBOCOMP_ICE_TO_SRC(Lidar3D OmniRobot Camera360RGB GenericBase JoystickAdapter)
 SET (EXECUTABLE_OUTPUT_PATH ${RC_COMPONENT_DEVEL_PATH}/bin)
 set(CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
+include_directories(../src)
+
 # Specify construction and link process
 ADD_EXECUTABLE( multiroom ${SOURCES} ${MOC_SOURCES} ${RC_SOURCES} ${UI_HEADERS} )
 TARGET_LINK_LIBRARIES( multiroom ${LIBS}  ${STATIC_LIBS} ${SPECIFIC_LIBS} ${QT_LIBRARIES} ${Ice_LIBRARIES} )

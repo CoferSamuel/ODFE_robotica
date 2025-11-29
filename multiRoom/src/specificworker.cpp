@@ -25,11 +25,15 @@
 #include <iostream>
 #include <qcolor.h>
 #include <QRect>
+#include <cstdlib>
+#include <limits>
+#include <cmath>
 #include <cppitertools/groupby.hpp>
 #include <cppitertools/enumerate.hpp>
 #include <cppitertools/zip.hpp>
 #include <algorithm>
 #include "common_types.h"
+#include <cctype>
 
 using namespace std;
 
@@ -38,6 +42,8 @@ const float MAX_ADV = 600.0f;				   // Velocidad máxima de avance en mm/s
 const float MIN_THRESHOLD = 50.0f;			   // Distancia mínima para empezar a frenar en mm
 const float MAX_BRAKE = 100.0f;				   // Velocidad máxima de frenado en mm/s
 const float DIST_CHANGE_TO_SPIRAL = 200000.0f; // Distancia a la que no consideramos que no hay nada cerca para la espiral
+// Localisation match error threshold (tunable)
+constexpr float LOCALISATION_MATCH_ERROR_THRESHOLD = 2800.0f; // mm
 
 SpecificWorker::SpecificWorker(const ConfigLoader &configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
@@ -132,7 +138,20 @@ void SpecificWorker::initialize()
 
 		// Connect mouse events from the viewer to a slot that handles new targets (clicks)
 		connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::new_target_slot);
+        connect(pushButton_stop, &QPushButton::clicked, []()
+        {
+            QCoreApplication::instance()->quit();
+        });
 		srand(time(NULL)); // Viewer
+
+		// Read runtime debug flag from environment variable if provided
+		if (const char *dbg = std::getenv("DEBUG_RUNTIME"))
+		{
+			std::string s(dbg);
+			for (auto &ch : s) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+			if (s == "1" || s == "true" || s == "yes")
+				debug_runtime = true;
+		}
 
 		// time series plotter for match error
 		TimeSeriesPlotter::Config plotConfig;
@@ -141,9 +160,9 @@ void SpecificWorker::initialize()
 		plotConfig.timeWindowSeconds = 15.0; // Show a 15-second window
 		plotConfig.autoScaleY = false;		 // We will set a fixed range
 		plotConfig.yMin = 0;
-		plotConfig.yMax = 1000;
+		plotConfig.yMax = 5000;
 
-		SpecificWorker::time_series_plotter = std::make_unique<TimeSeriesPlotter>(frame_plot_error, plotConfig);
+		SpecificWorker::time_series_plotter = std::make_unique<TimeSeriesPlotter>(localizationPlot, plotConfig);
 		match_error_graph = time_series_plotter->addGraph("", Qt::blue);
 
 		// stop robot
@@ -175,51 +194,10 @@ void SpecificWorker::new_target_slot(QPointF target)
 	}
 }
 
-void SpecificWorker::compute()
-{
-	QThread::msleep(500); // wait for viewer to be ready
-	std::cout << "Compute worker" << std::endl;
-
-	draw_mainViewer();
-
-	// Execute state machine
-	RetVal ret_val = process_state(data.points, corners, Match{}, viewer);
-	auto [next_state, adv, rot] = ret_val;
-	
-	// Update state
-	if (state != next_state)
-	{
-		qInfo() << "State changed:" << to_string(state) << "->" << to_string(next_state);
-	}
-	state = next_state;
-}
-
-void SpecificWorker::emergency()
-{
-}
-
-
-
-// Execute one when exiting to emergencyState
-void SpecificWorker::restore()
-{
-	std::cout << "Restore worker" << std::endl;
-	// restoreCODE
-	// Restore emergency component
-}
-
-int SpecificWorker::startup_check()
-{
-	std::cout << "Startup check" << std::endl;
-	QTimer::singleShot(200, QCoreApplication::instance(), SLOT(quit()));
-	return 0;
-}
-
-
 void SpecificWorker::draw_mainViewer()
 {
 	data = lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
-	qInfo() << "full" << data.points.size();
+	// qInfo() << "full" << data.points.size();
 
 	auto filtered_data = filter_data_basic(data.points);
 
@@ -237,53 +215,170 @@ void SpecificWorker::draw_mainViewer()
 	// ========== ROBOT POSE ESTIMATION VIA CORNER MATCHING ==========
 	// Estimate and update the robot's pose based on matched corners
 	const auto center_opt = room_detector.estimate_center_from_walls(lines);
-	
+
 	// Draw LiDAR points at their correct positions (no offset)
 	draw_lidar(filtered_data, std::nullopt, &viewer->scene);
-	
+
 	// Draw the room center as a separate visual indicator if it exists
 	if (center_opt.has_value()) {
 		target_room_center = center_opt.value();  // Store for controller
 		draw_room_center(center_opt.value(), &viewer->scene);
 	}
+
+	if (target_door_point.has_value()) {
+		draw_door_target(target_door_point.value(), &viewer->scene);
+	}
 }
 
 
-void SpecificWorker::draw_rightViewer()
+void SpecificWorker::emergency()
 {
-	// Transform nominal room corners to robot frame for matching
-	Corners robot_corners = nominal_rooms[0].transform_corners_to(robot_pose.inverse());
+}
 
-	// Match detected corners to nominal room corners using Hungarian algorithm
-	auto matched_corners = hungarian.match(corners, robot_corners);
+// Execute one when exiting to emergencyState
+void SpecificWorker::restore()
+{
+	std::cout << "Restore worker" << std::endl;
+	// restoreCODE
+	// Restore emergency component
+}
 
-	
-	// compute max of  match error
-	float max_match_error = 99999.f;
-	if (not matched_corners.empty())
-	{
-		const auto max_error_iter = std::ranges::max_element(matched_corners, [](const auto &a, const auto &b)
-															{ return std::get<2>(a) < std::get<2>(b); });
+int SpecificWorker::startup_check()
+{
+	std::cout << "Startup check" << std::endl;
+	QTimer::singleShot(200, QCoreApplication::instance(), SLOT(quit()));
+	return 0;
+}
 
-		max_match_error = static_cast<float>(std::get<2>(*max_error_iter));
-		time_series_plotter->addDataPoint(match_error_graph, max_match_error);
-		// print_match(match, max_match_error); //debugging
-	}
-	Eigen::Vector3d pose = solve_pose(corners, matched_corners);
-	// update robot pose
-	if (localised)
-		update_robot_pose(pose);
+void SpecificWorker::compute()
+{
+	QThread::msleep(500); // wait for viewer to be ready
+	if (debug_runtime) qInfo() << "--------------------------- Compute ---------------------------";
 
-	RetVal ret_val = process_state(data.points, corners, matched_corners, viewer);
+	// Draw main viewer (LIDAR points, corners, room center)
+	draw_mainViewer();
+
+	// Run localisation logic
+	execute_localiser();
+
+	// Execute state machine using last matching results and command robot
+	auto ret_val = this->process_state(data.points, corners, last_matched, viewer);
 	auto [st, adv, rot] = ret_val;
 	state = st;
 
-	// move_robot(adv, rot, max_match_error);
+	// Send velocities (movement independent of localisation as requested)
+	move_robot(adv, rot, last_match_error);
 
-	// Update robot graphic position in the room viewer
+    // Get image from camera
+    RoboCompCamera360RGB::TImage img;
+    try
+    {
+        img = camera360rgb_proxy->getROI(-1, -1, -1, -1, -1, -1);
+    }
+    catch (const Ice::Exception &e)
+    {
+        std::cout << e.what() << " Error reading 360 camera " << std::endl;
+    }
+
+    if(img.width > 0 && img.height > 0)
+    {
+        // convert to cv::Mat
+        cv::Mat cv_img(img.height, img.width, CV_8UC3, img.image.data());
+
+        // Convert BGR -> RGB for display
+        cv::Mat display_img;
+        cv::cvtColor(cv_img, display_img, cv::COLOR_BGR2RGB);
+
+        // optionally update the label with the ROI preview even when not detected
+        QImage qimg(display_img.data, display_img.cols, display_img.rows, static_cast<int>(display_img.step), QImage::Format_RGB888);
+        label_img->setPixmap(QPixmap::fromImage(qimg).scaled(label_img->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    }
+
+    // Update UI
+    RoboCompGenericBase::TBaseState bState;
+    omnirobot_proxy->getBaseState(bState);
+    lcdNumber_x->display(bState.x);
+    lcdNumber_y->display(bState.z);
+    lcdNumber_angle->display(qRadiansToDegrees(bState.alpha));
+    lcdNumber_adv->display(adv);
+    lcdNumber_rot->display(rot);
+    label_state->setText(to_string(state));
+}
+
+void SpecificWorker::execute_localiser()
+{
+	// 1) Transform nominal room corners into the robot frame for matching
+	Corners robot_corners = nominal_rooms[0].transform_corners_to(robot_pose.inverse());
+
+	// 2) Match detected corners to nominal room corners using Hungarian algorithm
+	Match matched = hungarian.match(corners, robot_corners);
+
+	// 3) Compute maximum match error (for plotting and localisation decision)
+	float max_match_error = std::numeric_limits<float>::infinity();
+	if (!matched.empty())
+	{
+		const auto max_it = std::ranges::max_element(matched, [](const auto &a, const auto &b)
+													 { return std::get<2>(a) < std::get<2>(b); });
+		max_match_error = static_cast<float>(std::get<2>(*max_it));
+	}
+
+	// 4) Update time-series plot (if available)
+	if (time_series_plotter)
+    {
+		time_series_plotter->addDataPoint(match_error_graph, (std::isfinite(max_match_error) ? max_match_error : 0.f));
+        time_series_plotter->update();
+    }
+
+	// Store matching results so compute() can run the state machine
+	last_matched = matched;
+	last_match_error = (std::isfinite(max_match_error) ? max_match_error : std::numeric_limits<float>::infinity());
+
+	// 5) Localisation decision using configured threshold
+	const bool was_localised = localised;
+	if (badge_found && std::isfinite(max_match_error) && max_match_error < LOCALISATION_MATCH_ERROR_THRESHOLD && matched.size() >= 3)
+	{
+		localised = true;
+		if (!was_localised && debug_runtime)
+			qInfo() << "localiser: Localisation achieved. max_error=" << max_match_error << "badge_found=" << badge_found;
+	}
+	else
+	{
+		localised = false;
+		if (was_localised && debug_runtime)
+			qInfo() << "localiser: Localisation lost. max_error=" << max_match_error << "badge_found=" << badge_found;
+	}
+
+	if (debug_runtime)
+		qInfo() << "localiser: Localised=" << (localised ? "true" : "false") << " max_error=" << max_match_error << " matches=" << matched.size() << " badge_found=" << badge_found;
+
+	// 6) If localised, compute a pose correction from the matches and update robot pose
+	if (localised && !matched.empty())
+	{
+		Eigen::Vector3d pose = solve_pose(corners, matched);
+		if (update_robot_pose(pose))
+		{
+			if (debug_runtime)
+			{
+				qInfo() << "localiser: Pose updated: x=" << robot_pose.translation().x() << " y=" << robot_pose.translation().y();
+				double angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+				qInfo() << " theta(deg)=" << qRadiansToDegrees(angle);
+			}
+		}
+		else
+		{
+			if (debug_runtime)
+				qInfo() << "localiser: Invalid pose (NaN), not updating robot_pose";
+		}
+	}
+
+	// 7) Update robot graphic in the room viewer regardless of localisation
 	robot_room_draw->setPos(robot_pose.translation().x(), robot_pose.translation().y());
 	double angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
 	robot_room_draw->setRotation(qRadiansToDegrees(angle));
+
+	// 8) Debug/trace
+	if (debug_runtime)
+		qInfo() << "localiser: Updated robot graphic at (" << robot_pose.translation().x() << ", " << robot_pose.translation().y() << ") angle=" << qRadiansToDegrees(angle) << " deg";
 }
 
 
@@ -373,6 +468,24 @@ void SpecificWorker::draw_room_center(const Eigen::Vector2d &center, QGraphicsSc
 	auto vLine = scene->addLine(0, -150, 0, 150, centerPen);
 	vLine->setPos(center.x(), center.y());
 	center_items.push_back(vLine);
+}
+
+void SpecificWorker::draw_door_target(const Eigen::Vector2f &target, QGraphicsScene *scene)
+{
+    static std::vector<QGraphicsItem *> door_target_items;
+
+    for (const auto &item : door_target_items)
+    {
+        scene->removeItem(item);
+        delete item;
+    }
+    door_target_items.clear();
+
+    const QColor color("green");
+    const QPen pen(color, 30);
+    auto circle = scene->addEllipse(-80, -80, 160, 160, pen, Qt::NoBrush);
+    circle->setPos(target.x(), target.y());
+    door_target_items.push_back(circle);
 }
 
 // Esta función recibe un conjunto de puntos del LiDAR (cada punto tiene coordenadas x, y, r y phi)
@@ -512,9 +625,11 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 	bool SpecificWorker::update_robot_pose(Eigen::Vector3d pose)
 	{
 
-		std::cout << "Nueva pose estimada: " << std::endl;
-		std::cout << "X: " << pose(0) << " Y: " << pose(1) << " Theta: " << pose(2) << std::endl;
-		qInfo() << "--------------------";
+		if (debug_runtime)
+		{
+			qInfo() << "Nueva pose estimada:";
+			qInfo() << "X:" << pose(0) << "Y:" << pose(1) << "Theta:" << pose(2);
+		}
 
 		if (pose.array().isNaN().any())
 			return false;
@@ -527,19 +642,16 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 
 	void SpecificWorker::move_robot(float adv, float rot, float max_match_error)
 	{
-		// TODO comprobar si el error es muy grande y no mover el robot
-		if (max_match_error > 500)
-		{
-			std::cout << "Error muy grande, no muevo el robot" << std::endl;
-			return;
-		}
+		// Movement is decided by the state machine in compute(); do not gate here.
 		try
 		{
+			if (debug_runtime)
+				qInfo() << "move_robot: adv=" << adv << " rot=" << rot << " max_match_error=" << max_match_error;
 			omnirobot_proxy->setSpeedBase(0, adv, rot);
 		}
 		catch (const Ice::Exception &e)
 		{
-			std::cout << e << " " << "Conexión con Laser" << std::endl;
+			qWarning() << "move_robot: exception calling setSpeedBase:" << e.what();
 			return;
 		}
 	}
@@ -601,7 +713,7 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		// Check if we have a valid target
 		if (!target_room_center.has_value())
 		{
-			qInfo() << "GOTO_ROOM_CENTER: No target available, returning to IDLE";
+			if(debug_runtime) qInfo() << "[GOTO_ROOM_CENTER] No target available, returning to IDLE";
 			omnirobot_proxy->setSpeedBase(0, 0, 0);
 			return {STATE::IDLE, 0.0f, 0.0f};
 		}
@@ -612,28 +724,29 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		float d = target.norm();
 		//float theta_e = std::atan2(target.y(), target.x());
 		
-
+	
 		// 2. Check if we've arrived at the target
-		if (d < 100.f)
-		{
-			qInfo() << "GOTO_ROOM_CENTER: Target reached! d=" << d << "mm";
-			omnirobot_proxy->setSpeedBase(0, 0, 0);
-			return {STATE::TURN, 0.0f, 0.0f};
-		}
-
+			if (d < 100.f)
+			{
+				if(debug_runtime) qInfo() << "[GOTO_ROOM_CENTER] Target reached! d=" << d << "mm";
+				target_room_center.reset();
+				omnirobot_proxy->setSpeedBase(0, 0, 0);
+				return {STATE::TURN, 0.0f, 0.0f};
+			}	
 		auto [v, omega] = robot_controller(target.cast<float>());
 		
-		qInfo() << "GOTO_ROOM_CENTER: v=" << v << " omega=" << omega;
-omnirobot_proxy->setSpeedBase(0, v, omega);
-
+		if (debug_runtime) qInfo() << "[GOTO_ROOM_CENTER] Target:" << target.x() << "," << target.y() << "Dist:" << d << "mm. V:" << v << "mm/s, W:" << omega << "rad/s";
+		omnirobot_proxy->setSpeedBase(0, v, omega);
+	
 		return {STATE::GOTO_ROOM_CENTER, v, omega};
 	}
-
 	SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners)
 	{
 		bool detected = false;
 		int direction = 1;
-
+		float rot_speed = 0.2f;
+		if (debug_runtime) qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED") << "panel. Rot speed:" << rot_speed;
+	
 		if (search_green)
 		{
 			// Check for Green Panel
@@ -648,94 +761,93 @@ omnirobot_proxy->setSpeedBase(0, v, omega);
 			detected = det;
 			direction = dir;
 		}
-
-		// Logic to handle detection
-		if (detected)
-		{
-			qInfo() << "TURN: Panel centered! Stopping.";
-			omnirobot_proxy->setSpeedBase(0, 0, 0);
-			return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
-		}
-
+	
+			// Logic to handle detection
+			if (detected)
+			{
+				if(debug_runtime) qInfo() << "[TURN] Panel centered! Stopping.";
+				badge_found = true;
+				omnirobot_proxy->setSpeedBase(0, 0, 0);
+				return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
+			}	
 		// If not detected or not centered, rotate
-		float rot_speed = 0.2f; 
 		omnirobot_proxy->setSpeedBase(0, 0, rot_speed);
 		return {STATE::TURN, 0.0f, rot_speed};
 	}
-
 	SpecificWorker::RetVal SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points)
 	{
 		auto doors = door_detector.doors();
 		if (doors.empty())
 		{
-			qInfo() << "GOTO_DOOR: No door found. Rotating.";
+			if(debug_runtime) qInfo() << "[GOTO_DOOR] No door found. Rotating.";
+			target_door_point.reset();
 			omnirobot_proxy->setSpeedBase(0, 0, 0.2);
 			return {STATE::GOTO_DOOR, 0.0f, 0.2f};
 		}
-
+	
 		const auto &door = doors[0];
 		Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0));
-
+		target_door_point = target;
+	
 		auto [v, w] = robot_controller(target);
-
-		if (v == 0.0f && w == 0.0f)
-		{
-			qInfo() << "GOTO_DOOR: Reached door approximation point.";
-			omnirobot_proxy->setSpeedBase(0, 0, 0);
-			return {STATE::ORIENT_TO_DOOR, 0.0f, 0.0f};
-		}
-
+	
+			if (v == 0.0f && w == 0.0f)
+			{
+		        if(debug_runtime) qInfo() << "[GOTO_DOOR] Reached door approximation point.";
+		        auto_nav_sequence_running = false;
+		        target_door_point.reset();
+		        omnirobot_proxy->setSpeedBase(0, 0, 0);
+		
+		        		        // Set sticky orientation target
+		        		        const float door_angle_at_transition = door.direction();
+		        		        double current_robot_angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+		                        double door_angle_world = current_robot_angle + door_angle_at_transition;
+		                        orient_target_angle = atan2(sin(door_angle_world), cos(door_angle_world));		
+		        if(debug_runtime) qInfo() << "[GOTO_DOOR] Setting sticky world orientation target:" << orient_target_angle.value();
+		
+		        return {STATE::ORIENT_TO_DOOR, 0.0f, 0.0f};
+		    }	    if(debug_runtime) qInfo() << "[GOTO_DOOR] Door found. Target:" << target.x() << "," << target.y() << ". V:" << v << "mm/s, W:" << w << "rad/s";
+	
 		omnirobot_proxy->setSpeedBase(v, 0, w);
 		return {STATE::GOTO_DOOR, v, w};
 	}
-	SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points)
-	{
-		const auto doors = door_detector.doors();
-		if (doors.empty())
-		{
-			qWarning() << "ORIENT_TO_DOOR: No door detected";
-			return {STATE::IDLE, 0.0f, 0.0f};
-		}
+	
+SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points)
+{
+    // 1. Check for a sticky target
+    if (!orient_target_angle.has_value())
+    {
+        qWarning() << "ORIENT_TO_DOOR: No orientation target set. Transitioning to IDLE.";
+        return {STATE::IDLE, 0.0f, 0.0f};
+    }
 
-		const auto &door = doors[0];
-		Eigen::Vector2f door_vector = door.p2 - door.p1;
-		
-		// Ensure door vector points roughly "left" (positive Y) to have consistent sign for side error
-		if (door_vector.y() < 0)
-			door_vector = -door_vector;
+    // 2. Calculate current rotational error
+    double current_robot_angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+    float rot_error = orient_target_angle.value() - current_robot_angle;
+    rot_error = atan2(sin(rot_error), cos(rot_error)); // Normalize error
 
-		Eigen::Vector2f robot_to_door = door.center();
-		
-		// Errors
-		float rot_error = std::atan2(robot_to_door.y(), robot_to_door.x());
-		float side_error = door_vector.x(); // We want this to be 0 (perpendicular to X)
+    // 3. State Transition Check
+    const float angle_tolerance = 0.2f; // approx 11.5 degrees
+    if (std::abs(rot_error) < angle_tolerance)
+    {
+        if(debug_runtime) qInfo() << "[ORIENT_TO_DOOR] Aligned! Transitioning to IDLE.";
+        omnirobot_proxy->setSpeedBase(0, 0, 0);
+        orient_target_angle.reset(); // Clear the sticky target
+        return {STATE::IDLE, 0.0f, 0.0f};
+    }
 
-		qInfo() << "ORIENT_TO_DOOR: Rot error:" << rot_error << " Side error:" << side_error;
+    // 4. Rotation Control
+    const float rot_speed = 0.2f;
+    float rot_velocity = -std::copysign(rot_speed, rot_error);
 
-		// Thresholds
-		if (std::abs(rot_error) < 0.05 && std::abs(side_error) < 50.0f) // ~3 deg, 5cm
-		{
-			qInfo() << "ORIENT_TO_DOOR: Aligned! Stopping.";
-			omnirobot_proxy->setSpeedBase(0, 0, 0);
-			return {STATE::IDLE, 0.0f, 0.0f};
-		}
+    if (debug_runtime) qInfo() << "[ORIENT_TO_DOOR] World Target:" << orient_target_angle.value() << "rad, Current World:" << current_robot_angle << "rad, Rotational Error:" << rot_error << "rad, Velocity:" << rot_velocity << "rad/s";
+    
+    // Send command to robot (only rotation)
+    omnirobot_proxy->setSpeedBase(0, 0, rot_velocity);
 
-		// Gains
-		float K_rot = 1.0f;
-		float K_side = 0.5f;
-
-		// Control
-		float v_rot = K_rot * rot_error;
-		float v_side = K_side * side_error;
-
-		// Limits
-		v_rot = std::clamp(v_rot, -0.5f, 0.5f);
-		v_side = std::clamp(v_side, -200.0f, 200.0f);
-
-		omnirobot_proxy->setSpeedBase(0, v_side, v_rot);
-
-		return {STATE::ORIENT_TO_DOOR, 0.0f, v_rot};
-	}
+    // Remain in the current state
+    return {STATE::ORIENT_TO_DOOR, 0.0f, rot_velocity};
+}
 
 	SpecificWorker::RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
 	{
@@ -743,13 +855,13 @@ omnirobot_proxy->setSpeedBase(0, v, omega);
 		switch(state)
 		{
 			case STATE::IDLE:
-				// Check if we should transition to GOTO_ROOM_CENTER
-				if (target_room_center.has_value())
-				{
-					qInfo() << "State transition: IDLE -> GOTO_ROOM_CENTER";
-					return goto_room_center(data);
-				}
-				// Stay in IDLE, do nothing
+							if (debug_runtime) qInfo() << "[IDLE] In IDLE state. auto_nav:" << auto_nav_sequence_running << "has_target:" << target_room_center.has_value() << "localised:" << localised;
+							// Check if we should transition to GOTO_ROOM_CENTER
+							if (auto_nav_sequence_running && target_room_center.has_value())
+							{
+								qInfo() << "State transition: IDLE -> GOTO_ROOM_CENTER";
+								return goto_room_center(data);
+							}				// Stay in IDLE, do nothing
 				return {STATE::IDLE, 0.0f, 0.0f};
 				
 			case STATE::GOTO_ROOM_CENTER:
