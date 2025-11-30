@@ -37,6 +37,9 @@
 #include <random>
 #include <doublebuffer/DoubleBuffer.h>
 #include "time_series_plotter.h"
+#include <fstream>
+#include <map>
+#include <memory>
 
 #ifdef emit // To avoid problems with the emit keyword defined in Qt.
 #undef emit // To avoid problems with the emit keyword defined in Qt
@@ -70,6 +73,11 @@ class SpecificWorker final : public GenericWorker
         ~SpecificWorker();
         Match last_matched;
         float last_match_error = std::numeric_limits<float>::infinity();
+        static SpecificWorker* instance;
+        
+        enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
+        std::map<STATE, std::shared_ptr<std::ofstream>> log_files;
+        STATE state = STATE::IDLE;  // Start in IDLE state
 
     public slots:
         void initialize();
@@ -180,7 +188,7 @@ class SpecificWorker final : public GenericWorker
 
         // state machine
         enum class State { IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL };
-        enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
+        // STATE enum moved to class scope for visibility
         inline const char* to_string(const STATE s) const
         {
             switch(s) {
@@ -194,7 +202,6 @@ class SpecificWorker final : public GenericWorker
                 default:                        return "UNKNOWN";
             }
         }
-        STATE state = STATE::IDLE;  // Start in IDLE state
         bool auto_nav_sequence_running = true;
         using RetVal = std::tuple<STATE, float, float>;
 

@@ -45,8 +45,44 @@ const float DIST_CHANGE_TO_SPIRAL = 200000.0f; // Distancia a la que no consider
 // Localisation match error threshold (tunable)
 constexpr float LOCALISATION_MATCH_ERROR_THRESHOLD = 2800.0f; // mm
 
+SpecificWorker* SpecificWorker::instance = nullptr;
+
+void stateMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    // Print to console/stderr as usual
+    QByteArray localMsg = msg.toLocal8Bit();
+    const char *file = context.file ? context.file : "";
+    const char *function = context.function ? context.function : "";
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        break;
+    case QtInfoMsg:
+        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        break;
+    }
+
+    // Log to file based on current state
+    if (SpecificWorker::instance) {
+        auto it = SpecificWorker::instance->log_files.find(SpecificWorker::instance->state);
+        if (it != SpecificWorker::instance->log_files.end() && it->second) {
+            *(it->second) << msg.toStdString() << std::endl;
+        }
+    }
+}
+
 SpecificWorker::SpecificWorker(const ConfigLoader &configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
+    SpecificWorker::instance = this;
 	this->startup_check_flag = startup_check;
 	if (this->startup_check_flag)
 	{
@@ -107,6 +143,20 @@ void SpecificWorker::initialize()
 	else
 	{
 		std::cout << "initialize worker" << std::endl; // announce initialisation on stdout
+
+        // Create logs directory if it doesn't exist
+        QDir().mkdir("logs");
+
+        // Initialize log files for each state
+        log_files[STATE::IDLE] = std::make_shared<std::ofstream>("logs/IDLE.log", std::ios::trunc);
+        log_files[STATE::LOCALISE] = std::make_shared<std::ofstream>("logs/LOCALISE.log", std::ios::trunc);
+        log_files[STATE::GOTO_DOOR] = std::make_shared<std::ofstream>("logs/GOTO_DOOR.log", std::ios::trunc);
+        log_files[STATE::TURN] = std::make_shared<std::ofstream>("logs/TURN.log", std::ios::trunc);
+        log_files[STATE::ORIENT_TO_DOOR] = std::make_shared<std::ofstream>("logs/ORIENT_TO_DOOR.log", std::ios::trunc);
+        log_files[STATE::GOTO_ROOM_CENTER] = std::make_shared<std::ofstream>("logs/GOTO_ROOM_CENTER.log", std::ios::trunc);
+        log_files[STATE::CROSS_DOOR] = std::make_shared<std::ofstream>("logs/CROSS_DOOR.log", std::ios::trunc);
+
+        qInstallMessageHandler(stateMessageHandler);
 
 		// --- Prepare GUI geometry -------------------------------------------------
 		/*
@@ -252,7 +302,7 @@ int SpecificWorker::startup_check()
 
 void SpecificWorker::compute()
 {
-	QThread::msleep(500); // wait for viewer to be ready
+	//QThread::msleep(500); // wait for viewer to be ready
 	if (debug_runtime) qInfo() << "--------------------------- Compute ---------------------------";
 
 	// Draw main viewer (LIDAR points, corners, room center)
@@ -785,10 +835,9 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 			return {STATE::GOTO_DOOR, 0.0f, 0.2f};
 		}
 	
-		const auto &door = doors[0];
-		Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0));
-		target_door_point = target;
-	
+			const auto &door = doors[0];
+			Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0), 1000.f);
+			target_door_point = target;	
 		auto [v, w] = robot_controller(target);
 	
 			if (v == 0.0f && w == 0.0f)
@@ -798,11 +847,52 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		        target_door_point.reset();
 		        omnirobot_proxy->setSpeedBase(0, 0, 0);
 		
-		        		        // Set sticky orientation target
-		        		        const float door_angle_at_transition = door.direction();
-		        		        double current_robot_angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
-		                        double door_angle_world = current_robot_angle + door_angle_at_transition;
-		                        orient_target_angle = atan2(sin(door_angle_world), cos(door_angle_world));		
+		        		        // 1. Calculate vectors:
+		        		        //    - door_parallel: used as the TARGET for alignment (system expects parallel to align perpendicular).
+		        		        //    - door_normal: used for the STABLE check against the inward vector.
+		        		        Eigen::Vector2f door_parallel = door.p2 - door.p1;
+		        		        Eigen::Vector2f door_normal = Eigen::Vector2f(-door_parallel.y(), door_parallel.x()); 
+		        		        Eigen::Vector2f target_vector = door_parallel; 
+
+		        		        // 2. Determine the correct direction for the vector (it should point INTO the room).
+		        		        //    We use the nominal room's center as a stable reference for the "inward" direction.
+		        		        QPointF room_center_qpoint = nominal_rooms[0].rect().center();
+		        		        Eigen::Vector2d room_center_eigen(room_center_qpoint.x(), room_center_qpoint.y());
+		        		        Eigen::Vector2d world_inward_vector = room_center_eigen - robot_pose.translation();
+		        		        Eigen::Vector2d robot_inward_vector = robot_pose.rotation().inverse() * world_inward_vector;
+
+		        		        if (debug_runtime) {
+		        		            qInfo() << "DEBUG: Door p1 = (" << door.p1.x() << ", " << door.p1.y() << ")";
+		        		            qInfo() << "DEBUG: Door p2 = (" << door.p2.x() << ", " << door.p2.y() << ")";
+		        		            qInfo() << "DEBUG: door_parallel = (" << door_parallel.x() << ", " << door_parallel.y() << ")";
+		        		            qInfo() << "DEBUG: door_normal = (" << door_normal.x() << ", " << door_normal.y() << ")";
+		        		            qInfo() << "DEBUG: nominal_rooms[0].center() (QPointF) = (" << room_center_qpoint.x() << ", " << room_center_qpoint.y() << ")";
+		        		            qInfo() << "DEBUG: robot_pose.translation() = (" << robot_pose.translation().x() << ", " << robot_pose.translation().y() << ")";
+		        		            qInfo() << "DEBUG: world_inward_vector = (" << world_inward_vector.x() << ", " << world_inward_vector.y() << ")";
+		        		            qInfo() << "DEBUG: robot_inward_vector = (" << robot_inward_vector.x() << ", " << robot_inward_vector.y() << ")";
+		        		            qInfo() << "DEBUG: dot product (normal . inward) = " << door_normal.cast<double>().dot(robot_inward_vector);
+		        		        }
+		        		        bool flipped = false;
+		        		        // 3. Check stability using NORMAL vector.
+		        		        //    We want the normal to point OUTWARD (towards the door), i.e., OPPOSED to the inward vector.
+		        		        //    So if it is ALIGNED (dot > 0), we flip it.
+		        		        if (door_normal.cast<double>().dot(robot_inward_vector) > 0.0)
+		        		        {
+		        		            // If normal is opposed, we flip the TARGET vector.
+		        		            target_vector = -target_vector;
+		        		            flipped = true;
+		        		        }
+		        		        if (debug_runtime) {
+		        		            qInfo() << "DEBUG: Flipped = " << (flipped ? "true" : "false");
+		        		            qInfo() << "DEBUG: Final target_vector = (" << target_vector.x() << ", " << target_vector.y() << ")";
+		        		        }
+
+		        		        // 4. Calculate the angle of this desired vector in the robot's frame.
+		        		        const float target_angle_robot = std::atan2(target_vector.y(), target_vector.x());
+		        		        // 5. Convert the relative angle to a world angle for the orientation target.
+		        		        const double current_robot_angle = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+		        		        const double door_target_angle_world = current_robot_angle + target_angle_robot;
+		        		        orient_target_angle = atan2(sin(door_target_angle_world), cos(door_target_angle_world));
 		        if(debug_runtime) qInfo() << "[GOTO_DOOR] Setting sticky world orientation target:" << orient_target_angle.value();
 		
 		        return {STATE::ORIENT_TO_DOOR, 0.0f, 0.0f};
@@ -840,7 +930,13 @@ SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPo
     const float rot_speed = 0.2f;
     float rot_velocity = -std::copysign(rot_speed, rot_error);
 
-    if (debug_runtime) qInfo() << "[ORIENT_TO_DOOR] World Target:" << orient_target_angle.value() << "rad, Current World:" << current_robot_angle << "rad, Rotational Error:" << rot_error << "rad, Velocity:" << rot_velocity << "rad/s";
+    if (debug_runtime)
+    {
+        qInfo() << "[ORIENT_TO_DOOR] World Target:" << orient_target_angle.value() << "rad, Current World:" << current_robot_angle << "rad, Rotational Error:" << rot_error << "rad, Velocity:" << rot_velocity << "rad/s";
+        Eigen::Vector2d robot_vector(cos(current_robot_angle), sin(current_robot_angle));
+        Eigen::Vector2d door_vector(cos(orient_target_angle.value()), sin(orient_target_angle.value()));
+        qInfo() << "    [VECTORS] Door: (" << door_vector.x() << "," << door_vector.y() << ") Robot: (" << robot_vector.x() << "," << robot_vector.y() << ") Angle: " << qRadiansToDegrees(rot_error) << " deg";
+    }
     
     // Send command to robot (only rotation)
     omnirobot_proxy->setSpeedBase(0, 0, rot_velocity);
