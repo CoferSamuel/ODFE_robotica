@@ -43,7 +43,7 @@ const float MIN_THRESHOLD = 50.0f;			   // Distancia mínima para empezar a fren
 const float MAX_BRAKE = 100.0f;				   // Velocidad máxima de frenado en mm/s
 const float DIST_CHANGE_TO_SPIRAL = 200000.0f; // Distancia a la que no consideramos que no hay nada cerca para la espiral
 // Localisation match error threshold (tunable)
-constexpr float LOCALISATION_MATCH_ERROR_THRESHOLD = 2800.0f; // mm
+constexpr float LOCALISATION_MATCH_ERROR_THRESHOLD = 3500.0f; // mm
 
 SpecificWorker* SpecificWorker::instance = nullptr;
 
@@ -51,23 +51,21 @@ void stateMessageHandler(QtMsgType type, const QMessageLogContext &context, cons
 {
     // Print to console/stderr as usual
     QByteArray localMsg = msg.toLocal8Bit();
-    const char *file = context.file ? context.file : "";
-    const char *function = context.function ? context.function : "";
     switch (type) {
     case QtDebugMsg:
-        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        fprintf(stderr, "Debug: %s\n", localMsg.constData());
         break;
     case QtInfoMsg:
-        fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        fprintf(stderr, "Info: %s\n", localMsg.constData());
         break;
     case QtWarningMsg:
-        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        fprintf(stderr, "Warning: %s\n", localMsg.constData());
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        fprintf(stderr, "Critical: %s\n", localMsg.constData());
         break;
     case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), file, context.line, function);
+        fprintf(stderr, "Fatal: %s\n", localMsg.constData());
         break;
     }
 
@@ -124,6 +122,7 @@ SpecificWorker::SpecificWorker(const ConfigLoader &configLoader, TuplePrx tprx, 
 
 SpecificWorker::~SpecificWorker()
 {
+	omnirobot_proxy->setSpeedBase(0, 0, 0);
 	std::cout << "Destroying SpecificWorker" << std::endl;
 }
 
@@ -178,7 +177,7 @@ void SpecificWorker::initialize()
 		robot_room_draw = rr;
 		// draw room in viewer_room
 
-		viewer_room->scene.addRect(nominal_rooms[0].rect(), QPen(Qt::black, 30));
+		            viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(), QPen(Qt::black, 30));
 
 		// initialise robot pose
 		robot_pose.setIdentity();
@@ -275,9 +274,7 @@ void SpecificWorker::draw_mainViewer()
 		draw_room_center(center_opt.value(), &viewer->scene);
 	}
 
-	if (target_door_point.has_value()) {
-		draw_door_target(target_door_point.value(), &viewer->scene);
-	}
+    draw_door_target(target_door_point, &viewer->scene);
 }
 
 
@@ -357,8 +354,8 @@ void SpecificWorker::compute()
 
 void SpecificWorker::execute_localiser()
 {
-	// 1) Transform nominal room corners into the robot frame for matching
-	Corners robot_corners = nominal_rooms[0].transform_corners_to(robot_pose.inverse());
+	    // 1) Transform nominal room corners into the robot frame for matching
+    Corners robot_corners = nominal_rooms[current_room_index].transform_corners_to(robot_pose.inverse());
 
 	// 2) Match detected corners to nominal room corners using Hungarian algorithm
 	Match matched = hungarian.match(corners, robot_corners);
@@ -520,7 +517,7 @@ void SpecificWorker::draw_room_center(const Eigen::Vector2d &center, QGraphicsSc
 	center_items.push_back(vLine);
 }
 
-void SpecificWorker::draw_door_target(const Eigen::Vector2f &target, QGraphicsScene *scene)
+void SpecificWorker::draw_door_target(const std::optional<Eigen::Vector2f> &target, QGraphicsScene *scene)
 {
     static std::vector<QGraphicsItem *> door_target_items;
 
@@ -531,10 +528,12 @@ void SpecificWorker::draw_door_target(const Eigen::Vector2f &target, QGraphicsSc
     }
     door_target_items.clear();
 
+    if (!target.has_value()) return;
+
     const QColor color("green");
     const QPen pen(color, 30);
     auto circle = scene->addEllipse(-80, -80, 160, 160, pen, Qt::NoBrush);
-    circle->setPos(target.x(), target.y());
+    circle->setPos(target.value().x(), target.value().y());
     door_target_items.push_back(circle);
 }
 
@@ -792,15 +791,15 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 	}
 	SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners)
 	{
-		bool detected = false;
-		int direction = 1;
-		float rot_speed = 0.2f;
-		if (debug_runtime) qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED") << "panel. Rot speed:" << rot_speed;
+		    bool detected = false;
+    int direction = 1;
+    float rot_speed = 0.4f;
+    if (debug_runtime) qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED") << "panel. Rot speed:" << rot_speed;
 	
 		if (search_green)
 		{
 			// Check for Green Panel
-			auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(camera360rgb_proxy, rc::ImageProcessor::Color::GREEN, nullptr);
+			auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(camera360rgb_proxy, rc::ImageProcessor::Color::GREEN, nullptr, 200);
 			detected = det;
 			direction = dir;
 		}
@@ -809,10 +808,12 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 			// Check for Red Panel
 			auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(camera360rgb_proxy, rc::ImageProcessor::Color::RED, nullptr);
 			detected = det;
-			direction = dir;
-		}
-	
-			// Logic to handle detection
+            direction = dir;
+    }
+
+    if(debug_runtime) qInfo() << "[TURN] Detected: " << detected;
+
+    // Logic to handle detection
 			if (detected)
 			{
 				if(debug_runtime) qInfo() << "[TURN] Panel centered! Stopping.";
@@ -820,9 +821,9 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 				omnirobot_proxy->setSpeedBase(0, 0, 0);
 				return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
 			}	
-		// If not detected or not centered, rotate
-		omnirobot_proxy->setSpeedBase(0, 0, rot_speed);
-		return {STATE::TURN, 0.0f, rot_speed};
+		    // If not detected or not centered, rotate
+    // omnirobot_proxy->setSpeedBase(0, 0, rot_speed * -direction); // Overridden by compute()
+    return {STATE::TURN, 0.0f, rot_speed * direction};
 	}
 	SpecificWorker::RetVal SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points)
 	{
@@ -836,7 +837,7 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		}
 	
 			const auto &door = doors[0];
-			Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0), 1000.f);
+			Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0), params.DOOR_APPROACH_DISTANCE);
 			target_door_point = target;	
 		auto [v, w] = robot_controller(target);
 	
@@ -854,9 +855,8 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		        		        Eigen::Vector2f door_normal = Eigen::Vector2f(-door_parallel.y(), door_parallel.x()); 
 		        		        Eigen::Vector2f target_vector = door_parallel; 
 
-		        		        // 2. Determine the correct direction for the vector (it should point INTO the room).
-		        		        //    We use the nominal room's center as a stable reference for the "inward" direction.
-		        		        QPointF room_center_qpoint = nominal_rooms[0].rect().center();
+		        		        // 2. Determine the correct direction for the vector (it should                                            //    We use the nominal room's center as a stable reference for the "inward" direction.
+                                            QPointF room_center_qpoint = nominal_rooms[current_room_index].rect().center();
 		        		        Eigen::Vector2d room_center_eigen(room_center_qpoint.x(), room_center_qpoint.y());
 		        		        Eigen::Vector2d world_inward_vector = room_center_eigen - robot_pose.translation();
 		        		        Eigen::Vector2d robot_inward_vector = robot_pose.rotation().inverse() * world_inward_vector;
@@ -866,7 +866,7 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 		        		            qInfo() << "DEBUG: Door p2 = (" << door.p2.x() << ", " << door.p2.y() << ")";
 		        		            qInfo() << "DEBUG: door_parallel = (" << door_parallel.x() << ", " << door_parallel.y() << ")";
 		        		            qInfo() << "DEBUG: door_normal = (" << door_normal.x() << ", " << door_normal.y() << ")";
-		        		            qInfo() << "DEBUG: nominal_rooms[0].center() (QPointF) = (" << room_center_qpoint.x() << ", " << room_center_qpoint.y() << ")";
+		        		            qInfo() << "DEBUG: nominal_rooms[current_room_index].center() (QPointF) = (" << room_center_qpoint.x() << ", " << room_center_qpoint.y() << ")";
 		        		            qInfo() << "DEBUG: robot_pose.translation() = (" << robot_pose.translation().x() << ", " << robot_pose.translation().y() << ")";
 		        		            qInfo() << "DEBUG: world_inward_vector = (" << world_inward_vector.x() << ", " << world_inward_vector.y() << ")";
 		        		            qInfo() << "DEBUG: robot_inward_vector = (" << robot_inward_vector.x() << ", " << robot_inward_vector.y() << ")";
@@ -917,13 +917,13 @@ SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPo
     rot_error = atan2(sin(rot_error), cos(rot_error)); // Normalize error
 
     // 3. State Transition Check
-    const float angle_tolerance = 0.2f; // approx 11.5 degrees
+    const float angle_tolerance = 0.1f; // approx 5.7 degrees
     if (std::abs(rot_error) < angle_tolerance)
     {
-        if(debug_runtime) qInfo() << "[ORIENT_TO_DOOR] Aligned! Transitioning to IDLE.";
+        if(debug_runtime) qInfo() << "[ORIENT_TO_DOOR] Aligned! Transitioning to CROSS_DOOR.";
         omnirobot_proxy->setSpeedBase(0, 0, 0);
         orient_target_angle.reset(); // Clear the sticky target
-        return {STATE::IDLE, 0.0f, 0.0f};
+        return {STATE::CROSS_DOOR, 0.0f, 0.0f};
     }
 
     // 4. Rotation Control
@@ -943,6 +943,80 @@ SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPo
 
     // Remain in the current state
     return {STATE::ORIENT_TO_DOOR, 0.0f, rot_velocity};
+}
+
+SpecificWorker::RetVal SpecificWorker::cross_door(const RoboCompLidar3D::TPoints &points)
+{
+    const float adv_speed = 400.0f; // mm/s
+
+    // 1. Initialize start time if not set
+    if (!cross_door_start_time.has_value())
+    {
+        cross_door_start_time = std::chrono::steady_clock::now();
+        if(debug_runtime) qInfo() << "[CROSS_DOOR] Starting cross door maneuver (Timer-based).";
+    }
+
+    // 2. Calculate elapsed time
+    auto now = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = now - cross_door_start_time.value();
+
+    // 3. Required duration (Hardcoded as per user request)
+    double required_duration = 5.0;
+
+    // 4. Check termination condition
+    if (elapsed.count() >= required_duration)
+    {
+        if(debug_runtime) qInfo() << "[CROSS_DOOR] Timer expired (" << elapsed.count() << "s). Transitioning to GOTO_ROOM_CENTER.";
+        omnirobot_proxy->setSpeedBase(0, 0, 0);
+        cross_door_start_time.reset();
+        switch_room();
+        return {STATE::GOTO_ROOM_CENTER, 0.0f, 0.0f};
+    }
+
+    // 5. Move straight forward
+    omnirobot_proxy->setSpeedBase(adv_speed, 0, 0);
+    
+    if(debug_runtime) qInfo() << "[CROSS_DOOR] Crossing... Time: " << elapsed.count() << "/" << required_duration << " s";
+
+    return {STATE::CROSS_DOOR, adv_speed, 0.0f};
+}
+
+void SpecificWorker::switch_room()
+{
+    // 1. Update room index
+    current_room_index = (current_room_index + 1) % nominal_rooms.size();
+    if(debug_runtime) qInfo() << "[SWITCH_ROOM] Switching to room index: " << current_room_index;
+
+    // 2. Clear and redraw viewer_room
+    viewer_room->scene.clear();
+    
+    // Re-add robot to viewer_room (since clear removed it)
+    auto [rr, re] = viewer_room->add_robot(params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
+    robot_room_draw = rr;
+
+    // Draw new room
+    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(), QPen(Qt::black, 30));
+
+    // Draw axes at center
+    auto center = nominal_rooms[current_room_index].rect().center();
+    // X-axis (Red)
+    viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350, center.y(), QPen(Qt::red, 20));
+    // Y-axis (Green)
+    viewer_room->scene.addLine(center.x(), center.y(), center.x(), center.y() + 350, QPen(Qt::green, 20));
+
+    // 3. Reset robot pose to center
+    robot_pose.setIdentity();
+
+    // 4. Reset badge_found status for the new room
+    badge_found = false;
+
+    // 5. Set search_green based on room index (Room 0 = Red, Room 1 = Green)
+    if (current_room_index == 1)
+        search_green = true;
+    else
+        search_green = false;
+    
+    if(debug_runtime) qInfo() << "[SWITCH_ROOM] search_green set to: " << (search_green ? "TRUE" : "FALSE");
 }
 
 	SpecificWorker::RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)
@@ -987,10 +1061,12 @@ SpecificWorker::RetVal SpecificWorker::orient_to_door(const RoboCompLidar3D::TPo
 
 			case STATE::ORIENT_TO_DOOR:
 				return orient_to_door(data);
+
+            case STATE::CROSS_DOOR:
+                return cross_door(data);
 				
 			// Other states can be added here in the future
 			case STATE::LOCALISE:
-			case STATE::CROSS_DOOR:
 			default:
 				qWarning() << "Unimplemented state:" << to_string(state) << ", returning to IDLE";
 				return {STATE::IDLE, 0.0f, 0.0f};

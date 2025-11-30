@@ -151,6 +151,7 @@ class SpecificWorker final : public GenericWorker
             float RELOCAL_MATCH_MAX_DIST = 2000.f;   // mm for Hungarian gating
             float RELOCAL_DONE_COST = 500.f;
             float RELOCAL_DONE_MATCH_MAX_ERROR = 1000.f;
+            float DOOR_APPROACH_DISTANCE = 1000.f;
         };
         Params params;
 
@@ -163,6 +164,7 @@ class SpecificWorker final : public GenericWorker
 
         // rooms
         std::vector<NominalRoom> nominal_rooms{ NominalRoom{5500.f, 4000.f}, NominalRoom{8000.f, 4000.f}};
+        int current_room_index = 0;
         rc::Room_Detector room_detector;
         rc::Hungarian hungarian;
 
@@ -175,6 +177,7 @@ class SpecificWorker final : public GenericWorker
         std::optional<Eigen::Vector2f> target_door_point;
         float prev_angle_error = 0.0f;
         std::optional<float> orient_target_angle;
+        std::optional<std::chrono::steady_clock::time_point> cross_door_start_time;
 
         // Controller parameters (angle-distance controller from RL0021)
         struct ControllerParams {
@@ -208,6 +211,7 @@ class SpecificWorker final : public GenericWorker
         RetVal goto_door(const RoboCompLidar3D::TPoints &points);
         RetVal orient_to_door(const RoboCompLidar3D::TPoints &points);
         RetVal cross_door(const RoboCompLidar3D::TPoints &points);
+        void switch_room();
         RetVal localise(const Match &match);
         RetVal goto_room_center(const RoboCompLidar3D::TPoints &points);
         RetVal update_pose(const Corners &corners, const Match &match);
@@ -217,7 +221,7 @@ class SpecificWorker final : public GenericWorker
         // draw
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
         void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
-        void draw_door_target(const Eigen::Vector2f &target, QGraphicsScene *scene);
+        void draw_door_target(const std::optional<Eigen::Vector2f> &target, QGraphicsScene *scene);
         void draw_points(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
         std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);

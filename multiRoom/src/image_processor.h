@@ -12,6 +12,7 @@
 #include <QPixmap>
 #include <cmath>
 #include <Camera360RGB.h>
+#include <QDebug>
 
 namespace rc
 {
@@ -68,10 +69,11 @@ namespace rc
             else if (color == Color::GREEN)
             {
                 // Green range (approx 40-80 hue)
-                cv::inRange(hsv_img, cv::Scalar(40, 100, 100), cv::Scalar(80, 255, 255), mask);
+                cv::inRange(hsv_img, cv::Scalar(40, 50, 50), cv::Scalar(80, 255, 255), mask);
             }
 
             const int nonZeroCount = cv::countNonZero(mask);
+            if(color == Color::GREEN) qDebug() << "[ImageProcessor] Green count:" << nonZeroCount << " Threshold:" << min_nonzero;
             if (nonZeroCount < min_nonzero)
             {
                 // optionally update the label with the ROI preview even when not detected
