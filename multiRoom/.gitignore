@@ -1,0 +1,9 @@
+build/
+bin/
+logs/
+generated/
+*.user
+.vscode/
+*~
+*.swp
+backups/
