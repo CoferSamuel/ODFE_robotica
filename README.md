@@ -35,7 +35,7 @@ For complete project documentation, please refer to:
 
 ## Getting Started
 
-Refer to the [main documentation](docs/main.pdf) for detailed information on setup, configuration, and usage of the project.
+Refer to the [main documentation](docs/main.pdf) for detailed information.
 
 ---
 
