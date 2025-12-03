@@ -1,0 +1,8 @@
+build/
+logs/
+generated/
+*.user
+.vscode/
+*~
+*.swp
+backups/
