@@ -1,5 +1,4 @@
 build/
-bin/
 logs/
 generated/
 *.user
