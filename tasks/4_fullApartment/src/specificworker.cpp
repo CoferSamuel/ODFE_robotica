@@ -836,9 +836,57 @@ RoboCompLidar3D::TPoints SpecificWorker::filter_data_basic(const RoboCompLidar3D
 			return {STATE::GOTO_DOOR, 0.0f, 0.2f};
 		}
 	
-			const auto &door = doors[0];
-			Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0), params.DOOR_APPROACH_DISTANCE);
-			target_door_point = target;	
+		// Sort doors by angle (or some consistent metric) to ensure indices are stable
+		std::sort(doors.begin(), doors.end(), [](const auto& a, const auto& b) {
+			return a.direction() < b.direction();
+		});
+
+		int selected_index = 0;
+
+		// Room 0: Red Badge -> Random selection
+		if (current_room_index == 0)
+		{
+			if (last_door_index == -1)
+			{
+				// Randomly select 0 or 1 (assuming at least 2 doors)
+				// If only 1 door, it will be 0.
+				if (doors.size() > 1)
+				{
+					std::uniform_int_distribution<> dist(0, static_cast<int>(doors.size()) - 1);
+					last_door_index = dist(rd);
+				}
+				else
+				{
+					last_door_index = 0;
+				}
+				if(debug_runtime) qInfo() << "[GOTO_DOOR] Room 0: Randomly selected door index:" << last_door_index;
+			}
+			selected_index = last_door_index;
+		}
+		// Room 1: Green Badge -> Select the OTHER door
+		else
+		{
+			// We assume door indices correspond. If we picked k in Room 0, we pick !k in Room 1.
+			// Or more generally, (k + 1) % N.
+			// If we haven't visited Room 0 (shouldn't happen in this flow but for safety), pick 0.
+			if (last_door_index == -1)
+			{
+				qWarning() << "[GOTO_DOOR] Room 1 reached without Room 0 selection! Defaulting to 0.";
+				selected_index = 0;
+			}
+			else
+			{
+				selected_index = (last_door_index + 1) % doors.size();
+				if(debug_runtime) qInfo() << "[GOTO_DOOR] Room 1: Selecting alternate door index:" << selected_index << "(prev:" << last_door_index << ")";
+			}
+		}
+
+		// Safety check
+		if (selected_index >= doors.size()) selected_index = 0;
+
+		const auto &door = doors[selected_index];
+		Eigen::Vector2f target = door.center_before(Eigen::Vector2d(0,0), params.DOOR_APPROACH_DISTANCE);
+		target_door_point = target;	
 		auto [v, w] = robot_controller(target);
 	
 			if (v == 0.0f && w == 0.0f)
@@ -1017,6 +1065,13 @@ void SpecificWorker::switch_room()
         search_green = false;
     
     if(debug_runtime) qInfo() << "[SWITCH_ROOM] search_green set to: " << (search_green ? "TRUE" : "FALSE");
+
+    // 6. If we are back to Room 0, reset the door memory so we choose randomly again next time
+    if (current_room_index == 0)
+    {
+        last_door_index = -1;
+        if(debug_runtime) qInfo() << "[SWITCH_ROOM] Resetting last_door_index for new cycle.";
+    }
 }
 
 	SpecificWorker::RetVal SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer)

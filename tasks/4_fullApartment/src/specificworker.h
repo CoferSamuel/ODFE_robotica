@@ -167,6 +167,7 @@ class SpecificWorker final : public GenericWorker
         int current_room_index = 0;
         rc::Room_Detector room_detector;
         rc::Hungarian hungarian;
+        int last_door_index = -1;
 
         // LiDAR data and detected features
         RoboCompLidar3D::TData data;
