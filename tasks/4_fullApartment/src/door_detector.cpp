@@ -150,31 +150,43 @@ RoboCompLidar3D::TPoints DoorDetector::filter_points(const RoboCompLidar3D::TPoi
     if (doors.empty()) return points;
 
     // For each door, check if the distance from the robot to each lidar point is smaller than the distance from the robot to the door
-    RoboCompLidar3D::TPoints filtered;
+    // Pre-compute door lines to avoid recreating them for every point
+    std::vector<QLineF> door_lines;
+    door_lines.reserve(doors.size());
     for (const auto &d : doors)
     {
-        const float dist_to_door = d.center().norm();
-        // Check if the angular range wraps around the -π/+π boundary
-        const bool angle_wraps = d.p2_angle < d.p1_angle;
-        for (const auto &p : points)
+        door_lines.emplace_back(QPointF(d.p1.x(), d.p1.y()), QPointF(d.p2.x(), d.p2.y()));
+    }
+
+    RoboCompLidar3D::TPoints filtered;
+    filtered.reserve(points.size());
+
+    for (const auto &p : points)
+    {
+        bool is_behind_any_door = false;
+        QLineF ray(QPointF(0, 0), QPointF(p.x, p.y));
+        float dist_to_point = std::hypot(p.x, p.y); // Use consistent distance calculation
+
+        for (const auto &door_line : door_lines)
         {
-            // Determine if point is within the door's angular range
-            bool point_in_angular_range;
-            if (angle_wraps)
-            {
-                // If the range wraps around, point is in range if it's > p1_angle OR < p2_angle
-                point_in_angular_range = (p.phi > d.p1_angle) || (p.phi < d.p2_angle);
-            }
-            else
-            {
-                // Normal case: point is in range if it's between p1_angle and p2_angle
-                point_in_angular_range = (p.phi > d.p1_angle) && (p.phi < d.p2_angle);
-            }
+            QPointF intersectionPoint;
+            auto intersectionType = door_line.intersects(ray, &intersectionPoint);
 
-            // Filter out points that are through the door (in angular range and farther than door)
-            if (point_in_angular_range && p.distance2d >= dist_to_door)
-                continue;
+            if (intersectionType == QLineF::BoundedIntersection)
+            {
+                float dist_to_intersection = std::hypot(intersectionPoint.x(), intersectionPoint.y());
 
+                // Check if point is behind the door with a buffer
+                if (dist_to_point > dist_to_intersection + 150.0f)
+                {
+                    is_behind_any_door = true;
+                    break; // No need to check other doors, it's filtered
+                }
+            }
+        }
+
+        if (!is_behind_any_door)
+        {
             filtered.emplace_back(p);
         }
     }
