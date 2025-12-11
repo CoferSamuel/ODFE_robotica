@@ -5,6 +5,7 @@
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
   ../src/room_detector.cpp          # Room feature extraction
+  ../src/graph.cpp
   ../src/hungarian.cpp              # Hungarian algorithm wrapper
   ../src/ransac_line_detector.cpp   # RANSAC-based 2D line segment detector
   ../src/time_series_plotter.cpp     # Time series plotter utility
