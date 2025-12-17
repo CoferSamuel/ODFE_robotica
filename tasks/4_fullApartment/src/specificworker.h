@@ -40,7 +40,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <memory>
-#include "graph.h"
+
 
 #ifdef emit // To avoid problems with the emit keyword defined in Qt.
 #undef emit // To avoid problems with the emit keyword defined in Qt
@@ -266,17 +266,7 @@ class SpecificWorker final : public GenericWorker
         bool debug_runtime = true;
         std::vector<QGraphicsItem *> room_door_items;
 
-        // Graph related members
-        Graph graph;
-        AbstractGraphicViewer *viewer_graph;
-        int current_room_node_id = -1;
-        int last_crossed_door_node_id = -1;
-        int next_node_id = 0;
-        std::vector<int> current_room_door_node_ids;
-        std::shared_ptr<std::ofstream> graph_log_file;
-        std::optional<Eigen::Vector2f> entry_point_in_room_frame;
 
-        void draw_graph();
 
     public:
         void set_search_green(bool val) { search_green = val; }

@@ -163,8 +163,7 @@ void SpecificWorker::initialize() {
         "logs/GOTO_ROOM_CENTER.log", std::ios::trunc);
     log_files[STATE::CROSS_DOOR] =
         std::make_shared<std::ofstream>("logs/CROSS_DOOR.log", std::ios::trunc);
-    graph_log_file =
-        std::make_shared<std::ofstream>("logs/graph.log", std::ios::trunc);
+
 
     qInstallMessageHandler(stateMessageHandler);
 
@@ -188,8 +187,7 @@ void SpecificWorker::initialize() {
 
     viewer_room =
         new AbstractGraphicViewer(this->frame_room, params.GRID_MAX_DIM);
-    viewer_graph =
-        new AbstractGraphicViewer(this->frame_graph, params.GRID_MAX_DIM);
+
     auto [rr, re] = viewer_room->add_robot(
         params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
     robot_room_draw = rr;
@@ -324,7 +322,7 @@ void SpecificWorker::compute() {
   draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
 
   // Draw the topological graph
-  draw_graph();
+
 
   // Run localisation logic
   execute_localiser();
@@ -431,14 +429,7 @@ void SpecificWorker::execute_localiser() {
   if (localised && !matched.empty()) {
     Eigen::Vector3d pose = solve_pose(corners, matched);
     if (update_robot_pose(pose)) {
-      if (!entry_point_in_room_frame.has_value()) {
-        entry_point_in_room_frame = Eigen::Vector2f(
-            robot_pose.translation().x(), robot_pose.translation().y());
-        if (debug_runtime)
-          qInfo() << "[GRAPH] Captured entry point in room frame: "
-                  << entry_point_in_room_frame.value().x()
-                  << entry_point_in_room_frame.value().y();
-      }
+
 
       if (debug_runtime) {
         qInfo() << "localiser: Pose updated: x=" << robot_pose.translation().x()
@@ -939,17 +930,7 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
       qInfo() << "[GOTO_DOOR] Reached door approximation point.";
 
     // Update graph tracking
-    if (selected_index < current_room_door_node_ids.size()) {
-      last_crossed_door_node_id = current_room_door_node_ids[selected_index];
-      std::stringstream ss_cross;
-      ss_cross << "[GRAPH] Selected Door Node ID " << last_crossed_door_node_id
-               << " to cross.";
-      qInfo() << QString::fromStdString(ss_cross.str());
-      if (graph_log_file && graph_log_file->is_open())
-        *graph_log_file << ss_cross.str() << std::endl;
-    } else {
-      qWarning() << "Selected door index out of range for graph node IDs!";
-    }
+
 
     auto_nav_sequence_running = false;
     target_door_point.reset();
@@ -1159,7 +1140,7 @@ void SpecificWorker::switch_room() {
 
   // 3. Reset robot pose to center
   robot_pose.setIdentity();
-  entry_point_in_room_frame.reset();
+
 
   // 4. Reset badge_found status for the new room
   badge_found = false;
@@ -1217,156 +1198,7 @@ SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data,
     if (next_s == STATE::IDLE) {
       qInfo() << "State transition: TURN -> GOTO_DOOR";
 
-      // --- GRAPH UPDATE: Add Room Node ---
-      // Check if we already have a node for this room (tracking via
-      // current_room_node_id) But wait, we need to create a NEW node every time
-      // we enter a room via TURN? The user said: "Add a new frame in the UI to
-      // draw the graph in real-time... insert a new node when a new room is
-      // detected" And "When are you going to add a room to the graph, at first
-      // entering room or just when it finish the turn" -> "just when it finish
-      // the turn"
 
-      // So, we create a new Room Node here.
-      int new_room_node_id = next_node_id++;
-      Eigen::Vector2f room_pos(
-          robot_pose.translation().x(),
-          robot_pose.translation().y()); // Use robot pos as room center approx
-      graph.add_node(Node(new_room_node_id, Node::ROOM, room_pos));
-
-      std::stringstream ss_room;
-      ss_room << "[GRAPH] Added ROOM Node ID: " << new_room_node_id << " at "
-              << room_pos.transpose();
-      qInfo() << QString::fromStdString(ss_room.str());
-      if (graph_log_file && graph_log_file->is_open())
-        *graph_log_file << ss_room.str() << std::endl;
-
-      // Link to the door we just crossed (if any)
-      if (last_crossed_door_node_id != -1) {
-        graph.add_edge(last_crossed_door_node_id, new_room_node_id);
-        std::stringstream ss_edge;
-        ss_edge << "[GRAPH] Linked Door " << last_crossed_door_node_id
-                << " -> Room " << new_room_node_id;
-        qInfo() << QString::fromStdString(ss_edge.str());
-        if (graph_log_file && graph_log_file->is_open())
-          *graph_log_file << ss_edge.str() << std::endl;
-      }
-
-      // Update current room node
-      current_room_node_id = new_room_node_id;
-
-      // Update doors for the current room
-      auto detected_doors = door_detector.doors();
-      // Do NOT clear nominal_rooms doors here. We accumulate them.
-      // nominal_rooms[current_room_index].doors.clear();
-
-      for (const auto &d : detected_doors) {
-        // Transform points to room frame
-        Eigen::Vector2d p1_robot(d.p1.x(), d.p1.y());
-        Eigen::Vector2d p2_robot(d.p2.x(), d.p2.y());
-
-        Eigen::Vector2d p1_room = robot_pose * p1_robot;
-        Eigen::Vector2d p2_room = robot_pose * p2_robot;
-
-        // Calculate midpoint to find the single wall the door belongs to
-        Eigen::Vector2d midpoint = (p1_room + p2_room) / 2.0;
-
-        // Find the closest wall to the midpoint
-        auto wall = nominal_rooms[current_room_index].get_closest_wall_to_point(
-            Eigen::Vector2f(midpoint.x(), midpoint.y()));
-        const auto &[line, i, c1, c2] = wall;
-
-        // Project both points onto this wall
-        auto p1_proj =
-            line.projection(Eigen::Vector2f(p1_room.x(), p1_room.y()));
-        auto p2_proj =
-            line.projection(Eigen::Vector2f(p2_room.x(), p2_room.y()));
-
-        // Clamp points to the wall segment defined by c1 and c2
-        Eigen::Vector2f v_wall(std::get<0>(c2).x() - std::get<0>(c1).x(),
-                               std::get<0>(c2).y() - std::get<0>(c1).y());
-        float len_sq = v_wall.squaredNorm();
-
-        auto clamp = [&](Eigen::Vector2f &p) {
-          Eigen::Vector2f v_p(p.x() - std::get<0>(c1).x(),
-                              p.y() - std::get<0>(c1).y());
-          float t = v_p.dot(v_wall) / len_sq;
-          t = std::max(0.0f, std::min(1.0f, t));
-          p = Eigen::Vector2f(std::get<0>(c1).x(), std::get<0>(c1).y()) +
-              t * v_wall;
-        };
-
-        clamp(p1_proj);
-        clamp(p2_proj);
-
-        // Check if this door already exists in nominal_rooms
-        Eigen::Vector2f new_center = (p1_proj + p2_proj) / 2.0f;
-        bool exists = false;
-        for (const auto &existing_door :
-             nominal_rooms[current_room_index].doors) {
-          if ((existing_door.center() - new_center).norm() <
-              500.0f) // Threshold for duplicate
-          {
-            exists = true;
-            break;
-          }
-        }
-
-        if (!exists) {
-          nominal_rooms[current_room_index].doors.emplace_back(
-              p1_proj, d.p1_angle, p2_proj, d.p2_angle);
-          if (debug_runtime)
-            qInfo() << "[GRAPH] Added new door to nominal_rooms. Total: "
-                    << nominal_rooms[current_room_index].doors.size();
-        }
-      }
-
-      // --- GRAPH UPDATE: Add/Link Door Nodes ---
-      current_room_door_node_ids.clear();
-      for (const auto &d : nominal_rooms[current_room_index].doors) {
-        Eigen::Vector2f door_midpoint = d.center();
-        float dist_to_entry = std::numeric_limits<float>::infinity();
-        if (entry_point_in_room_frame.has_value()) {
-          dist_to_entry =
-              (door_midpoint - entry_point_in_room_frame.value()).norm();
-        }
-
-        int door_node_id = -1;
-
-        // Check if this is the door we entered from (closest to entry point)
-        // Threshold increased to 2500mm to account for localization noise and
-        // door width
-        if (last_crossed_door_node_id != -1 && dist_to_entry < 2500.0f) {
-          door_node_id = last_crossed_door_node_id;
-          std::stringstream ss_door_exist;
-          ss_door_exist << "[GRAPH] Identified existing entry Door Node ID: "
-                        << door_node_id;
-          qInfo() << QString::fromStdString(ss_door_exist.str());
-          if (graph_log_file && graph_log_file->is_open())
-            *graph_log_file << ss_door_exist.str() << std::endl;
-        } else {
-          // New door
-          door_node_id = next_node_id++;
-          // Position for visualization: Room Pos + Door relative pos
-          Eigen::Vector2f door_global_pos = room_pos + door_midpoint;
-          graph.add_node(Node(door_node_id, Node::DOOR, door_global_pos));
-          graph.add_edge(new_room_node_id, door_node_id);
-
-          std::stringstream ss_door_new;
-          ss_door_new << "[GRAPH] Added new DOOR Node ID: " << door_node_id
-                      << " linked to Room " << new_room_node_id;
-          qInfo() << QString::fromStdString(ss_door_new.str());
-          if (graph_log_file && graph_log_file->is_open())
-            *graph_log_file << ss_door_new.str() << std::endl;
-        }
-        current_room_door_node_ids.push_back(door_node_id);
-      }
-
-      // Draw detected doors in the room viewer
-      draw_room_doors(nominal_rooms[current_room_index].doors,
-                      &viewer_room->scene);
-
-      // Draw the topological graph
-      draw_graph();
 
       return {STATE::GOTO_DOOR, 0.0f, 0.0f};
     }
@@ -1429,59 +1261,4 @@ SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data,
 // From the RoboCompOmniRobot you can use this types:
 // RoboCompOmniRobot::TMechParams
 
-void SpecificWorker::draw_graph() {
-  if (!viewer_graph)
-    return;
 
-  static std::vector<QGraphicsItem *> graph_items;
-  for (auto item : graph_items) {
-    viewer_graph->scene.removeItem(item);
-    delete item;
-  }
-  graph_items.clear();
-
-  const auto &nodes = graph.get_nodes();
-  const auto &adj = graph.get_adj();
-
-  // Draw edges first so they are behind nodes
-  QPen edgePen(Qt::black, 2);
-  for (const auto &[id, neighbors] : adj) {
-    if (nodes.find(id) == nodes.end())
-      continue;
-    const auto &p1 = nodes.at(id).pos;
-
-    for (int neighbor_id : neighbors) {
-      if (nodes.find(neighbor_id) == nodes.end())
-        continue;
-      // Draw edge only once (e.g., if id < neighbor_id)
-      if (id < neighbor_id) {
-        const auto &p2 = nodes.at(neighbor_id).pos;
-        auto line = viewer_graph->scene.addLine(p1.x(), p1.y(), p2.x(), p2.y(),
-                                                edgePen);
-        graph_items.push_back(line);
-      }
-    }
-  }
-
-  // Draw nodes
-  for (const auto &[id, node] : nodes) {
-    QColor color = (node.type == Node::ROOM) ? Qt::blue : Qt::red;
-    QBrush brush(color);
-    QPen pen(Qt::black, 1);
-
-    float size =
-        (node.type == Node::ROOM) ? 400.0f : 200.0f; // Larger nodes for rooms
-    auto ellipse = viewer_graph->scene.addEllipse(node.pos.x() - size / 2,
-                                                  node.pos.y() - size / 2, size,
-                                                  size, pen, brush);
-    graph_items.push_back(ellipse);
-
-    // Add ID label
-    auto text = viewer_graph->scene.addText(QString::number(id));
-    text->setPos(node.pos.x(), node.pos.y());
-    text->setDefaultTextColor(Qt::white);
-    // Scale text to be visible
-    text->setScale(10.0);
-    graph_items.push_back(text);
-  }
-}
