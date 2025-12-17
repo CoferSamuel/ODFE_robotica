@@ -11,6 +11,7 @@ LIST(APPEND SOURCES
   ../src/door_detector.cpp        # Door detection logic
   ../src/qcustomplot.cpp       # QCustomPlot library source
 )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
 # Dependiendo de cómo use RoboComp este archivo, a veces es mejor
 # poner las cabeceras externas en HEADERS o simplemente incluirlas,

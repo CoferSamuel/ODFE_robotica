@@ -1,0 +1,53 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "" "generated/multiroom_autogen/timestamp" "custom" "generated/multiroom_autogen/deps"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Camera360RGB.cpp" "generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/Camera360RGB.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/GenericBase.cpp" "generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/GenericBase.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/JoystickAdapter.cpp" "generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/JoystickAdapter.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Lidar3D.cpp" "generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/Lidar3D.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/OmniRobot.cpp" "generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/OmniRobot.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/door_detector.cpp" "generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/door_detector.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/hungarian.cpp" "generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/hungarian.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/qcustomplot.cpp" "generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/qcustomplot.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/ransac_line_detector.cpp" "generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/ransac_line_detector.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/room_detector.cpp" "generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/room_detector.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/specificworker.cpp" "generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/specificworker.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/time_series_plotter.cpp" "generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/__/src/time_series_plotter.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/genericworker.cpp" "generated/CMakeFiles/multiroom.dir/genericworker.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/genericworker.cpp.o.d"
+  "/home/cofer/robocomp/classes/ConfigLoader/ConfigLoader.cpp" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/ConfigLoader/ConfigLoader.cpp.o.d"
+  "/home/cofer/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/abstract_graphic_viewer/abstract_graphic_viewer.cpp.o.d"
+  "/home/cofer/robocomp/classes/grafcetStep/GRAFCETStep.cpp" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/grafcetStep/GRAFCETStep.cpp.o.d"
+  "/home/cofer/robocomp/classes/rapplication/rapplication.cpp" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/rapplication/rapplication.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/rapplication/rapplication.cpp.o.d"
+  "/home/cofer/robocomp/classes/sigwatch/sigwatch.cpp" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/sigwatch/sigwatch.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/home/cofer/robocomp/classes/sigwatch/sigwatch.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/main.cpp" "generated/CMakeFiles/multiroom.dir/main.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/main.cpp.o.d"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/multiroom_autogen/mocs_compilation.cpp" "generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o" "gcc" "generated/CMakeFiles/multiroom.dir/multiroom_autogen/mocs_compilation.cpp.o.d"
+  )
+
+# Pairs of files generated by the same build rule.
+set(CMAKE_MULTIPLE_OUTPUT_PAIRS
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Camera360RGB.h" "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Camera360RGB.cpp"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/GenericBase.h" "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/GenericBase.cpp"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/JoystickAdapter.h" "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/JoystickAdapter.cpp"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Lidar3D.h" "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/Lidar3D.cpp"
+  "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/OmniRobot.h" "/home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/OmniRobot.cpp"
+  )
+
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")
