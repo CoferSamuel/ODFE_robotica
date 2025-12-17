@@ -59,9 +59,12 @@ static void draw_doors(const Doors &doors,
     }
     draw_points.clear();
 
-    const QColor color("Red");
-    const QPen pen(color, 15);  // Red, thicker to distinguish doors
-    const QBrush brush(color);
+    const QColor lineColor("Blue");
+    const QPen linePen(lineColor, 15);
+
+    const QColor pointColor("Cyan");
+    const QPen pointPen(pointColor, 15);
+    const QBrush pointBrush(pointColor);
 
     double offsetX = 0.0;
     double offsetY = 0.0;
@@ -74,18 +77,18 @@ static void draw_doors(const Doors &doors,
     for (const auto &door : doors)
     {
         // Draw first point of the door as a circle
-        const auto dp1 = scene->addEllipse(-25, -25, 50, 50, pen, brush);
+        const auto dp1 = scene->addEllipse(-50, -50, 100, 100, pointPen, pointBrush);
         dp1->setPos(offsetX + door.p1.x(), offsetY + door.p1.y());
         draw_points.push_back(dp1);
 
         // Draw second point of the door as a circle
-        const auto dp2 = scene->addEllipse(-25, -25, 50, 50, pen, brush);
+        const auto dp2 = scene->addEllipse(-50, -50, 100, 100, pointPen, pointBrush);
         dp2->setPos(offsetX + door.p2.x(), offsetY + door.p2.y());
         draw_points.push_back(dp2);
 
         // Draw a line connecting the two door points
         const auto line = scene->addLine(door.p1.x(), door.p1.y(),
-                                         door.p2.x(), door.p2.y(), pen);
+                                         door.p2.x(), door.p2.y(), linePen);
         line->setPos(offsetX, offsetY);
         draw_points.push_back(line);
     }

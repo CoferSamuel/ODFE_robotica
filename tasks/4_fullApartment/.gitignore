@@ -1,6 +1,5 @@
 build/
 logs/
-generated/
 *.user
 .vscode/
 *~
