@@ -2,7 +2,7 @@
 # Proxies for required interfaces
 Camera360RGB = "camera360rgb:tcp -h localhost -p 10098"
 JoystickAdapter = "joystickadapter:tcp -h localhost -p 11230"
-Lidar3D = "lidar3d:tcp -h localhost -p 11989" # Helioss: 11990
+Lidar3D = "lidar3d:tcp -h localhost -p 11990" # Helios: 11989
 OmniRobot = "omnirobot:tcp -h localhost -p 10004"
 
 

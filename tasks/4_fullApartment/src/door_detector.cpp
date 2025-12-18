@@ -103,7 +103,7 @@ Doors DoorDetector::detect(const RoboCompLidar3D::TPoints &points, QGraphicsScen
         const auto &p1 = p[0];
         const auto &p2 = p[1];
         const float d = std::abs(p2.distance2d - p1.distance2d);
-        if (d > 1000.f)
+        if (d > 500.f)
         {
             const auto &shorter = (p1.distance2d < p2.distance2d) ? p1 : p2;
             peaks.emplace_back(Eigen::Vector2f(shorter.x, shorter.y), shorter.phi);
