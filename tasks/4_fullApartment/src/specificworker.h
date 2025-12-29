@@ -262,6 +262,7 @@ class SpecificWorker final : public GenericWorker
         // relocalization
         bool relocal_centered = false;
         bool localised = false;
+        bool initial_localisation_done = false;  // Track if bootstrap localization complete
         bool badge_found = false;
         bool search_green = false;
         // runtime debug flag - when true, detailed qInfo() logs are emitted
@@ -280,6 +281,7 @@ class SpecificWorker final : public GenericWorker
         Eigen::Vector3d solve_pose(const Corners &corners, const Match &match);
         void predict_robot_pose();
         std::tuple<float, float> robot_controller(const Eigen::Vector2f &target);
+        Eigen::Affine2d find_best_initial_pose(const Corners &detected_corners);
 
 
 signals:

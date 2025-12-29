@@ -371,6 +371,15 @@ void SpecificWorker::compute() {
 }
 
 void SpecificWorker::execute_localiser() {
+  // Bootstrap: If not yet localized, try multi-hypothesis grid search
+  if (!initial_localisation_done && !corners.empty()) {
+    robot_pose = find_best_initial_pose(corners);
+    initial_localisation_done = true;
+    if (debug_runtime)
+      qInfo() << "localiser: Initial pose found via grid search at x="
+              << robot_pose.translation().x() << " y=" << robot_pose.translation().y();
+  }
+
   // 1) Transform nominal room corners into the robot frame for matching
   Corners robot_corners =
       nominal_rooms[current_room_index].transform_corners_to(
@@ -403,30 +412,28 @@ void SpecificWorker::execute_localiser() {
       (std::isfinite(max_match_error) ? max_match_error
                                       : std::numeric_limits<float>::infinity());
 
-  // 5) Localisation decision using configured threshold
+  // 5) Localisation decision using configured threshold (badge-independent)
   const bool was_localised = localised;
-  if (badge_found && std::isfinite(max_match_error) &&
+  if (std::isfinite(max_match_error) &&
       max_match_error < LOCALISATION_MATCH_ERROR_THRESHOLD &&
       matched.size() >= 3) {
     localised = true;
     if (!was_localised && debug_runtime)
       qInfo() << "localiser: Localisation achieved. max_error="
-              << max_match_error << "badge_found=" << badge_found;
+              << max_match_error;
   } else {
     localised = false;
     if (was_localised && debug_runtime)
-      qInfo() << "localiser: Localisation lost. max_error=" << max_match_error
-              << "badge_found=" << badge_found;
+      qInfo() << "localiser: Localisation lost. max_error=" << max_match_error;
   }
 
   if (debug_runtime)
     qInfo() << "localiser: Localised=" << (localised ? "true" : "false")
-            << " max_error=" << max_match_error << " matches=" << matched.size()
-            << " badge_found=" << badge_found;
+            << " max_error=" << max_match_error << " matches=" << matched.size();
 
-  // 6) If localised, compute a pose correction from the matches and update
-  // robot pose
-  if (localised && !matched.empty()) {
+  // 6) Update pose continuously when we have good matches (independent of badge)
+  if (matched.size() >= 3 && std::isfinite(max_match_error) &&
+      max_match_error < LOCALISATION_MATCH_ERROR_THRESHOLD) {
     Eigen::Vector3d pose = solve_pose(corners, matched);
     if (update_robot_pose(pose)) {
 
@@ -457,6 +464,56 @@ void SpecificWorker::execute_localiser() {
             << robot_pose.translation().x() << ", "
             << robot_pose.translation().y()
             << ") angle=" << qRadiansToDegrees(angle) << " deg";
+}
+
+Eigen::Affine2d SpecificWorker::find_best_initial_pose(const Corners &detected_corners) {
+  const auto &room = nominal_rooms[current_room_index];
+  const float w = room.width / 2.0f;
+  const float l = room.length / 2.0f;
+
+  Eigen::Affine2d best_pose = Eigen::Affine2d::Identity();
+  float best_error = std::numeric_limits<float>::infinity();
+
+  // Grid search: 5 positions × 5 positions × 8 angles = 200 hypotheses
+  for (float x = -w * 0.8f; x <= w * 0.8f; x += w * 0.4f) {
+    for (float y = -l * 0.8f; y <= l * 0.8f; y += l * 0.4f) {
+      for (float theta = 0; theta < 2 * M_PI; theta += M_PI / 4) {
+        Eigen::Affine2d candidate;
+        candidate.setIdentity();
+        candidate.translate(Eigen::Vector2d(x, y));
+        candidate.rotate(theta);
+
+        // Transform nominal corners to robot frame using this candidate
+        Corners robot_corners = room.transform_corners_to(candidate.inverse());
+
+        // Match with detected corners
+        Match matched = hungarian.match(detected_corners, robot_corners);
+
+        if (matched.size() < 3)
+          continue; // Need at least 3 matches
+
+        // Compute max error
+        float max_err = 0.0f;
+        for (const auto &m : matched) {
+          float err = static_cast<float>(std::get<2>(m));
+          if (err > max_err)
+            max_err = err;
+        }
+
+        if (max_err < best_error) {
+          best_error = max_err;
+          best_pose = candidate;
+        }
+      }
+    }
+  }
+
+  if (debug_runtime)
+    qInfo() << "Grid search best error:" << best_error
+            << "at x=" << best_pose.translation().x()
+            << "y=" << best_pose.translation().y();
+
+  return best_pose;
 }
 
 void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &filtered_points,
