@@ -195,6 +195,50 @@ if rcnode_process:
 def expand_path(p):
     return os.path.expanduser(p) if p else None
 
+def monitor_and_rotate_log(pipe, log_path, max_size=10 * 1024 * 1024):
+    """
+    Reads from the pipe and writes to log_path.
+    Rotates the log file when it exceeds max_size.
+    Keeps one backup file (.old).
+    """
+    try:
+        current_file = open(log_path, 'wb')
+        while True:
+            # Read in chunks to handle both binary data and massive lines safely
+            data = pipe.read(4096)
+            if not data:
+                break
+            
+            current_file.write(data)
+
+            current_file.flush()
+            
+            # Check size
+            if current_file.tell() > max_size:
+                current_file.close()
+                timestamp = int(time.time())
+                backup_name = f"{log_path}.old"
+                
+                # Windows support (rewrite implied by simple rename on Unix)
+                if os.path.exists(backup_name):
+                    try:
+                        os.remove(backup_name)
+                    except OSError:
+                        pass
+                        
+                try:
+                    os.rename(log_path, backup_name)
+                except OSError:
+                    pass
+                
+                current_file = open(log_path, 'wb')
+                
+        current_file.close()
+    except Exception as e:
+        # Safely ignore errors during shutdown or file ops to prevent crashing the monitor
+        pass
+
+
 # Start all components
 def launch_process(command, cwd=None, name=None):
     # Create output directory in the project folder
@@ -206,8 +250,11 @@ def launch_process(command, cwd=None, name=None):
     stdout_path = os.devnull  # Discard stdout to prevent massive log files
     stderr_path = os.path.join(output_dir, f"{name}.err") if name else os.devnull
 
-    stdout = open(stdout_path, "w")
-    stderr = open(stderr_path, "w")
+    # stdout = open(stdout_path, "w")
+    # stderr = open(stderr_path, "w")
+    
+    # We will pipe stderr to our rotation function
+    # stdout is still discarded to devnull
 
     # Replace 'rcnode' alias with actual script path
     if 'rcnode' in command and not command.startswith('bash /'):
@@ -217,11 +264,17 @@ def launch_process(command, cwd=None, name=None):
         command,
         cwd=cwd,
         shell=True,
-        stdout=stdout,
-        stderr=stderr,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,  # Capture stderr
         env=os.environ.copy(),
         executable='/bin/bash'  # Use bash instead of sh to handle the command properly
     )
+
+    # Start the log rotator thread if we have a name (and thus a log file)
+    if name:
+        t = threading.Thread(target=monitor_and_rotate_log, args=(proc.stderr, stderr_path), daemon=True)
+        t.start()
+
     time.sleep(0.3)  # wait for child process to start
     try:
         children = psutil.Process(proc.pid).children()

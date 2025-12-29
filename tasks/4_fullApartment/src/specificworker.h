@@ -168,7 +168,9 @@ class SpecificWorker final : public GenericWorker
         int current_room_index = 0;
         rc::Room_Detector room_detector;
         rc::Hungarian hungarian;
-        int last_door_index = -1;
+        std::optional<bool> chosen_door_was_on_left;  // for Room 1 selection
+        std::optional<Eigen::Vector2d> chosen_door_world_pos;  // for Room 0 sticky tracking
+        std::optional<Eigen::Vector2d> chosen_door_world_pos_room1;  // for Room 1 sticky tracking
 
         // LiDAR data and detected features
         RoboCompLidar3D::TData data;

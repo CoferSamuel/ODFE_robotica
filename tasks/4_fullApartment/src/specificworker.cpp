@@ -826,7 +826,7 @@ SpecificWorker::goto_room_center(const RoboCompLidar3D::TPoints &points) {
 SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners) {
   bool detected = false;
   int direction = 1;
-  float rot_speed = 0.4f;
+  float rot_speed = 0.8f;
   if (debug_runtime)
     qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED")
             << "panel. Rot speed:" << rot_speed;
@@ -867,7 +867,7 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
   if (doors.empty()) {
     if (debug_runtime)
       qInfo() << "[GOTO_DOOR] No door found. Rotating.";
-    target_door_point.reset();
+    // Don't reset target_door_point here - keep navigating to last known target if we have one
     omnirobot_proxy->setSpeedBase(0, 0, 0.2);
     return {STATE::GOTO_DOOR, 0.0f, 0.2f};
   }
@@ -880,38 +880,78 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
 
   int selected_index = 0;
 
-  // Room 0: Red Badge -> Random selection
+  // Room 0: Random selection, track by world position
   if (current_room_index == 0) {
-    if (last_door_index == -1) {
-      // Randomly select 0 or 1 (assuming at least 2 doors)
-      // If only 1 door, it will be 0.
+    if (!chosen_door_world_pos.has_value()) {
+      // First time: randomly select
       if (doors.size() > 1) {
-        std::uniform_int_distribution<> dist(0, static_cast<int>(doors.size()) -
-                                                    1);
-        last_door_index = dist(rd);
+        std::uniform_int_distribution<> dist(0, static_cast<int>(doors.size()) - 1);
+        selected_index = dist(rd);
       } else {
-        last_door_index = 0;
+        selected_index = 0;
       }
+      // Save world position and left/right for Room 1
+      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
+      chosen_door_was_on_left = (doors[selected_index].center().x() < 0);
       if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 0: Randomly selected door index:"
-                << last_door_index;
-    }
-    selected_index = last_door_index;
-  }
-  // Room 1: Green Badge -> Select the OTHER door
-  else {
-    // We assume door indices correspond. If we picked k in Room 0, we pick !k
-    // in Room 1. Or more generally, (k + 1) % N. If we haven't visited Room 0
-    // (shouldn't happen in this flow but for safety), pick 0.
-    if (last_door_index == -1) {
-      qWarning() << "[GOTO_DOOR] Room 1 reached without Room 0 selection! "
-                    "Defaulting to 0.";
-      selected_index = 0;
+        qInfo() << "[GOTO_DOOR] Room 0: Selected door" << selected_index 
+                << "x=" << doors[selected_index].center().x()
+                << "world=(" << chosen_door_world_pos.value().x() << "," 
+                << chosen_door_world_pos.value().y() << ")";
     } else {
-      selected_index = (last_door_index + 1) % doors.size();
+      // Sticky: find door closest to saved world position
+      float min_dist = std::numeric_limits<float>::max();
+      for (size_t i = 0; i < doors.size(); ++i) {
+        Eigen::Vector2d door_world = robot_pose * doors[i].center().cast<double>();
+        float dist = (door_world - chosen_door_world_pos.value()).norm();
+        if (dist < min_dist) {
+          min_dist = dist;
+          selected_index = i;
+        }
+      }
+      // Update saved position for next frame
+      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
       if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 1: Selecting alternate door index:"
-                << selected_index << "(prev:" << last_door_index << ")";
+        qInfo() << "[GOTO_DOOR] Room 0: Sticky selection, door" << selected_index
+                << "world_dist=" << min_dist;
+    }
+  }
+  // Room 1: SAME side (coordinates are mirrored because badges are on opposite walls)
+  else {
+    if (!chosen_door_world_pos_room1.has_value() && chosen_door_was_on_left.has_value()) {
+      // First frame: select by min/max x
+      bool want_left = chosen_door_was_on_left.value();
+      float target_x = want_left ? std::numeric_limits<float>::max() 
+                                  : std::numeric_limits<float>::lowest();
+      for (size_t i = 0; i < doors.size(); ++i) {
+        float x = doors[i].center().x();
+        if ((want_left && x < target_x) || (!want_left && x > target_x)) {
+          target_x = x;
+          selected_index = i;
+        }
+      }
+      // Save world position for sticky tracking
+      chosen_door_world_pos_room1 = robot_pose * doors[selected_index].center().cast<double>();
+      if (debug_runtime)
+        qInfo() << "[GOTO_DOOR] Room 1: Selected door" << selected_index
+                << "x=" << doors[selected_index].center().x()
+                << "want_left=" << want_left;
+    } else if (chosen_door_world_pos_room1.has_value()) {
+      // Sticky: find door closest to saved world position
+      float min_dist = std::numeric_limits<float>::max();
+      for (size_t i = 0; i < doors.size(); ++i) {
+        Eigen::Vector2d door_world = robot_pose * doors[i].center().cast<double>();
+        float dist = (door_world - chosen_door_world_pos_room1.value()).norm();
+        if (dist < min_dist) {
+          min_dist = dist;
+          selected_index = i;
+        }
+      }
+      // Update saved position
+      chosen_door_world_pos_room1 = robot_pose * doors[selected_index].center().cast<double>();
+      if (debug_runtime)
+        qInfo() << "[GOTO_DOOR] Room 1: Sticky selection, door" << selected_index
+                << "world_dist=" << min_dist;
     }
   }
 
@@ -1045,7 +1085,7 @@ SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points) {
   }
 
   // 4. Rotation Control
-  const float rot_speed = 0.2f;
+  const float rot_speed = 0.5f;
   float rot_velocity = -std::copysign(rot_speed, rot_error);
 
   if (debug_runtime) {
@@ -1158,9 +1198,11 @@ void SpecificWorker::switch_room() {
   // 6. If we are back to Room 0, reset the door memory so we choose randomly
   // again next time
   if (current_room_index == 0) {
-    last_door_index = -1;
+    chosen_door_was_on_left.reset();
+    chosen_door_world_pos.reset();
+    chosen_door_world_pos_room1.reset();
     if (debug_runtime)
-      qInfo() << "[SWITCH_ROOM] Resetting last_door_index for new cycle.";
+      qInfo() << "[SWITCH_ROOM] Resetting door memory for new cycle.";
   }
 }
 

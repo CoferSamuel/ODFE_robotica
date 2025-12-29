@@ -7,3 +7,4 @@ logs/
 backups/
 *.new
 CMakeCache.txt
+mcp_server/

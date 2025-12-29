@@ -24,8 +24,6 @@ cp etc/config etc/yourConfig
 After editing the new config file we can run the component:
 
 ```bash
-cmake -B build && make -C build -j12 # Compile the component+
-# or
 cbuild # CAUTION: always use a safe directory name. It cannot include weird characters such as spaces, accents...
 bin/multiroom etc/yourConfig # Execute the component
 ```
