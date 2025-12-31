@@ -5,7 +5,7 @@
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
   ../src/room_detector.cpp          # Room feature extraction
-
+  ../src/graph.cpp                  # Graph for room/door topology
   ../src/hungarian.cpp              # Hungarian algorithm wrapper
   ../src/ransac_line_detector.cpp   # RANSAC-based 2D line segment detector
   ../src/time_series_plotter.cpp     # Time series plotter utility
@@ -31,6 +31,7 @@ endif()
 LIST(APPEND HEADERS
   ../src/specificworker.h
   ../src/room_detector.h
+  ../src/graph.h
   ../src/hungarian.h
   ../src/ransac_line_detector.h
   ../src/common_types.h

@@ -8,6 +8,7 @@
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/generated/genericworker.h \
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/common_types.h \
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/door_detector.h \
+  /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/graph.h \
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/hungarian.h \
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/image_processor.h \
   /home/cofer/Documents/University/Robotics/Work/ODFE_robotica/tasks/4_fullApartment/src/munkres.hpp \

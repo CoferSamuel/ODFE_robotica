@@ -191,10 +191,7 @@ void SpecificWorker::initialize() {
     auto [rr, re] = viewer_room->add_robot(
         params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
     robot_room_draw = rr;
-    // draw room in viewer_room
-
-    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
-                               QPen(Qt::black, 30));
+    // Note: Room walls are NOT drawn here - they appear only after badge recognition
 
     // initialise robot pose
     robot_pose.setIdentity();
@@ -231,6 +228,12 @@ void SpecificWorker::initialize() {
     SpecificWorker::time_series_plotter =
         std::make_unique<TimeSeriesPlotter>(localizationPlot, plotConfig);
     match_error_graph = time_series_plotter->addGraph("", Qt::blue);
+
+    // Initialize room recognition tracking
+    room_recognized = std::vector<bool>(nominal_rooms.size(), false);
+    
+    // Initialize topology graph for room/door memory
+    topology_graph = std::make_unique<Graph>("logs/GRAPH.log");
 
     // stop robot
     move_robot(0, 0, 0);
@@ -318,8 +321,21 @@ void SpecificWorker::compute() {
   // Draw main viewer (LIDAR points, corners, room center)
   draw_mainViewer();
 
-  // Draw detected doors in the room viewer
-  draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
+  // Draw axes at center (always visible)
+  auto center = nominal_rooms[current_room_index].rect().center();
+  viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350,
+                             center.y(), QPen(Qt::red, 20));
+  viewer_room->scene.addLine(center.x(), center.y(), center.x(),
+                             center.y() + 350, QPen(Qt::green, 20));
+
+  // Draw room walls and doors only if room is recognized
+  if (room_recognized[current_room_index]) {
+    // Draw walls
+    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
+                               QPen(Qt::black, 30));
+    // Draw doors
+    draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
+  }
 
   // Draw the topological graph
 
@@ -373,8 +389,34 @@ void SpecificWorker::compute() {
 void SpecificWorker::execute_localiser() {
   // Bootstrap: If not yet localized, try multi-hypothesis grid search
   if (!initial_localisation_done && !corners.empty()) {
-    robot_pose = find_best_initial_pose(corners);
+    // If room is already recognized, use stored heading as constraint
+    std::optional<float> ref_heading = std::nullopt;
+    if (room_recognized[current_room_index] && topology_graph->is_room_in_graph(current_room_index)) {
+      ref_heading = topology_graph->get_room_heading(current_room_index);
+    }
+    
+    robot_pose = find_best_initial_pose(corners, ref_heading);
     initial_localisation_done = true;
+    
+    // Save entry position for later door matching (proximity-based)
+    room_entry_position = robot_pose.translation().cast<float>();
+    qInfo() << "[POS_SAVED] Saved entry position for room" << current_room_index
+            << ": (" << room_entry_position.value().x() 
+            << "," << room_entry_position.value().y() << ")";
+    
+    // If room already recognized, update entry door immediately
+    if (room_recognized[current_room_index]) {
+      if (previous_traversed_door_id != -1) {
+          qInfo() << "[POS_SAVED] Room" << current_room_index << "recognized, calling set_entry_door_by_proximity to learn connection";
+          set_entry_door_by_proximity();
+      } else {
+          qInfo() << "[POS_SAVED] Room" << current_room_index << "recognized, entry door already set by learned connection (skipping proximity)";
+          room_entry_position.reset(); // Clear unused position
+      }
+    } else {
+      qInfo() << "[POS_SAVED] Room" << current_room_index << "not yet recognized, will set entry later";
+    }
+    
     if (debug_runtime)
       qInfo() << "localiser: Initial pose found via grid search at x="
               << robot_pose.translation().x() << " y=" << robot_pose.translation().y();
@@ -466,7 +508,8 @@ void SpecificWorker::execute_localiser() {
             << ") angle=" << qRadiansToDegrees(angle) << " deg";
 }
 
-Eigen::Affine2d SpecificWorker::find_best_initial_pose(const Corners &detected_corners) {
+Eigen::Affine2d SpecificWorker::find_best_initial_pose(const Corners &detected_corners,
+                                                        std::optional<float> reference_heading) {
   const auto &room = nominal_rooms[current_room_index];
   const float w = room.width / 2.0f;
   const float l = room.length / 2.0f;
@@ -474,10 +517,24 @@ Eigen::Affine2d SpecificWorker::find_best_initial_pose(const Corners &detected_c
   Eigen::Affine2d best_pose = Eigen::Affine2d::Identity();
   float best_error = std::numeric_limits<float>::infinity();
 
-  // Grid search: 5 positions × 5 positions × 8 angles = 200 hypotheses
+  // If reference heading is provided, constrain search to ±45° around it
+  float theta_start = 0.0f;
+  float theta_end = 2 * M_PI;
+  float theta_step = M_PI / 4;
+  
+  if (reference_heading.has_value()) {
+    // Search only near the reference heading (±45°)
+    theta_start = reference_heading.value() - M_PI / 4;
+    theta_end = reference_heading.value() + M_PI / 4;
+    theta_step = M_PI / 8;  // Finer steps within constrained range
+    if (debug_runtime)
+      qInfo() << "Grid search constrained to heading" << reference_heading.value() << "±45°";
+  }
+
+  // Grid search: 5 positions × 5 positions × angles
   for (float x = -w * 0.8f; x <= w * 0.8f; x += w * 0.4f) {
     for (float y = -l * 0.8f; y <= l * 0.8f; y += l * 0.4f) {
-      for (float theta = 0; theta < 2 * M_PI; theta += M_PI / 4) {
+      for (float theta = theta_start; theta <= theta_end; theta += theta_step) {
         Eigen::Affine2d candidate;
         candidate.setIdentity();
         candidate.translate(Eigen::Vector2d(x, y));
@@ -629,14 +686,180 @@ void SpecificWorker::draw_room_doors(const std::vector<Door> &doors,
   }
   room_door_items.clear();
 
-  const QColor color("magenta");
-  const QPen pen(color, 30);
+  // Cyan line styling
+  const QColor lineColor("Cyan");
+  const QPen linePen(lineColor, 30);
+
+  // Dark blue endpoint styling
+  const QColor pointColor("DarkBlue");
+  const QPen pointPen(pointColor, 30);
+  const QBrush pointBrush(pointColor);
 
   for (const auto &door : doors) {
+    // Draw line (cyan)
     auto line =
-        scene->addLine(door.p1.x(), door.p1.y(), door.p2.x(), door.p2.y(), pen);
+        scene->addLine(door.p1.x(), door.p1.y(), door.p2.x(), door.p2.y(), linePen);
     room_door_items.push_back(line);
+
+    // Draw endpoint circles (dark blue)
+    auto c1 = scene->addEllipse(-50, -50, 100, 100, pointPen, pointBrush);
+    c1->setPos(door.p1.x(), door.p1.y());
+    room_door_items.push_back(c1);
+
+    auto c2 = scene->addEllipse(-50, -50, 100, 100, pointPen, pointBrush);
+    c2->setPos(door.p2.x(), door.p2.y());
+    room_door_items.push_back(c2);
   }
+}
+
+void SpecificWorker::capture_doors_for_current_room() {
+  auto doors_robot_frame = door_detector.doors();
+  nominal_rooms[current_room_index].doors.clear();
+
+  for (const auto &door : doors_robot_frame) {
+    // Transform door endpoints from robot frame to world frame
+    Eigen::Vector2d p1_robot(door.p1.x(), door.p1.y());
+    Eigen::Vector2d p2_robot(door.p2.x(), door.p2.y());
+
+    Eigen::Vector2d p1_world = robot_pose * p1_robot;
+    Eigen::Vector2d p2_world = robot_pose * p2_robot;
+
+    // Align door endpoints to the closest wall (based on door center to ensure consistency)
+    Eigen::Vector2f center_world = (p1_world.cast<float>() + p2_world.cast<float>()) / 2.f;
+    const auto& room = nominal_rooms[current_room_index];
+    const auto wall = room.get_closest_wall_to_point(center_world);
+    const auto& wall_line = std::get<0>(wall);
+
+    Eigen::Vector2f p1_aligned = wall_line.projection(p1_world.cast<float>());
+    Eigen::Vector2f p2_aligned = wall_line.projection(p2_world.cast<float>());
+
+    // Create door using aligned endpoints
+    Door world_door(p1_aligned, door.p1_angle, p2_aligned, door.p2_angle);
+
+    nominal_rooms[current_room_index].doors.push_back(world_door);
+  }
+
+  if (debug_runtime)
+    qInfo() << "[DOORS] Captured" << nominal_rooms[current_room_index].doors.size()
+            << "doors for room" << current_room_index;
+}
+
+int SpecificWorker::select_door_from_graph() {
+  // Get room node from graph
+  int room_id = topology_graph->get_room_node_id(current_room_index);
+  if (room_id < 0) return -1;  // Room not in graph yet
+  
+  int entry_door = topology_graph->get_entry_door(current_room_index);
+  auto unexplored = topology_graph->get_unexplored_doors(current_room_index);
+  
+  std::vector<int> candidates;
+  
+  // 1. Prefer unexplored, non-entry doors
+  for (int door_id : unexplored) {
+    if (door_id != entry_door) {
+      candidates.push_back(door_id);
+    }
+  }
+  if (!candidates.empty()) {
+    std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
+    int selected = candidates[dist(rd)];
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose unexplored non-entry door" << selected 
+              << "(from" << candidates.size() << "candidates)";
+    return selected;
+  }
+  
+  // 2. Any unexplored door (even if entry)
+  if (!unexplored.empty()) {
+    std::uniform_int_distribution<> dist(0, static_cast<int>(unexplored.size()) - 1);
+    int selected = unexplored[dist(rd)];
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose unexplored door" << selected;
+    return selected;
+  }
+  
+  // 3. Any explored non-entry door
+  candidates.clear();
+  for (int door_id : topology_graph->get_neighbors(room_id)) {
+    if (topology_graph->get_node(door_id).type == NodeType::DOOR) {
+      // Room 0: True random (include entry door)
+      if (current_room_index == 0) {
+          candidates.push_back(door_id);
+      }
+      // Other rooms: Prefer non-entry (traversal)
+      else if (door_id != entry_door) {
+          candidates.push_back(door_id);
+      }
+    }
+  }
+  if (!candidates.empty()) {
+    std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
+    int selected = candidates[dist(rd)];
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose explored non-entry door" << selected;
+    return selected;
+  }
+  
+  // 4. Backtrack through entry door
+  if (debug_runtime)
+    qInfo() << "[GRAPH_SELECT] Backtracking via entry door" << entry_door;
+  return entry_door;
+}
+
+void SpecificWorker::set_entry_door_by_proximity() {
+  int room_id = topology_graph->get_room_node_id(current_room_index);
+  if (room_id < 0 || !room_entry_position.has_value()) {
+    qInfo() << "[ENTRY_DOOR] Skip: room_id=" << room_id 
+            << "has_position=" << room_entry_position.has_value();
+    return;
+  }
+  
+  qInfo() << "[ENTRY_DOOR] Room" << current_room_index 
+          << "robot entry position: (" << room_entry_position.value().x() 
+          << "," << room_entry_position.value().y() << ")";
+  
+  int closest_door = -1;
+  float min_dist = std::numeric_limits<float>::max();
+  
+  for (int neighbor_id : topology_graph->get_neighbors(room_id)) {
+    const auto& node = topology_graph->get_node(neighbor_id);
+    if (node.type == NodeType::DOOR) {
+      // Only consider doors from THIS room (filter out doors from other rooms)
+      std::string prefix = "Door_R" + std::to_string(current_room_index) + "_";
+      if (node.name.rfind(prefix, 0) != 0) {
+        qInfo() << "[ENTRY_DOOR] Skipping door" << neighbor_id 
+                << "(" << QString::fromStdString(node.name) << ") - not from this room";
+        continue;
+      }
+      
+      auto door_pos = node.position;
+      float dist = (door_pos - room_entry_position.value()).norm();
+      
+      qInfo() << "[ENTRY_DOOR] Door" << neighbor_id 
+              << "at (" << door_pos.x() << "," << door_pos.y() << ")"
+              << "dist=" << dist;
+      
+      if (dist < min_dist) {
+        min_dist = dist;
+        closest_door = neighbor_id;
+      }
+    }
+  }
+  
+  if (closest_door >= 0) {
+    topology_graph->set_entry_door(current_room_index, closest_door);
+    qInfo() << "[ENTRY_DOOR] Selected door" << closest_door 
+            << "for room" << current_room_index << "(closest)";
+            
+    // LEARN: Connect previous door to this closest door if valid
+    if (previous_traversed_door_id != -1 && topology_graph->has_node(previous_traversed_door_id)) {
+        topology_graph->connect(previous_traversed_door_id, closest_door);
+        qInfo() << "[ENTRY_DOOR] LEARNED connection:" << previous_traversed_door_id 
+                << "<->" << closest_door;
+        previous_traversed_door_id = -1; // Learned, reset
+    }
+  }
+  room_entry_position.reset();
 }
 
 // Esta función recibe un conjunto de puntos del LiDAR (cada punto tiene
@@ -832,17 +1055,21 @@ Eigen::Vector3d SpecificWorker::solve_pose(const Corners &corners,
 std::tuple<float, float>
 SpecificWorker::robot_controller(const Eigen::Vector2f &target) {
   // 1. Calculate distance and angle to target (robot frame coordinates)
-  float d = target.norm(); // sqrt(x_t² + y_t²)
+  float d = target.norm();
   if (d < 100.f)
     return {0.f, 0.f};
-  float theta_e = std::atan2(
-      target.x(), target.y()); // angle error (x, y) for standard robot frame
+  float theta_e = std::atan2(target.x(), target.y());
 
-  float theta_dot_e = 0.5f * theta_e;
+  // 2. Higher rotation gain for faster alignment (was 0.5)
+  float theta_dot_e = 0.8f * theta_e;
 
-  float omega = exp((-theta_e * theta_e) / (M_PI / 6.f));
+  // 3. Wider Gaussian falloff for smoother speed curve (was π/6)
+  float omega = exp((-theta_e * theta_e) / (M_PI / 4.f));
 
-  float v = 1000.f * omega;
+  // 4. Distance-based speed scaling for smooth approach
+  float dist_factor = std::min(1.0f, d / 500.f);
+
+  float v = 1000.f * omega * dist_factor;
 
   return {v, theta_dot_e};
 }
@@ -869,6 +1096,13 @@ SpecificWorker::goto_room_center(const RoboCompLidar3D::TPoints &points) {
       qInfo() << "[GOTO_ROOM_CENTER] Target reached! d=" << d << "mm";
     target_room_center.reset();
     omnirobot_proxy->setSpeedBase(0, 0, 0);
+    
+    // Skip TURN for recognized rooms - go directly to GOTO_DOOR
+    if (room_recognized[current_room_index]) {
+      if (debug_runtime)
+        qInfo() << "[GOTO_ROOM_CENTER] Room already recognized, skipping TURN";
+      return {STATE::GOTO_DOOR, 0.0f, 0.0f};
+    }
     return {STATE::TURN, 0.0f, 0.0f};
   }
   auto [v, omega] = robot_controller(target.cast<float>());
@@ -910,6 +1144,43 @@ SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners) {
     if (debug_runtime)
       qInfo() << "[TURN] Panel centered! Stopping.";
     badge_found = true;
+    
+    // Recognize room and add to graph if not already done
+    if (!room_recognized[current_room_index]) {
+      // Capture doors for this room
+      capture_doors_for_current_room();
+      
+      // Add room to topology graph
+      auto& room = nominal_rooms[current_room_index];
+      auto center = room.rect().center();
+      int room_node_id = topology_graph->add_room(
+          "Room_" + std::to_string(current_room_index),
+          current_room_index,
+          room.width, room.length,
+          Eigen::Vector2f(center.x(), center.y()));
+      
+      // Add doors to graph and connect to room
+      for (size_t i = 0; i < room.doors.size(); ++i) {
+        const auto& door = room.doors[i];
+        int door_node_id = topology_graph->add_door(
+            "Door_R" + std::to_string(current_room_index) + "_" + std::to_string(i),
+            door.p1, door.p2);
+        topology_graph->connect(room_node_id, door_node_id);
+      }
+      
+      // Set entry door by proximity (find door closest to where robot entered)
+      set_entry_door_by_proximity();
+      
+      room_recognized[current_room_index] = true;
+      
+      // Store robot heading for future re-entry (breaks 180° ambiguity)
+      float current_heading = std::atan2(robot_pose.rotation()(1,0), robot_pose.rotation()(0,0));
+      topology_graph->set_room_heading(current_room_index, current_heading);
+      
+      if (debug_runtime)
+        qInfo() << "[TURN] Room" << current_room_index << "recognized and added to graph";
+    }
+    
     omnirobot_proxy->setSpeedBase(0, 0, 0);
     return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
   }
@@ -937,7 +1208,41 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
 
   int selected_index = 0;
 
-  // Room 0: Random selection, track by world position
+  // Use graph-based selection for recognized rooms
+  if (room_recognized[current_room_index]) {
+    // Only select once (sticky) - reuse until door is crossed
+    if (selected_graph_door_id < 0) {
+      selected_graph_door_id = select_door_from_graph();
+    }
+    
+    if (selected_graph_door_id >= 0) {
+      // Get door position from graph
+      const auto& door_node = topology_graph->get_node(selected_graph_door_id);
+      Eigen::Vector2d door_world_pos = door_node.position.cast<double>();
+      
+      // Find the detected door closest to graph door position
+      float min_dist = std::numeric_limits<float>::max();
+      for (size_t i = 0; i < doors.size(); ++i) {
+        Eigen::Vector2d detected_world = robot_pose * doors[i].center().cast<double>();
+        float dist = (detected_world - door_world_pos).norm();
+        if (dist < min_dist) {
+          min_dist = dist;
+          selected_index = static_cast<int>(i);
+        }
+      }
+      
+      // Set chosen_door_world_pos for sticky tracking
+      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
+      if (debug_runtime)
+        qInfo() << "[GOTO_DOOR] Graph selected door" << selected_graph_door_id
+                << "matched to index" << selected_index;
+      
+      // Skip the room-specific logic below
+      goto navigate_to_door;
+    }
+  }
+
+  // Fallback: Room 0: Random selection, track by world position
   if (current_room_index == 0) {
     if (!chosen_door_world_pos.has_value()) {
       // First time: randomly select
@@ -1016,6 +1321,7 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
   if (selected_index >= doors.size())
     selected_index = 0;
 
+navigate_to_door:
   const auto &door = doors[selected_index];
   Eigen::Vector2f target =
       door.center_before(Eigen::Vector2d(0, 0), params.DOOR_APPROACH_DISTANCE);
@@ -1138,6 +1444,16 @@ SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points) {
       qInfo() << "[ORIENT_TO_DOOR] Aligned! Transitioning to CROSS_DOOR.";
     omnirobot_proxy->setSpeedBase(0, 0, 0);
     orient_target_angle.reset(); // Clear the sticky target
+    
+    // Set traversing_door_id for graph update in switch_room()
+    if (chosen_door_world_pos.has_value()) {
+      traversing_door_id = topology_graph->get_door_by_position(
+          chosen_door_world_pos.value().cast<float>());
+    } else if (chosen_door_world_pos_room1.has_value()) {
+      traversing_door_id = topology_graph->get_door_by_position(
+          chosen_door_world_pos_room1.value().cast<float>());
+    }
+    
     return {STATE::CROSS_DOOR, 0.0f, 0.0f};
   }
 
@@ -1222,11 +1538,7 @@ void SpecificWorker::switch_room() {
       params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
   robot_room_draw = rr;
 
-  // Draw new room
-  viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
-                             QPen(Qt::black, 30));
-
-  // Draw axes at center
+  // Draw axes at center (always visible)
   auto center = nominal_rooms[current_room_index].rect().center();
   // X-axis (Red)
   viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350,
@@ -1235,9 +1547,48 @@ void SpecificWorker::switch_room() {
   viewer_room->scene.addLine(center.x(), center.y(), center.x(),
                              center.y() + 350, QPen(Qt::green, 20));
 
-  // 3. Reset robot pose to center
-  robot_pose.setIdentity();
+  // Draw walls only if room is already recognized
+  if (room_recognized[current_room_index]) {
+    // Draw room walls
+    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
+                               QPen(Qt::black, 30));
+  }
 
+  // 3. Reset robot pose and re-run Ultra-localiser for new entry position
+  robot_pose.setIdentity();
+  initial_localisation_done = false;  // Force grid search to find correct entry pose
+
+  // 3b. Update graph: store previous door and check for learned connections
+  previous_traversed_door_id = traversing_door_id;
+  
+  if (previous_traversed_door_id != -1 && topology_graph->is_room_in_graph(current_room_index)) {
+    // Check if we already have a learned connection to the new room
+    int connected_door = -1;
+    for (int neighbor : topology_graph->get_neighbors(previous_traversed_door_id)) {
+        const auto& node = topology_graph->get_node(neighbor);
+        // If neighbor is a door belonging to the NEW room, we found our entry!
+        std::string prefix = "Door_R" + std::to_string(current_room_index) + "_";
+        if (node.type == NodeType::DOOR && node.name.find(prefix) == 0) {
+            connected_door = neighbor;
+            break;
+        }
+    }
+
+    if (connected_door != -1) {
+        topology_graph->set_entry_door(current_room_index, connected_door);
+        if (debug_runtime)
+          qInfo() << "[ENTRY_DOOR] Found learned connection:" << previous_traversed_door_id 
+                  << "<->" << connected_door << ". Set entry door immediately.";
+        previous_traversed_door_id = -1; // Connection found, no need to learn again
+    } else {
+        if (debug_runtime)
+          qInfo() << "[SWITCH_ROOM] No learned connection from door" << previous_traversed_door_id 
+                  << "yet. Will learn via proximity.";
+    }
+  }
+  
+  traversing_door_id = -1;  // Reset
+  selected_graph_door_id = -1;  // Reset sticky door selection for new room
 
   // 4. Reset badge_found status for the new room
   badge_found = false;
@@ -1286,6 +1637,11 @@ SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data,
     if (next_s == STATE::IDLE &&
         target_room_center.has_value()) // Reached center (and we had a target)
     {
+      // If room is already recognized, skip TURN and go to GOTO_DOOR
+      if (room_recognized[current_room_index]) {
+        qInfo() << "State transition: GOTO_ROOM_CENTER -> GOTO_DOOR (room recognized)";
+        return {STATE::GOTO_DOOR, 0.0f, 0.0f};
+      }
       qInfo() << "State transition: GOTO_ROOM_CENTER -> TURN";
       return {STATE::TURN, 0.0f, 0.0f};
     }

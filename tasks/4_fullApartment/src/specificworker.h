@@ -55,6 +55,7 @@
 #include "door_detector.h"
 #include "image_processor.h"
 #include "nominal_room.h"
+#include "graph.h"
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
@@ -171,6 +172,12 @@ class SpecificWorker final : public GenericWorker
         std::optional<bool> chosen_door_was_on_left;  // for Room 1 selection
         std::optional<Eigen::Vector2d> chosen_door_world_pos;  // for Room 0 sticky tracking
         std::optional<Eigen::Vector2d> chosen_door_world_pos_room1;  // for Room 1 sticky tracking
+        std::vector<bool> room_recognized;  // Track if room has been recognized (badge seen)
+        std::unique_ptr<Graph> topology_graph;  // Graph for room/door topology
+        int traversing_door_id = -1;  // Door node ID being crossed (for graph updates)
+        int previous_traversed_door_id = -1;  // Door crossed to enter the current room (for learning connections)
+        int selected_graph_door_id = -1;  // Sticky door selection from graph
+        std::optional<Eigen::Vector2f> room_entry_position;  // Robot position when entering room
 
         // LiDAR data and detected features
         RoboCompLidar3D::TData data;
@@ -227,6 +234,9 @@ class SpecificWorker final : public GenericWorker
         void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
         void draw_room_doors(const std::vector<Door> &doors, QGraphicsScene *scene);
         void draw_door_target(const std::optional<Eigen::Vector2f> &target, QGraphicsScene *scene);
+        void capture_doors_for_current_room();  // Capture doors to world frame and store in NominalRoom
+        int select_door_from_graph();  // Select door using graph (returns door node ID, -1 if unavailable)
+        void set_entry_door_by_proximity();  // Set entry door based on robot's position
         void draw_points(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
         std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
@@ -281,7 +291,8 @@ class SpecificWorker final : public GenericWorker
         Eigen::Vector3d solve_pose(const Corners &corners, const Match &match);
         void predict_robot_pose();
         std::tuple<float, float> robot_controller(const Eigen::Vector2f &target);
-        Eigen::Affine2d find_best_initial_pose(const Corners &detected_corners);
+        Eigen::Affine2d find_best_initial_pose(const Corners &detected_corners, 
+                                               std::optional<float> reference_heading = std::nullopt);
 
 
 signals:

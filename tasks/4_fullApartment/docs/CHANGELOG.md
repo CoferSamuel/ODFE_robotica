@@ -4,6 +4,82 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## Commit 31-12-2025 13:00
+
+### Added
+- **Door Decision Logic (Ultra-Localiser + Graph Integration)**:
+    A robust, memory-based navigation system that combines geometric localization with topological learning:
+    1.  **Localization**: Upon entering a room, the **Ultra-Localiser** (Grid Search) estimates the robot's pose to handle arbitrary entry positions.
+    2.  **Entry Identification (Learning)**:
+        -   **First Visit**: Uses the robot's pose to find the closest door ("Proximity") and registers it as the Entry Door. Crucially, it **learns** a bidirectional connection in the Graph between this door and the previous room's exit door.
+        -   **Re-entry**: Uses the **Learned Connection** from the Graph to identify the entry door instantly. This bypasses proximity checks, making the system immune to localization symmetry errors (e.g., if the robot localizes upside-down).
+    3.  **Target Selection Strategy**:
+        -   **Room 0**: Implements **True Random Selection** (choosing from ALL doors, including the entry door). This prevents deterministic loops and allows the robot to start/stop or change direction randomly.
+        -   **Room 1**: Implements **Traversal Preference** (prioritizing non-entry doors) to ensure the robot crosses the room ("Lateral Preference").
+        -   **Exploration**: The Graph now correctly tracks "Explored" status (doors with >= 2 connections) to guide this selection.
+
+    #### Topological Graph Map (Deep Dive)
+    
+    The robot now builds a **semantic graph** of the environment in real-time. This replaces transient decision-making with a persistent memory structure.
+    
+    **Graph Structure**
+    
+    The graph consists of two types of nodes:
+    - **ROOM Nodes**: Represent physical rooms (e.g., Room 0, Room 1). Store metadata like dimensions (`5500x4000`), entry heading, and the ID of the door used to enter.
+    - **DOOR Nodes**: Represent physical connections between rooms. Store geometric endpoints (`p1`, `p2`) and their center position.
+    
+    **How It Works**
+    
+    1.  **Dynamic Construction**:
+        -   When the robot enters a new room, it calls `add_room()`.
+        -   Detected doors are added via `add_door()` and immediately connected to the current Room node.
+        
+    2.  **Topological Linking (The "Smarts")**:
+        -   The system handles the fact that the same physical door is seen as two different "Door Nodes" from different rooms (different coordinates in local frames).
+        -   When moving from Room A to Room B, the graph **links** the exit door of Room A to the entry door of Room B.
+        -   **Result**: The topology is `Room_A <-> Door_Node_A <-> Door_Node_B <-> Room_B`.
+        
+    3.  **Exploration State**:
+        -   A door is considered **Explored** if it has connections to 2 different neighbors (Parent Room + Linked Door).
+        -   This allows the robot to query `get_unexplored_doors()` to intelligently select new targets, prioritizing unknown areas over backtracking.
+
+    **Data Structure**
+    
+    ```cpp
+    struct GraphNode {
+        int id;
+        NodeType type;       // ROOM or DOOR
+        Eigen::Vector2f pos; // Center coordinates
+        // Room specifics
+        int entry_door_id;   // How we got here
+        float reference_heading;
+        // Door specifics
+        Eigen::Vector2f p1, p2;
+    };
+    ```
+    
+    **Visualization (Log Example)**
+    
+    The system generates a human-readable trace in `logs/GRAPH.log`:
+    ```
+    [12:51:38] Added ROOM node: id=0 name="Room_0"
+    [12:51:38] Added DOOR node: id=1 name="Door_R0_0"
+    [12:51:38] Connected: Room_0 (id=0) <-> Door_R0_0 (id=1)
+    ...
+    [12:51:58] Connected: Door_R0_1 (id=2) <-> Door_R1_0 (id=4) <-- Topology Loop Closed!
+    ```
+
+### Changed
+- **Targeting & Motion Control Improvements**:
+    Refined the `robot_controller` for faster and smoother target approach:
+    -   **Adaptive Deceleration**: Added distance-based speed scaling (`dist_factor`) to slow down smoothly when within 500mm of the target.
+    -   **Aggressive Rotation**: Increased rotational gain (`theta_dot_e`) to align with targets more quickly.
+    -   **Velocity Profile**: Widened the Gaussian curve (`sigma`) to maintain higher linear speeds even during minor orientation corrections, reducing "stop-and-turn" behavior.
+
+### Fixed
+- **Door Projection Artifacts**: Fixed a visual bug where doors appeared distorted or on adjacent walls. The system now projects both door endpoints to the **single wall closest to the door's center**, ensuring consistent geometry.
+- **Compilation**: Fixed `is_node_in_graph` vs `has_node` API mismatch.
+
 ## Commit 29-12-2025 18:10
 
 ### Added
@@ -159,6 +235,23 @@ All notable changes to this project will be documented in this file.
             robot_pose = robot_pose + pose_correction
         
         update_robot_graphic(robot_pose)
+    ```
+    
+    #### Algorithm Flowchart
+    
+    ```mermaid
+    flowchart TD
+        A[execute_localiser] --> B{initial_localisation_done?}
+        B -->|No| C[Grid search 200 poses]
+        C --> D[Select best match]
+        D --> E[Set robot_pose]
+        E --> F[Continue]
+        B -->|Yes| F
+        F --> G{match_error < 3500mm<br/>and matches ≥ 3?}
+        G -->|Yes| H[Update pose with solve_pose]
+        G -->|No| I[Keep current pose]
+        H --> J[Update robot graphic]
+        I --> J
     ```
     
     #### Files Modified
@@ -356,3 +449,5 @@ All notable changes to this project will be documented in this file.
 - **Rotation Speed**: Increased rotational velocity parameters to improve responsiveness:
     - `TURN` state speed increased from 0.4 to **0.8**.
     - `ORIENT_TO_DOOR` state speed increased from 0.2 to **0.5**.
+
+
