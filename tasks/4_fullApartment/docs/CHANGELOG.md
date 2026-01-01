@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## Commit 01-01-2026 [UI Improvements]
+
+### Added
+- **Topological Graph Frame (`mainUI.ui`)**:
+    - Added a new `frame_graph` widget to visualize the robot's topological map in real-time.
+    - The graph displays Room and Door nodes with their connections, providing a semantic overview of the explored environment.
+
+### Changed
+- **UI Layout Refinements (`mainUI.ui`)**:
+    - Limited LCD widget expansion with `maximumSize` constraints (80px width) to keep labels close to their corresponding displays.
+    - Added horizontal spacers to all dashboard rows for consistent left-aligned grouping of controls.
+    - Relocated the **Stop** button to the same row as the "Room" display for better ergonomic access during operation.
+
+### Fixed
+- **Graph Node Text Rendering**:
+    - Fixed inverted/distorted room labels in the topological graph visualization caused by `QGraphicsView`'s Y-axis flip.
+    - Improved text sharpness by using `QFont` directly instead of `setScale()` transformation.
+    - Applied counter-transform `QTransform::fromScale(1, -1)` to text items for correct orientation.
+
 ## Commit 31-12-2025 13:00
 
 ### Added

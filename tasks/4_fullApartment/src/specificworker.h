@@ -158,7 +158,7 @@ class SpecificWorker final : public GenericWorker
         Params params;
 
         // viewer
-        AbstractGraphicViewer *viewer, *viewer_room;
+        AbstractGraphicViewer *viewer, *viewer_room, *viewer_graph;
         QGraphicsPolygonItem *robot_draw, *robot_room_draw;
 
         // robot
@@ -231,6 +231,7 @@ class SpecificWorker final : public GenericWorker
 
         // draw
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
+        void draw_topology_graph(QGraphicsScene *scene);
         void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
         void draw_room_doors(const std::vector<Door> &doors, QGraphicsScene *scene);
         void draw_door_target(const std::optional<Eigen::Vector2f> &target, QGraphicsScene *scene);
@@ -278,6 +279,8 @@ class SpecificWorker final : public GenericWorker
         // runtime debug flag - when true, detailed qInfo() logs are emitted
         bool debug_runtime = true;
         std::vector<QGraphicsItem *> room_door_items;
+        std::vector<Door> accumulated_doors_for_room; // Accumulate doors during TURN
+        std::map<int, Eigen::Vector2f> graph_vis_positions;
 
 
 

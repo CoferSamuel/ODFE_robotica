@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1235</width>
-    <height>773</height>
+    <height>920</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,8 +29,11 @@
          <property name="minimumSize">
           <size>
            <width>500</width>
-           <height>300</height>
+           <height>350</height>
           </size>
+         </property>
+         <property name="accessibleName">
+          <string>LIDAR_Map</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -51,8 +54,11 @@
          <property name="minimumSize">
           <size>
            <width>500</width>
-           <height>300</height>
+           <height>350</height>
           </size>
+         </property>
+         <property name="accessibleName">
+          <string>Room_View</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::StyledPanel</enum>
@@ -83,6 +89,12 @@
                </item>
                <item>
                 <widget class="QLCDNumber" name="lcdNumber_x">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
                    <bold>true</bold>
@@ -103,6 +115,12 @@
                </item>
                <item>
                 <widget class="QLCDNumber" name="lcdNumber_y">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
                    <bold>true</bold>
@@ -123,6 +141,12 @@
                </item>
                <item>
                 <widget class="QLCDNumber" name="lcdNumber_angle">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
                  <property name="font">
                   <font>
                    <bold>true</bold>
@@ -131,6 +155,19 @@
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <spacer name="spacer_row1">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </item>
@@ -146,7 +183,14 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLCDNumber" name="lcdNumber_adv"/>
+                <widget class="QLCDNumber" name="lcdNumber_adv">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -160,9 +204,29 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLCDNumber" name="lcdNumber_rot"/>
+                <widget class="QLCDNumber" name="lcdNumber_rot">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <spacer name="spacer_row2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
             </layout>
            </item>
@@ -182,39 +246,95 @@
                </property>
               </widget>
              </item>
+             <item>
+              <spacer name="spacer_row3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
             </layout>
            </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_room">
+             <item>
+              <widget class="QLabel" name="label_room">
+               <property name="text">
+                <string>Room</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLCDNumber" name="lcdNumber_room">
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="spacer_row4">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton_stop">
+               <property name="text">
+                <string>Stop</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_img">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>250</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
           </layout>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_stop">
-           <property name="text">
-            <string>Stop</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_graph">
+        <layout class="QVBoxLayout" name="verticalLayout_graph">
          <item>
-          <widget class="QCustomPlot" name="localizationPlot" native="true">
+          <widget class="QFrame" name="frame_graph">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -224,27 +344,42 @@
            <property name="minimumSize">
             <size>
              <width>400</width>
-             <height>50</height>
+             <height>100</height>
             </size>
+           </property>
+           <property name="accessibleName">
+            <string>Topological_Graph</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCustomPlot" name="localizationPlot" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="accessibleName">
+            <string>Localization_Error_Plot</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_img">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

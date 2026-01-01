@@ -193,6 +193,10 @@ void SpecificWorker::initialize() {
     robot_room_draw = rr;
     // Note: Room walls are NOT drawn here - they appear only after badge recognition
 
+    // Initialize Graph Topology Viewer
+    viewer_graph = new AbstractGraphicViewer(this->frame_graph, QRectF(-2000, -2000, 4000, 4000), false);
+
+
     // initialise robot pose
     robot_pose.setIdentity();
     robot_pose.translate(Eigen::Vector2d(0.0, 0.0));
@@ -338,7 +342,7 @@ void SpecificWorker::compute() {
   }
 
   // Draw the topological graph
-
+  draw_topology_graph(&viewer_graph->scene);
 
   // Run localisation logic
   execute_localiser();
@@ -372,7 +376,7 @@ void SpecificWorker::compute() {
     QImage qimg(display_img.data, display_img.cols, display_img.rows,
                 static_cast<int>(display_img.step), QImage::Format_RGB888);
     label_img->setPixmap(QPixmap::fromImage(qimg).scaled(
-        label_img->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+        label_img->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
   }
 
   // Update UI
@@ -383,6 +387,8 @@ void SpecificWorker::compute() {
   lcdNumber_angle->display(qRadiansToDegrees(bState.alpha));
   lcdNumber_adv->display(adv);
   lcdNumber_rot->display(rot);
+  lcdNumber_rot->display(rot);
+  lcdNumber_room->display(current_room_index);
   label_state->setText(to_string(state));
 }
 
@@ -712,36 +718,151 @@ void SpecificWorker::draw_room_doors(const std::vector<Door> &doors,
   }
 }
 
-void SpecificWorker::capture_doors_for_current_room() {
-  auto doors_robot_frame = door_detector.doors();
-  nominal_rooms[current_room_index].doors.clear();
+void SpecificWorker::draw_topology_graph(QGraphicsScene *scene) {
+  static std::vector<QGraphicsItem *> graph_items;
 
-  for (const auto &door : doors_robot_frame) {
-    // Transform door endpoints from robot frame to world frame
-    Eigen::Vector2d p1_robot(door.p1.x(), door.p1.y());
-    Eigen::Vector2d p2_robot(door.p2.x(), door.p2.y());
+  for (auto *item : graph_items) {
+    scene->removeItem(item);
+    delete item;
+  }
+  graph_items.clear();
 
-    Eigen::Vector2d p1_world = robot_pose * p1_robot;
-    Eigen::Vector2d p2_world = robot_pose * p2_robot;
+  if (!topology_graph) return;
 
-    // Align door endpoints to the closest wall (based on door center to ensure consistency)
-    Eigen::Vector2f center_world = (p1_world.cast<float>() + p2_world.cast<float>()) / 2.f;
-    const auto& room = nominal_rooms[current_room_index];
-    const auto wall = room.get_closest_wall_to_point(center_world);
-    const auto& wall_line = std::get<0>(wall);
+// Force-directed layout parameters
+  const float REPULSION_FORCE = 5000000.f;
+  const float SPRING_FORCE = 0.05f;
+  const float SPRING_LENGTH = 800.f;  // Target distance for connected nodes
+  const float CENTER_FORCE = 0.01f;
+  const int ITERATIONS = 50; // Run layout multiple times per frame if needed
 
-    Eigen::Vector2f p1_aligned = wall_line.projection(p1_world.cast<float>());
-    Eigen::Vector2f p2_aligned = wall_line.projection(p2_world.cast<float>());
-
-    // Create door using aligned endpoints
-    Door world_door(p1_aligned, door.p1_angle, p2_aligned, door.p2_angle);
-
-    nominal_rooms[current_room_index].doors.push_back(world_door);
+  // 1. Initialize new nodes
+  for (const auto &[id, node] : topology_graph->get_nodes()) {
+      if (graph_vis_positions.find(id) == graph_vis_positions.end()) {
+          // New node: place near neighbors or at random
+          Eigen::Vector2f init_pos(0,0);
+          auto neighbors = topology_graph->get_neighbors(id);
+          if (!neighbors.empty() && graph_vis_positions.count(neighbors[0])) {
+               // Place near first neighbor with random offset
+               Eigen::Vector2f offset = Eigen::Vector2f::Random() * 100.f;
+               init_pos = graph_vis_positions[neighbors[0]] + offset;
+          } else {
+               // Random start
+               init_pos = Eigen::Vector2f::Random() * 500.f;
+          }
+          graph_vis_positions[id] = init_pos;
+      }
   }
 
+  // 2. Physics Simulation Step
+  for (int iter = 0; iter < ITERATIONS; ++iter) {
+      std::map<int, Eigen::Vector2f> forces;
+      
+      // Calculate Forces
+      for (const auto &[id1, pos1] : graph_vis_positions) {
+          forces[id1] = Eigen::Vector2f::Zero();
+          
+          // Repulsion (All nodes repel)
+          for (const auto &[id2, pos2] : graph_vis_positions) {
+              if (id1 == id2) continue;
+              Eigen::Vector2f diff = pos1 - pos2;
+              float dist_sq = diff.squaredNorm();
+              if (dist_sq < 1) dist_sq = 1; // Avoid singularity
+              float dist = std::sqrt(dist_sq);
+              
+              forces[id1] += (diff / dist) * (REPULSION_FORCE / dist_sq);
+          }
+          
+          // Spring (Connected nodes attract)
+          for (int neighbor_id : topology_graph->get_neighbors(id1)) {
+              if (graph_vis_positions.count(neighbor_id)) {
+                  Eigen::Vector2f diff = graph_vis_positions[neighbor_id] - pos1;
+                  float dist = diff.norm();
+                  float displacement = dist - SPRING_LENGTH;
+                  // F = k * x
+                  forces[id1] += (diff / dist) * (displacement * SPRING_FORCE);
+              }
+          }
+          
+           // Center weak attraction to keep graph in view
+          forces[id1] -= pos1 * CENTER_FORCE;
+      }
+      
+      // Apply Forces
+      for (auto &[id, pos] : graph_vis_positions) {
+          pos += forces[id]; // Assuming unit mass and dt=1 for simplicity
+      }
+  }
+
+  // 3. Draw Edges
+  QPen edgePen(Qt::black, 15);
+  for (const auto &[id1, node] : topology_graph->get_nodes()) {
+    for (int id2 : topology_graph->get_neighbors(id1)) {
+        if (id2 > id1) { // Avoid duplicates
+             if (!graph_vis_positions.count(id1) || !graph_vis_positions.count(id2)) continue;
+             
+             auto p1 = graph_vis_positions[id1];
+             auto p2 = graph_vis_positions[id2];
+             
+             auto line = scene->addLine(p1.x(), p1.y(), p2.x(), p2.y(), edgePen);
+             graph_items.push_back(line);
+        }
+    }
+  }
+
+  // 4. Draw Nodes
+  QBrush roomBrush(Qt::blue);
+  QPen roomPen(Qt::black, 5);
+  QBrush doorBrush(Qt::red);
+
+  for (const auto &[id, pos] : graph_vis_positions) {
+      if (!topology_graph->has_node(id)) continue;
+      auto node = topology_graph->get_node(id);
+      
+      if (node.type == NodeType::ROOM) {
+          QBrush brush = (node.room_index == current_room_index) ? QBrush(Qt::green) : roomBrush;
+          auto circle = scene->addEllipse(-150, -150, 300, 300, roomPen, brush);
+          circle->setPos(pos.x(), pos.y());
+          graph_items.push_back(circle);
+          
+          auto text = scene->addText(QString::fromStdString(node.name));
+          QFont font("Arial", 40, QFont::Bold);
+          text->setFont(font);
+          
+          // Flip text vertically to counter inverted Y-axis in view
+          text->setTransform(QTransform::fromScale(1, -1));
+          
+          // Center text in the node (accounting for flipped bounding rect)
+          QRectF textRect = text->boundingRect();
+          text->setPos(pos.x() - textRect.width() / 2, pos.y() + textRect.height() / 2);
+          
+          graph_items.push_back(text);
+          
+      } else if (node.type == NodeType::DOOR) {
+          auto rect = scene->addRect(-100, -50, 200, 100, roomPen, doorBrush);
+          rect->setPos(pos.x(), pos.y());
+          graph_items.push_back(rect);
+          
+          if (debug_runtime) {
+            auto text = scene->addText(QString::number(id));
+            text->setScale(3);
+            text->setPos(pos.x(), pos.y());
+            graph_items.push_back(text);
+          }
+      }
+  }
+}
+
+void SpecificWorker::capture_doors_for_current_room() {
+  // Use accumulated doors from TURN phase instead of single snapshot
+  nominal_rooms[current_room_index].doors = accumulated_doors_for_room;
+  
   if (debug_runtime)
     qInfo() << "[DOORS] Captured" << nominal_rooms[current_room_index].doors.size()
-            << "doors for room" << current_room_index;
+            << "doors for room" << current_room_index << "(from accumulation)";
+            
+  // Clear accumulation for next room
+  accumulated_doors_for_room.clear();
 }
 
 int SpecificWorker::select_door_from_graph() {
@@ -853,10 +974,55 @@ void SpecificWorker::set_entry_door_by_proximity() {
             
     // LEARN: Connect previous door to this closest door if valid
     if (previous_traversed_door_id != -1 && topology_graph->has_node(previous_traversed_door_id)) {
-        topology_graph->connect(previous_traversed_door_id, closest_door);
-        qInfo() << "[ENTRY_DOOR] LEARNED connection:" << previous_traversed_door_id 
-                << "<->" << closest_door;
-        previous_traversed_door_id = -1; // Learned, reset
+        // Validation: Ensure we are not connecting two doors of the SAME room
+        bool same_room = false;
+        bool door_already_linked = false;
+
+        auto prev_neighbors = topology_graph->get_neighbors(previous_traversed_door_id);
+        auto curr_neighbors = topology_graph->get_neighbors(closest_door);
+        
+        // Check 1: Same Room?
+        for (int p_neighbor : prev_neighbors) {
+            for (int c_neighbor : curr_neighbors) {
+                if (p_neighbor == c_neighbor) {
+                    same_room = true; 
+                    break;
+                }
+            }
+            if (same_room) break;
+        }
+
+        // Check 2: Door Exclusivity (Max degree 2: 1 Room + 1 Door)
+        // Check if 'previous' door already has a DOOR neighbor
+        for (int p_neighbor : prev_neighbors) {
+             if (topology_graph->get_node(p_neighbor).type == NodeType::DOOR) {
+                 door_already_linked = true;
+                 qInfo() << "[ENTRY_DOOR] Blocked: Previous door" << previous_traversed_door_id 
+                         << "already linked to door" << p_neighbor;
+                 break;
+             }
+        }
+        // Check if 'current' door already has a DOOR neighbor
+        if (!door_already_linked) {
+            for (int c_neighbor : curr_neighbors) {
+                if (topology_graph->get_node(c_neighbor).type == NodeType::DOOR) {
+                    door_already_linked = true;
+                     qInfo() << "[ENTRY_DOOR] Blocked: Current door" << closest_door 
+                             << "already linked to door" << c_neighbor;
+                    break;
+                }
+            }
+        }
+
+        if (!same_room && !door_already_linked) {
+            topology_graph->connect(previous_traversed_door_id, closest_door);
+            qInfo() << "[ENTRY_DOOR] LEARNED connection:" << previous_traversed_door_id 
+                    << "<->" << closest_door;
+        } else {
+            qInfo() << "[ENTRY_DOOR] Connection blocked. Same Room:" << same_room 
+                    << "Already Linked:" << door_already_linked;
+        }
+        previous_traversed_door_id = -1; // Reset attempt regardless of success
     }
   }
   room_entry_position.reset();
@@ -1118,6 +1284,45 @@ SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners) {
   bool detected = false;
   int direction = 1;
   float rot_speed = 0.8f;
+  
+  // Accumulate doors during rotation to capture all doors from different angles
+  auto current_doors = door_detector.doors();
+  for (const auto& door : current_doors) {
+    Eigen::Vector2d center_robot(door.center().x(), door.center().y());
+    Eigen::Vector2d center_world = robot_pose * center_robot;
+    
+    // Check if this door is already in accumulated list (by proximity)
+    bool is_new = true;
+    for (const auto& existing : accumulated_doors_for_room) {
+        Eigen::Vector2f existing_center = (existing.p1 + existing.p2) / 2.f;
+        if ((existing_center - center_world.cast<float>()).norm() < 500.f) {
+            is_new = false;
+            break;
+        }
+    }
+    
+    if (is_new) {
+        // Transform and add to accumulated list
+        Eigen::Vector2d p1_world = robot_pose * Eigen::Vector2d(door.p1.x(), door.p1.y());
+        Eigen::Vector2d p2_world = robot_pose * Eigen::Vector2d(door.p2.x(), door.p2.y());
+        
+        // Align to wall
+        Eigen::Vector2f center_f = center_world.cast<float>();
+        const auto& room = nominal_rooms[current_room_index];
+        const auto wall = room.get_closest_wall_to_point(center_f);
+        const auto& wall_line = std::get<0>(wall);
+        
+        Eigen::Vector2f p1_aligned = wall_line.projection(p1_world.cast<float>());
+        Eigen::Vector2f p2_aligned = wall_line.projection(p2_world.cast<float>());
+        
+        Door world_door(p1_aligned, door.p1_angle, p2_aligned, door.p2_angle);
+        accumulated_doors_for_room.push_back(world_door);
+        
+        if (debug_runtime)
+          qInfo() << "[TURN] Accumulated new door. Total:" << accumulated_doors_for_room.size();
+    }
+  }
+  
   if (debug_runtime)
     qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED")
             << "panel. Rot speed:" << rot_speed;
@@ -1233,6 +1438,10 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
       
       // Set chosen_door_world_pos for sticky tracking
       chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
+      
+      // Explicitly set traversing_door_id for the sticky case
+      traversing_door_id = selected_graph_door_id;
+      
       if (debug_runtime)
         qInfo() << "[GOTO_DOOR] Graph selected door" << selected_graph_door_id
                 << "matched to index" << selected_index;
@@ -1318,8 +1527,38 @@ SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
   }
 
   // Safety check
-  if (selected_index >= doors.size())
+  if (selected_index >= static_cast<int>(doors.size()))
     selected_index = 0;
+
+  // IMPORTANT: Identify the Graph Node ID for the selected door
+  // This ensures 'traversing_door_id' is set correctly for the connection logic in 'switch_room'
+  {
+      int room_graph_id = topology_graph->get_room_node_id(current_room_index);
+      if (room_graph_id >= 0) {
+          Eigen::Vector2d selected_world_pos = robot_pose * doors[selected_index].center().cast<double>();
+          
+          int closest_node_id = -1;
+          float best_dist = 2000.0f; // Threshold (mm) - increased to 2m to handle drift
+          
+          for (int neighbor_id : topology_graph->get_neighbors(room_graph_id)) {
+              const auto& node = topology_graph->get_node(neighbor_id);
+              if (node.type == NodeType::DOOR) {
+                  float d = (node.position.cast<double>() - selected_world_pos).norm();
+                  if (d < best_dist) {
+                      best_dist = d;
+                      closest_node_id = neighbor_id;
+                  }
+              }
+          }
+          
+          if (closest_node_id != -1) {
+              traversing_door_id = closest_node_id;
+              if (debug_runtime)
+                qInfo() << "[GOTO_DOOR] Identified traversing_door_id =" << traversing_door_id 
+                        << "for physical door index" << selected_index;
+          }
+      }
+  }
 
 navigate_to_door:
   const auto &door = doors[selected_index];
@@ -1445,14 +1684,8 @@ SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points) {
     omnirobot_proxy->setSpeedBase(0, 0, 0);
     orient_target_angle.reset(); // Clear the sticky target
     
-    // Set traversing_door_id for graph update in switch_room()
-    if (chosen_door_world_pos.has_value()) {
-      traversing_door_id = topology_graph->get_door_by_position(
-          chosen_door_world_pos.value().cast<float>());
-    } else if (chosen_door_world_pos_room1.has_value()) {
-      traversing_door_id = topology_graph->get_door_by_position(
-          chosen_door_world_pos_room1.value().cast<float>());
-    }
+    // NOTE: traversing_door_id is already set correctly during goto_door() 
+    // at lines 1440 (graph-based) or 1552 (proximity-based). Do not overwrite.
     
     return {STATE::CROSS_DOOR, 0.0f, 0.0f};
   }

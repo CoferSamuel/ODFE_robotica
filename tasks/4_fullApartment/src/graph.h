@@ -46,6 +46,7 @@ public:
     int get_room_node_id(int room_index) const;  // Get node ID for a room index
     bool is_room_in_graph(int room_index) const;
     int node_count() const { return static_cast<int>(nodes_.size()); }
+    const std::map<int, GraphNode>& get_nodes() const { return nodes_; }
     
     // Heading constraint for room re-entry
     void set_room_heading(int room_index, float heading);

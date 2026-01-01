@@ -6,7 +6,6 @@ tasks/4_fullApartment/CMakeFiles/cmake.check_cache
 tasks/4_fullApartment/bin/multiroom
 others/initializeComponents/output/bridge.err
 others/initializeComponents/output/camera.err
-.gitignore
 others/initializeComponents/output/joy.err
 others/initializeComponents/output/helios.err
 others/initializeComponents/output/pearl.err
@@ -14,3 +13,4 @@ tasks/4_fullApartment/generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/
 tasks/4_fullApartment/personalREADME.md
 tasks/4_fullApartment/generated/CMakeFiles/
 tasks/4_fullApartment/generated/Makefile
+tasks/4_fullApartment/mcp_server/
