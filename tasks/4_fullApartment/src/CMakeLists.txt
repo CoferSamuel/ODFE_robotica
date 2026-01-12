@@ -4,6 +4,8 @@
 # --- Sources set ---
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
+  ../src/localiser/localiser.cpp
+
   ../src/room_detector.cpp          # Room feature extraction
   ../src/graph.cpp                  # Graph for room/door topology
   ../src/hungarian.cpp              # Hungarian algorithm wrapper
@@ -30,6 +32,8 @@ endif()
 # --- Headers set ---
 LIST(APPEND HEADERS
   ../src/specificworker.h
+  ../src/localiser/localiser.h
+
   ../src/room_detector.h
   ../src/graph.h
   ../src/hungarian.h

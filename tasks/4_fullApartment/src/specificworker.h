@@ -56,6 +56,7 @@
 #include "image_processor.h"
 #include "nominal_room.h"
 #include "graph.h"
+#include "localiser/localiser.h"
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
@@ -110,13 +111,9 @@ class SpecificWorker final : public GenericWorker
          * @brief Runs the localization algorithm and updates the robot's pose.
          * 
          * This method performs the following operations:
-         * 1. Transforms nominal room corners to robot frame for matching
-         * 2. Matches detected corners to nominal room corners using Hungarian algorithm
-         * 3. Computes maximum match error and updates time series plot
-         * 4. Solves robot pose from matched corners
-         * 5. Updates robot pose if localized
-         * 6. Processes state machine logic
-         * 7. Updates robot graphic position in the room viewer
+         * 1. Uses Localiser class to compute matches and pose
+         * 2. Updates robot pose if localized
+         * 3. Updates plots and graphics
          */
         void execute_localiser();
 
@@ -168,7 +165,7 @@ class SpecificWorker final : public GenericWorker
         std::vector<NominalRoom> nominal_rooms{ NominalRoom{5500.f, 4000.f}, NominalRoom{8000.f, 4000.f}};
         int current_room_index = 0;
         rc::Room_Detector room_detector;
-        rc::Hungarian hungarian;
+        Localiser localiser;
         std::optional<bool> chosen_door_was_on_left;  // for Room 1 selection
         std::optional<Eigen::Vector2d> chosen_door_world_pos;  // for Room 0 sticky tracking
         std::optional<Eigen::Vector2d> chosen_door_world_pos_room1;  // for Room 1 sticky tracking
@@ -291,11 +288,8 @@ class SpecificWorker final : public GenericWorker
 
         bool update_robot_pose(Eigen::Vector3d pose);
         void move_robot(float adv, float rot, float max_match_error);
-        Eigen::Vector3d solve_pose(const Corners &corners, const Match &match);
         void predict_robot_pose();
         std::tuple<float, float> robot_controller(const Eigen::Vector2f &target);
-        Eigen::Affine2d find_best_initial_pose(const Corners &detected_corners, 
-                                               std::optional<float> reference_heading = std::nullopt);
 
 
 signals:

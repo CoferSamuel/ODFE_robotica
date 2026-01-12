@@ -339,13 +339,18 @@ void SpecificWorker::compute() {
                                QPen(Qt::black, 30));
     // Draw doors
     draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
+
+    localiser.update_pose(robot_room_draw, robot_pose);
+  
   }
+
+  // Run localisation logic
+  execute_localiser();
 
   // Draw the topological graph
   draw_topology_graph(&viewer_graph->scene);
 
-  // Run localisation logic
-  execute_localiser();
+
 
   // Execute state machine using last matching results and command robot
   auto ret_val =
@@ -393,190 +398,32 @@ void SpecificWorker::compute() {
 }
 
 void SpecificWorker::execute_localiser() {
-  // Bootstrap: If not yet localized, try multi-hypothesis grid search
-  if (!initial_localisation_done && !corners.empty()) {
-    // If room is already recognized, use stored heading as constraint
-    std::optional<float> ref_heading = std::nullopt;
-    if (room_recognized[current_room_index] && topology_graph->is_room_in_graph(current_room_index)) {
-      ref_heading = topology_graph->get_room_heading(current_room_index);
-    }
-    
-    robot_pose = find_best_initial_pose(corners, ref_heading);
-    initial_localisation_done = true;
-    
-    // Save entry position for later door matching (proximity-based)
-    room_entry_position = robot_pose.translation().cast<float>();
-    qInfo() << "[POS_SAVED] Saved entry position for room" << current_room_index
-            << ": (" << room_entry_position.value().x() 
-            << "," << room_entry_position.value().y() << ")";
-    
-    // If room already recognized, update entry door immediately
-    if (room_recognized[current_room_index]) {
-      if (previous_traversed_door_id != -1) {
-          qInfo() << "[POS_SAVED] Room" << current_room_index << "recognized, calling set_entry_door_by_proximity to learn connection";
-          set_entry_door_by_proximity();
-      } else {
-          qInfo() << "[POS_SAVED] Room" << current_room_index << "recognized, entry door already set by learned connection (skipping proximity)";
-          room_entry_position.reset(); // Clear unused position
-      }
-    } else {
-      qInfo() << "[POS_SAVED] Room" << current_room_index << "not yet recognized, will set entry later";
-    }
-    
-    if (debug_runtime)
-      qInfo() << "localiser: Initial pose found via grid search at x="
-              << robot_pose.translation().x() << " y=" << robot_pose.translation().y();
-  }
-
-  // 1) Transform nominal room corners into the robot frame for matching
-  Corners robot_corners =
-      nominal_rooms[current_room_index].transform_corners_to(
-          robot_pose.inverse());
-
-  // 2) Match detected corners to nominal room corners using Hungarian algorithm
-  Match matched = hungarian.match(corners, robot_corners);
-
-  // 3) Compute maximum match error (for plotting and localisation decision)
-  float max_match_error = std::numeric_limits<float>::infinity();
-  if (!matched.empty()) {
-    const auto max_it =
-        std::ranges::max_element(matched, [](const auto &a, const auto &b) {
-          return std::get<2>(a) < std::get<2>(b);
-        });
-    max_match_error = static_cast<float>(std::get<2>(*max_it));
-  }
-
-  // 4) Update time-series plot (if available)
-  if (time_series_plotter) {
-    time_series_plotter->addDataPoint(
-        match_error_graph,
-        (std::isfinite(max_match_error) ? max_match_error : 0.f));
-    time_series_plotter->update();
-  }
-
-  // Store matching results so compute() can run the state machine
-  last_matched = matched;
-  last_match_error =
-      (std::isfinite(max_match_error) ? max_match_error
-                                      : std::numeric_limits<float>::infinity());
-
-  // 5) Localisation decision using configured threshold (badge-independent)
-  const bool was_localised = localised;
-  if (std::isfinite(max_match_error) &&
-      max_match_error < LOCALISATION_MATCH_ERROR_THRESHOLD &&
-      matched.size() >= 3) {
-    localised = true;
-    if (!was_localised && debug_runtime)
-      qInfo() << "localiser: Localisation achieved. max_error="
-              << max_match_error;
-  } else {
-    localised = false;
-    if (was_localised && debug_runtime)
-      qInfo() << "localiser: Localisation lost. max_error=" << max_match_error;
-  }
-
-  if (debug_runtime)
-    qInfo() << "localiser: Localised=" << (localised ? "true" : "false")
-            << " max_error=" << max_match_error << " matches=" << matched.size();
-
-  // 6) Update pose continuously when we have good matches (independent of badge)
-  if (matched.size() >= 3 && std::isfinite(max_match_error) &&
-      max_match_error < LOCALISATION_MATCH_ERROR_THRESHOLD) {
-    Eigen::Vector3d pose = solve_pose(corners, matched);
-    if (update_robot_pose(pose)) {
-
-
-      if (debug_runtime) {
-        qInfo() << "localiser: Pose updated: x=" << robot_pose.translation().x()
-                << " y=" << robot_pose.translation().y();
-        double angle = std::atan2(robot_pose.rotation()(1, 0),
-                                  robot_pose.rotation()(0, 0));
-        qInfo() << " theta(deg)=" << qRadiansToDegrees(angle);
-      }
-    } else {
-      if (debug_runtime)
-        qInfo() << "localiser: Invalid pose (NaN), not updating robot_pose";
-    }
-  }
-
-  // 7) Update robot graphic in the room viewer regardless of localisation
-  robot_room_draw->setPos(robot_pose.translation().x(),
-                          robot_pose.translation().y());
-  double angle =
-      std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
-  robot_room_draw->setRotation(qRadiansToDegrees(angle));
-
-  // 8) Debug/trace
-  if (debug_runtime)
-    qInfo() << "localiser: Updated robot graphic at ("
-            << robot_pose.translation().x() << ", "
-            << robot_pose.translation().y()
-            << ") angle=" << qRadiansToDegrees(angle) << " deg";
-}
-
-Eigen::Affine2d SpecificWorker::find_best_initial_pose(const Corners &detected_corners,
-                                                        std::optional<float> reference_heading) {
-  const auto &room = nominal_rooms[current_room_index];
-  const float w = room.width / 2.0f;
-  const float l = room.length / 2.0f;
-
-  Eigen::Affine2d best_pose = Eigen::Affine2d::Identity();
-  float best_error = std::numeric_limits<float>::infinity();
-
-  // If reference heading is provided, constrain search to ±45° around it
-  float theta_start = 0.0f;
-  float theta_end = 2 * M_PI;
-  float theta_step = M_PI / 4;
   
-  if (reference_heading.has_value()) {
-    // Search only near the reference heading (±45°)
-    theta_start = reference_heading.value() - M_PI / 4;
-    theta_end = reference_heading.value() + M_PI / 4;
-    theta_step = M_PI / 8;  // Finer steps within constrained range
-    if (debug_runtime)
-      qInfo() << "Grid search constrained to heading" << reference_heading.value() << "±45°";
+  // Use graph heading (if available) as hint for grid search
+  std::optional<float> ref_heading = std::nullopt;
+  if (!initial_localisation_done && !corners.empty() && 
+      room_recognized[current_room_index] && topology_graph->is_room_in_graph(current_room_index)) {
+      ref_heading = topology_graph->get_room_heading(current_room_index);
   }
 
-  // Grid search: 5 positions × 5 positions × angles
-  for (float x = -w * 0.8f; x <= w * 0.8f; x += w * 0.4f) {
-    for (float y = -l * 0.8f; y <= l * 0.8f; y += l * 0.4f) {
-      for (float theta = theta_start; theta <= theta_end; theta += theta_step) {
-        Eigen::Affine2d candidate;
-        candidate.setIdentity();
-        candidate.translate(Eigen::Vector2d(x, y));
-        candidate.rotate(theta);
+  // --- Process Localization via Localiser Class ---
+  const auto& room = nominal_rooms[current_room_index];
+  
+  auto result = localiser.process(corners, room, robot_pose, 
+                                  initial_localisation_done, 
+                                  localised, 
+                                  ref_heading, 
+                                  debug_runtime);
 
-        // Transform nominal corners to robot frame using this candidate
-        Corners robot_corners = room.transform_corners_to(candidate.inverse());
+  // Update State from Result
+  localised = result.localised;
+  last_matched = result.matches;
+  last_match_error = result.max_match_error;
 
-        // Match with detected corners
-        Match matched = hungarian.match(detected_corners, robot_corners);
-
-        if (matched.size() < 3)
-          continue; // Need at least 3 matches
-
-        // Compute max error
-        float max_err = 0.0f;
-        for (const auto &m : matched) {
-          float err = static_cast<float>(std::get<2>(m));
-          if (err > max_err)
-            max_err = err;
-        }
-
-        if (max_err < best_error) {
-          best_error = max_err;
-          best_pose = candidate;
-        }
-      }
-    }
+  // Handle Pose Update
+  if (result.new_pose.has_value()) {
+      robot_pose = result.new_pose.value();
   }
-
-  if (debug_runtime)
-    qInfo() << "Grid search best error:" << best_error
-            << "at x=" << best_pose.translation().x()
-            << "y=" << best_pose.translation().y();
-
-  return best_pose;
 }
 
 void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &filtered_points,
@@ -1187,25 +1034,7 @@ void SpecificWorker::move_robot(float adv, float rot, float max_match_error) {
   }
 }
 
-Eigen::Vector3d SpecificWorker::solve_pose(const Corners &corners,
-                                           const Match &match) {
-  Eigen::MatrixXd W(match.size() * 2, 3);
-  Eigen::VectorXd b(match.size() * 2);
 
-  for (auto &&[i, m] : match | iter::enumerate) {
-    auto &[meas_c, nom_c, _] = m;
-    auto &[p_meas, __, ___] = meas_c;
-    auto &[p_nom, ____, _____] = nom_c;
-
-    b(2 * i) = p_nom.x() - p_meas.x();
-    b(2 * i + 1) = p_nom.y() - p_meas.y();
-    W.block<1, 3>(2 * i, 0) << 1.0, 0.0, -p_meas.y();
-    W.block<1, 3>(2 * i + 1, 0) << 0.0, 1.0, p_meas.x();
-  }
-  // estimate new pose with pseudoinverse
-  const Eigen::Vector3d r = (W.transpose() * W).inverse() * W.transpose() * b;
-  return r;
-}
 
 /**
  * @brief Angle-distance controller to navigate robot to room center.
@@ -1367,9 +1196,18 @@ SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners) {
       // Add doors to graph and connect to room
       for (size_t i = 0; i < room.doors.size(); ++i) {
         const auto& door = room.doors[i];
-        int door_node_id = topology_graph->add_door(
-            "Door_R" + std::to_string(current_room_index) + "_" + std::to_string(i),
-            door.p1, door.p2);
+        Eigen::Vector2f door_mid = (door.p1 + door.p2) / 2.0f;
+        int door_node_id = topology_graph->get_door_by_position(door_mid, 600.0f);
+        
+        if (door_node_id == -1) {
+             door_node_id = topology_graph->add_door(
+                "Door_R" + std::to_string(current_room_index) + "_" + std::to_string(i),
+                door.p1, door.p2);
+        } else {
+             if (debug_runtime)
+                qInfo() << "Reusing existing door node" << door_node_id << "for Room" << current_room_index;
+        }
+
         topology_graph->connect(room_node_id, door_node_id);
       }
       
