@@ -31,11 +31,12 @@
 // If you want to reduce the period automatically due to lack of use, you must uncomment the following line
 //#define HIBERNATION_ENABLED
 
+#include "navigation_state_machine.h"
+
 #include <genericworker.h>
+#include <opencv2/opencv.hpp>
 #include "abstract_graphic_viewer/abstract_graphic_viewer.h"
-#include <expected> // Commented to compile
 #include <random>
-#include <doublebuffer/DoubleBuffer.h>
 #include "time_series_plotter.h"
 #include <QTimer>
 #include <QLabel>
@@ -45,44 +46,40 @@
 #ifdef emit // To avoid problems with the emit keyword defined in Qt.
 #undef emit // To avoid problems with the emit keyword defined in Qt
 #endif
-#include <execution>
 #include <tuple>
 #include <utility>
 #include <vector>
 #include <limits>
 #include "room_detector.h"
-#include "hungarian.h"
 #include "door_detector.h"
 #include "image_processor.h"
 #include "nominal_room.h"
 #include "graph.h"
 #include "localiser/localiser.h"
 
-/**
- * \brief Class SpecificWorker implements the core functionality of the component.
- */
 class SpecificWorker final : public GenericWorker
 {
     Q_OBJECT
+    friend class NavigationStateMachine; // Allow access to private members
+    
     public:
-        /**
-         * \brief Constructor for SpecificWorker.
-         * \param configLoader Configuration loader for the component.
-         * \param tprx Tuple of proxies required for the component.
-         * \param startup_check Indicates whether to perform startup checks.
-         */
+        // ===================================
+        // LIFECYCLE & CORE
+        // ===================================
         SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check);
-        void JoystickAdapter_sendData(RoboCompJoystickAdapter::TData data);
         ~SpecificWorker();
-        Match last_matched;
-        float last_match_error = std::numeric_limits<float>::infinity();
         static SpecificWorker* instance;
-        
-        enum class STATE {GOTO_DOOR, ORIENT_TO_DOOR, LOCALISE, GOTO_ROOM_CENTER, TURN, IDLE, CROSS_DOOR};
-        std::map<STATE, std::shared_ptr<std::ofstream>> log_files;
-        STATE state = STATE::IDLE;  // Start in IDLE state
+
+        // ===================================
+        // UTILS & CONFIG
+        // ===================================
+        // Enable/disable runtime debug logging
+        void set_debug_runtime(bool val) { debug_runtime = val; }
 
     public slots:
+        // ===================================
+        // SLOTS (RoboComp Interface)
+        // ===================================
         void initialize();
         void new_target_slot(QPointF target);
         void compute();
@@ -91,208 +88,132 @@ class SpecificWorker final : public GenericWorker
         int startup_check();
 
     private:
-        bool startup_check_flag;
-        
-        // Visualization methods
-
-        /**
-         * @brief Draws the main viewer with LiDAR data, detected corners, and room center.
-         * 
-         * This method performs the complete visualization pipeline:
-         * 1. Acquires LiDAR data from the sensor
-         * 2. Filters the data (basic filtering and door detection)
-         * 3. Detects corners and lines using RANSAC
-         * 4. Estimates room center from detected walls
-         * 5. Draws all elements in the main viewer
-         */
-        void draw_mainViewer();
-
-        /**
-         * @brief Runs the localization algorithm and updates the robot's pose.
-         * 
-         * This method performs the following operations:
-         * 1. Uses Localiser class to compute matches and pose
-         * 2. Updates robot pose if localized
-         * 3. Updates plots and graphics
-         */
-        void execute_localiser();
-
-    struct Params
+        // ===================================
+        // PARAMETERS
+        // ===================================
+        struct Params
         {
             float ROBOT_WIDTH = 460;  // mm
             float ROBOT_LENGTH = 480;  // mm
-            float MAX_ADV_SPEED = 1000; // mm/s
-            float MAX_ROT_SPEED = 1; // rad/s
-            float MAX_SIDE_SPEED = 50; // mm/s
-            float MAX_TRANSLATION = 500; // mm/s
-            float MAX_ROTATION = 0.2;
-            float STOP_THRESHOLD = 700; // mm
-            float ADVANCE_THRESHOLD = ROBOT_WIDTH * 3; // mm
-            float LIDAR_FRONT_SECTION = 0.2; // rads, aprox 12 degrees
-            // wall
-            float LIDAR_RIGHT_SIDE_SECTION = M_PI/3; // rads, 90 degrees
-            float LIDAR_LEFT_SIDE_SECTION = -M_PI/3; // rads, 90 degrees
-            float WALL_MIN_DISTANCE = ROBOT_WIDTH*1.2;
-            // match error correction
-            float MATCH_ERROR_SIGMA = 150.f; // mm
-            float DOOR_REACHED_DIST = 300.f;
-            std::string LIDAR_NAME_LOW = "bpearl";
-            std::string LIDAR_NAME_HIGH = "helios";
             QRectF GRID_MAX_DIM{-5000, 2500, 10000, -5000};
-
-            // relocalization
-            float RELOCAL_CENTER_EPS = 300.f;    // mm: stop when |mean| < eps
-            float RELOCAL_KP = 0.002f;           // gain to convert mean (mm) -> speed (magnitude)
-            float RELOCAL_MAX_ADV = 300.f;       // mm/s cap while re-centering
-            float RELOCAL_MAX_SIDE = 300.f;      // mm/s cap while re-centering
-            float RELOCAL_ROT_SPEED = 0.3f;     // rad/s while aligning
-            float RELOCAL_DELTA = 5.0f * M_PI/180.f; // small probe angle in radians
-            float RELOCAL_MATCH_MAX_DIST = 2000.f;   // mm for Hungarian gating
-            float RELOCAL_DONE_COST = 500.f;
-            float RELOCAL_DONE_MATCH_MAX_ERROR = 1000.f;
             float DOOR_APPROACH_DISTANCE = 1000.f;
         };
         Params params;
 
-        // viewer
-        AbstractGraphicViewer *viewer, *viewer_room, *viewer_graph;
-        QGraphicsPolygonItem *robot_draw, *robot_room_draw;
+        // ===================================
+        // STATE MACHINE
+        // ===================================
+    public: 
+        // Using State from NavigationStateMachine
+        using STATE = NavigationStateMachine::State;
+        
+        inline const char* to_string(const STATE s) const {
+            return NavigationStateMachine::to_string(s);
+        }
+        
+        // Log files map
+        std::map<STATE, std::shared_ptr<std::ofstream>> log_files;
+        
+        // Proxy for current state (optional, or access via sm)
+        STATE state = STATE::IDLE;
+    
+    private:
+        // Navigation State Machine Instance
+        std::unique_ptr<NavigationStateMachine> navigation_sm;
 
-        // robot
-        Eigen::Affine2d robot_pose;
+        // State Handlers are now in NavigationStateMachine
 
-        // rooms
-        std::vector<NominalRoom> nominal_rooms{ NominalRoom{5500.f, 4000.f}, NominalRoom{8000.f, 4000.f}};
-        int current_room_index = 0;
-        rc::Room_Detector room_detector;
-        Localiser localiser;
-        std::optional<bool> chosen_door_was_on_left;  // for Room 1 selection
-        std::optional<Eigen::Vector2d> chosen_door_world_pos;  // for Room 0 sticky tracking
-        std::optional<Eigen::Vector2d> chosen_door_world_pos_room1;  // for Room 1 sticky tracking
-        std::vector<bool> room_recognized;  // Track if room has been recognized (badge seen)
-        std::unique_ptr<Graph> topology_graph;  // Graph for room/door topology
-        int traversing_door_id = -1;  // Door node ID being crossed (for graph updates)
-        int previous_traversed_door_id = -1;  // Door crossed to enter the current room (for learning connections)
-        int selected_graph_door_id = -1;  // Sticky door selection from graph
-        std::optional<Eigen::Vector2f> room_entry_position;  // Robot position when entering room
+        // ===================================
+        // NAVIGATION & CONTROL
+        // ===================================
+        void move_robot(float adv, float rot, float max_match_error);
 
-        // LiDAR data and detected features
+        // ===================================
+        // PERCEPTION (LiDAR, Vision, Features)
+        // ===================================
+        // Data & Processors
         RoboCompLidar3D::TData data;
         Corners corners;
+        rc::Room_Detector room_detector;
+        DoorDetector door_detector;
+        
+        // Filtering Methods
+        std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
+        RoboCompLidar3D::TPoints filter_data_basic(const RoboCompLidar3D::TPoints &data);
+        RoboCompLidar3D::TPoints filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d);
+        std::optional<cv::Rect> detect_frame(const cv::Mat& img);
 
-        // Angle-distance controller state
-        std::optional<Eigen::Vector2d> target_room_center;
-        std::optional<Eigen::Vector2f> target_door_point;
-        float prev_angle_error = 0.0f;
-        std::optional<float> orient_target_angle;
-        std::optional<std::chrono::steady_clock::time_point> cross_door_start_time;
+        // ===================================
+        // LOCALIZATION
+        // ===================================
+        void execute_localiser();
+        
+        Localiser localiser;
+        Eigen::Affine2d robot_pose;
+        Match last_matched;
+        float last_match_error = std::numeric_limits<float>::infinity();
+        
+        bool localised = false;
+        bool initial_localisation_done = false;
+        std::optional<RoboCompGenericBase::TBaseState> last_odom_state; // Odometry integration
+        std::vector<bool> room_recognized; // Badge detection status
+        bool badge_found = false;
+        bool search_green = false;
 
-        // Controller parameters (angle-distance controller from RL0021)
-        struct ControllerParams {
-            float K_p = 1.0f;              // Proportional gain
-            float K_d = 0.5f;              // Derivative gain
-            float sigma = M_PI/3.0f;       // Angle brake sensitivity (60° - permissive)
-            float d_stop = 500.0f;         // Distance brake start (mm)
-            float k = 10.0f;               // Sigmoid steepness
-            float v_max = 600.0f;          // Maximum velocity (mm/s)
-        } controller_params;
+        // ===================================
+        // MAPPING & TOPOLOGY (Rooms & Doors)
+        // ===================================
+        void capture_doors_for_current_room();
+        int  select_door_from_graph();
+        void set_entry_door_by_proximity();
+        
+        std::vector<NominalRoom> nominal_rooms{ NominalRoom{5500.f, 4000.f}, NominalRoom{8000.f, 4000.f}};
+        int current_room_index = 0;
+        std::unique_ptr<Graph> topology_graph;
+        
+        // Topology State
+        int traversing_door_id = -1;
+        int previous_traversed_door_id = -1;
+        int selected_graph_door_id = -1;
+        std::optional<Eigen::Vector2f> room_entry_position;
+        std::optional<Eigen::Vector2f> expected_restart_position;
+        std::vector<Door> accumulated_doors_for_room;
+        std::map<int, int> last_exit_door_for_room;
+        
+        // Legacy/Special logic vars
+        std::optional<bool> chosen_door_was_on_left;
+        std::optional<Eigen::Vector2d> chosen_door_world_pos;
+        std::optional<Eigen::Vector2d> chosen_door_world_pos_room1;
 
-        // state machine
-        enum class State { IDLE, FORWARD, TURN, FOLLOW_WALL, SPIRAL };
-        // STATE enum moved to class scope for visibility
-        inline const char* to_string(const STATE s) const
-        {
-            switch(s) {
-                case STATE::IDLE:               return "IDLE";
-                case STATE::LOCALISE:           return "LOCALISE";
-                case STATE::GOTO_DOOR:          return "GOTO_DOOR";
-                case STATE::TURN:               return "TURN";
-                case STATE::ORIENT_TO_DOOR:     return "ORIENT_TO_DOOR";
-                case STATE::GOTO_ROOM_CENTER:   return "GOTO_ROOM_CENTER";
-                case STATE::CROSS_DOOR:         return "CROSS_DOOR";
-                default:                        return "UNKNOWN";
-            }
-        }
-        bool auto_nav_sequence_running = true;
-        using RetVal = std::tuple<STATE, float, float>;
-
-        RetVal goto_door(const RoboCompLidar3D::TPoints &points);
-        RetVal orient_to_door(const RoboCompLidar3D::TPoints &points);
-        RetVal cross_door(const RoboCompLidar3D::TPoints &points);
-        void switch_room();
-        RetVal localise(const Match &match);
-        RetVal goto_room_center(const RoboCompLidar3D::TPoints &points);
-        RetVal update_pose(const Corners &corners, const Match &match);
-        RetVal turn(const Corners &corners);
-        RetVal process_state(const RoboCompLidar3D::TPoints &data, const Corners &corners, const Match &match, AbstractGraphicViewer *viewer);
-
-        // draw
+        // ===================================
+        // VISUALIZATION
+        // ===================================
+        void draw_mainViewer();
         void draw_lidar(const RoboCompLidar3D::TPoints &filtered_points, std::optional<Eigen::Vector2d> center, QGraphicsScene *scene);
         void draw_topology_graph(QGraphicsScene *scene);
         void draw_room_center(const Eigen::Vector2d &center, QGraphicsScene *scene);
         void draw_room_doors(const std::vector<Door> &doors, QGraphicsScene *scene);
         void draw_door_target(const std::optional<Eigen::Vector2f> &target, QGraphicsScene *scene);
-        void capture_doors_for_current_room();  // Capture doors to world frame and store in NominalRoom
-        int select_door_from_graph();  // Select door using graph (returns door node ID, -1 if unavailable)
-        void set_entry_door_by_proximity();  // Set entry door based on robot's position
         void draw_points(const RoboCompLidar3D::TPoints &points, QGraphicsScene* scene);
 
-        std::optional<RoboCompLidar3D::TPoints> filter_min_distance_cppitertools(const RoboCompLidar3D::TPoints &points);
-        RoboCompLidar3D::TPoints filter_data_basic(const RoboCompLidar3D::TPoints &data);
-
-        // aux
-        RoboCompLidar3D::TPoints read_data();
-        std::expected<int, std::string> closest_lidar_index_to_given_angle(const auto &points, float angle);
-        RoboCompLidar3D::TPoints filter_same_phi(const RoboCompLidar3D::TPoints &points);
-        RoboCompLidar3D::TPoints filter_isolated_points(const RoboCompLidar3D::TPoints &points, float d);
-        void print_match(const Match &match, const float error =1.f) const;
-
-        // random number generator
-        std::random_device rd;
-
-        // DoubleBuffer for velocity commands
-        DoubleBuffer<std::tuple<float, float, float, long>, std::tuple<float, float, float, long>> commands_buffer;
-        std::tuple<float, float, float, long> last_velocities{0.f, 0.f, 0.f, 0.f};
-
-        // plotter
-        std::unique_ptr<TimeSeriesPlotter> time_series_plotter;
-        int match_error_graph; // To store the index of the speed graph
-
-        // doors
-        DoorDetector door_detector;
-
-        // image processor
-        rc::ImageProcessor image_processor;
-
-        // timing
-        std::chrono::time_point<std::chrono::high_resolution_clock> last_time = std::chrono::high_resolution_clock::now();
-
-        // relocalization
-        bool relocal_centered = false;
-        bool localised = false;
-        bool initial_localisation_done = false;  // Track if bootstrap localization complete
-        bool badge_found = false;
-        bool search_green = false;
-        // runtime debug flag - when true, detailed qInfo() logs are emitted
-        bool debug_runtime = true;
+        AbstractGraphicViewer *viewer, *viewer_room, *viewer_graph;
+        QGraphicsPolygonItem *robot_draw, *robot_room_draw;
+        
         std::vector<QGraphicsItem *> room_door_items;
-        std::vector<Door> accumulated_doors_for_room; // Accumulate doors during TURN
         std::map<int, Eigen::Vector2f> graph_vis_positions;
 
+        // ===================================
+        // INTERNAL UTILS
+        // ===================================
+        bool startup_check_flag;
+        bool debug_runtime = false;
+        std::random_device rd;
+        
+        // Plotting / Logging
+        std::unique_ptr<TimeSeriesPlotter> time_series_plotter;
+        int match_error_graph;
 
-
-    public:
-        void set_search_green(bool val) { search_green = val; }
-        // Enable/disable runtime debug logging (controlled via env var DEBUG_RUNTIME or programmatically)
-        void set_debug_runtime(bool val) { debug_runtime = val; }
-
-        bool update_robot_pose(Eigen::Vector3d pose);
-        void move_robot(float adv, float rot, float max_match_error);
-        void predict_robot_pose();
-        std::tuple<float, float> robot_controller(const Eigen::Vector2f &target);
-
-
-signals:
+    signals:
         //void customSignal();
 };
 

@@ -4,6 +4,8 @@ Camera360RGB = "camera360rgb:tcp -h localhost -p 10098"
 JoystickAdapter = "joystickadapter:tcp -h localhost -p 11230"
 Lidar3D = "lidar3d:tcp -h localhost -p 11990" # Helios: 11989
 OmniRobot = "omnirobot:tcp -h localhost -p 10004"
+Proxies.MNIST = "mnist:tcp -h localhost -p 10111"
+
 
 
 [Period]

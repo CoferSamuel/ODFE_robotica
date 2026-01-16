@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2025 by YOUR NAME HERE
+ *    Copyright (C) 2026 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -82,6 +82,7 @@
 #include <GenericBase.h>
 #include <JoystickAdapter.h>
 #include <Lidar3D.h>
+#include <MNIST.h>
 #include <OmniRobot.h>
 
 #define USE_QTGUI
@@ -176,6 +177,7 @@ int multiroom::run(int argc, char* argv[])
 	RoboCompCamera360RGB::Camera360RGBPrxPtr camera360rgb_proxy;
 	RoboCompJoystickAdapter::JoystickAdapterPrxPtr joystickadapter_proxy;
 	RoboCompLidar3D::Lidar3DPrxPtr lidar3d_proxy;
+	RoboCompMNIST::MNISTPrxPtr mnist_proxy;
 	RoboCompOmniRobot::OmniRobotPrxPtr omnirobot_proxy;
 
 
@@ -186,10 +188,12 @@ int multiroom::run(int argc, char* argv[])
 	                    configLoader.get<std::string>("Proxies.JoystickAdapter"), "JoystickAdapterProxy", joystickadapter_proxy);
 	require<RoboCompLidar3D::Lidar3DPrx, RoboCompLidar3D::Lidar3DPrxPtr>(communicator(),
 	                    configLoader.get<std::string>("Proxies.Lidar3D"), "Lidar3DProxy", lidar3d_proxy);
+	require<RoboCompMNIST::MNISTPrx, RoboCompMNIST::MNISTPrxPtr>(communicator(),
+	                    configLoader.get<std::string>("Proxies.MNIST"), "MNISTProxy", mnist_proxy);
 	require<RoboCompOmniRobot::OmniRobotPrx, RoboCompOmniRobot::OmniRobotPrxPtr>(communicator(),
 	                    configLoader.get<std::string>("Proxies.OmniRobot"), "OmniRobotProxy", omnirobot_proxy);
 
-	tprx = std::make_tuple(camera360rgb_proxy,joystickadapter_proxy,lidar3d_proxy,omnirobot_proxy);
+	tprx = std::make_tuple(camera360rgb_proxy,joystickadapter_proxy,lidar3d_proxy,mnist_proxy,omnirobot_proxy);
 	SpecificWorker *worker = new SpecificWorker(this->configLoader, tprx, startup_check_flag);
 	QObject::connect(worker, SIGNAL(kill()), &a, SLOT(quit()));
 

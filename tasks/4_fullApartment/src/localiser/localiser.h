@@ -40,6 +40,7 @@ public:
                             bool& initial_localisation_done, /* updated by ref or we return it? ref is easier for state */
                             bool previously_localised,
                             std::optional<float> predefined_heading = std::nullopt,
+                            std::optional<Eigen::Vector2f> reference_position = std::nullopt,
                             bool debug = false);
 
     /**
@@ -48,6 +49,7 @@ public:
     Eigen::Affine2d find_best_initial_pose(const Corners& detected_corners,
                                            const NominalRoom& room,
                                            std::optional<float> reference_heading = std::nullopt,
+                                           std::optional<Eigen::Vector2f> reference_position = std::nullopt,
                                            bool debug = false);
     
     /**

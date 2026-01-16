@@ -37,17 +37,6 @@
 
 using namespace std;
 
-const float MIN_DISTANCE_TURN =
-    600.0f;                   // Distancia mínima para salir del estado TURN
-const float MAX_ADV = 600.0f; // Velocidad máxima de avance en mm/s
-const float MIN_THRESHOLD =
-    50.0f;                      // Distancia mínima para empezar a frenar en mm
-const float MAX_BRAKE = 100.0f; // Velocidad máxima de frenado en mm/s
-const float DIST_CHANGE_TO_SPIRAL =
-    200000.0f; // Distancia a la que no consideramos que no hay nada cerca para
-               // la espiral
-// Localisation match error threshold (tunable)
-constexpr float LOCALISATION_MATCH_ERROR_THRESHOLD = 3500.0f; // mm
 
 SpecificWorker *SpecificWorker::instance = nullptr;
 
@@ -85,39 +74,26 @@ void stateMessageHandler(QtMsgType type, const QMessageLogContext &context,
 
 SpecificWorker::SpecificWorker(const ConfigLoader &configLoader, TuplePrx tprx,
                                bool startup_check)
-    : GenericWorker(configLoader, tprx) {
+    : GenericWorker(configLoader, tprx),
+      navigation_sm(std::make_unique<NavigationStateMachine>(this)) {
+  // Save singleton instance for global access if necessary
   SpecificWorker::instance = this;
   this->startup_check_flag = startup_check;
+
+  // If startup check is requested, execute it immediately
   if (this->startup_check_flag) {
     this->startup_check();
   } else {
-#ifdef HIBERNATION_ENABLED
-    hibernationChecker.start(500);
-#endif
+    // Check if hibernation is enabled (power saving)
+  #ifdef HIBERNATION_ENABLED
+      hibernationChecker.start(500);
+  #endif
 
-    // Example statemachine:
-    /***
-    //Your definition for the statesmachine (if you dont want use a execute
-    function, use nullptr) states["CustomState"] =
-    std::make_unique<GRAFCETStep>("CustomState", period,
-                                                                                                            std::bind(&SpecificWorker::customLoop, this),  // Cyclic function
-                                                                                                            std::bind(&SpecificWorker::customEnter, this), // On-enter function
-                                                                                                            std::bind(&SpecificWorker::customExit, this)); // On-exit function
-
-    //Add your definition of transitions (addTransition(originOfSignal, signal,
-    dstState)) states["CustomState"]->addTransition(states["CustomState"].get(),
-    SIGNAL(entered()), states["OtherState"].get());
-    states["Compute"]->addTransition(this, SIGNAL(customSignal()),
-    states["CustomState"].get()); //Define your signal in the .h file under the
-    "Signals" section.
-
-    //Add your custom state
-    statemachine.addState(states["CustomState"].get());
-    ***/
-
+    // Configure and start the Qt state machine
     statemachine.setChildMode(QState::ExclusiveStates);
     statemachine.start();
 
+    // Check for errors when starting the state machine
     auto error = statemachine.errorString();
     if (error.length() > 0) {
       qWarning() << error;
@@ -127,6 +103,7 @@ SpecificWorker::SpecificWorker(const ConfigLoader &configLoader, TuplePrx tprx,
 }
 
 SpecificWorker::~SpecificWorker() {
+  // Stop the robot for safety when destroying the worker
   omnirobot_proxy->setSpeedBase(0, 0, 0);
   std::cout << "Destroying SpecificWorker" << std::endl;
 }
@@ -267,6 +244,462 @@ void SpecificWorker::new_target_slot(QPointF target) {
   }
 }
 
+void SpecificWorker::emergency() {}
+
+void SpecificWorker::restore() {}
+
+int SpecificWorker::startup_check() {
+  std::cout << "Startup check" << std::endl;
+  QTimer::singleShot(200, QCoreApplication::instance(), SLOT(quit()));
+  return 0;
+}
+
+
+void SpecificWorker::compute() {
+  if (debug_runtime)
+    qInfo()
+        << "--------------------------- Compute ---------------------------";
+
+  // ----------------------------------------------------------------------
+  // 1. VIEWER UPDATE
+  // ----------------------------------------------------------------------
+  // Draw main viewer (LIDAR points, corners, room center)
+  draw_mainViewer();
+
+  // Draw axes at center (always visible)
+  auto center = nominal_rooms[current_room_index].rect().center();
+  viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350,
+                             center.y(), QPen(Qt::red, 20));
+  viewer_room->scene.addLine(center.x(), center.y(), center.x(),
+                             center.y() + 350, QPen(Qt::green, 20));
+
+  // Draw room walls and doors only if room is recognized
+  if (room_recognized[current_room_index]) {
+    // Draw walls
+    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
+                               QPen(Qt::black, 30));
+    // Draw doors
+    draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
+
+    localiser.update_pose(robot_room_draw, robot_pose);
+  
+  }
+
+  // ----------------------------------------------------------------------
+  // 2. LOCALISATION AND TOPOLOGICAL MAP
+  // ----------------------------------------------------------------------
+  // Run localisation logic
+  execute_localiser();
+
+  // Draw the topological graph
+  draw_topology_graph(&viewer_graph->scene);
+
+
+  // ----------------------------------------------------------------------
+  // 3. STATE MACHINE AND CONTROL
+  // ----------------------------------------------------------------------
+  // Execute state machine using last matching results and command robot
+  auto ret_val =
+      navigation_sm->process_state(data.points, corners, last_matched, viewer);
+  auto [st, adv, rot] = ret_val;
+  // Update local state copy if needed, or rely on SM
+  state = st;
+  navigation_sm->set_current_state(st); // Sync state
+
+  // Send velocities (movement independent of localisation as requested)
+  move_robot(adv, rot, last_match_error);
+
+  // ----------------------------------------------------------------------
+  // 4. IMAGE PROCESSING (DIGIT RECOGNITION)
+  // ----------------------------------------------------------------------
+  // Get image from camera
+  RoboCompCamera360RGB::TImage img;
+  try {
+    img = camera360rgb_proxy->getROI(-1, -1, -1, -1, -1, -1);
+  } catch (const Ice::Exception &e) {
+    std::cout << e.what() << " Error reading 360 camera " << std::endl;
+  }
+
+  if (img.width > 0 && img.height > 0 && !img.image.empty()) {
+    // convert to cv::Mat
+    cv::Mat cv_img(img.height, img.width, CV_8UC3, img.image.data());
+
+    // Convert BGR -> RGB for display
+    cv::Mat display_img;
+    cv::cvtColor(cv_img, display_img, cv::COLOR_BGR2RGB);
+
+    // Only perform number detection and remote calls when in TURN state to save CPU
+    if (state == STATE::TURN) {
+        // Detect the red frame on the number plate
+        auto rect_opt = detect_frame(display_img);
+
+        if (rect_opt.has_value()) {
+            // Draw the green frame on the number plate
+             cv::Rect r = rect_opt.value();
+             cv::rectangle(display_img, r, cv::Scalar(0, 255, 0), 2);
+             
+             // Get number from proxy
+             try { 
+                 // Draw the number and confidence on the number plate 
+                 auto digit = mnist_proxy->getNumber();
+                 if (digit.val != -1) {
+                      std::string text = "Num: " + std::to_string(digit.val) + " (" + std::to_string(digit.confidence).substr(0,4) + ")";
+                      cv::putText(display_img, text, cv::Point(r.x, r.y - 10), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 255, 0), 2);
+                 }
+             } catch (...) {}
+        }
+    }
+
+    QImage qimg(display_img.data, display_img.cols, display_img.rows,
+                static_cast<int>(display_img.step), QImage::Format_RGB888);
+    label_img->setPixmap(QPixmap::fromImage(qimg).scaled(
+        label_img->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+  }
+
+  // ----------------------------------------------------------------------
+  // 5. UI AND ODOMETRY UPDATE
+  // ----------------------------------------------------------------------
+  // Update UI
+  RoboCompGenericBase::TBaseState bState;
+  omnirobot_proxy->getBaseState(bState);
+
+  // --- Odometry Integration (Dead Reckoning) ---
+  // Always integrate odometry to keep robot_pose alive even when localiser is off.
+  if (last_odom_state.has_value()) {
+      float dx = bState.x - last_odom_state.value().x;
+      float dy = bState.z - last_odom_state.value().z; // Z is Y in 2D
+      float da = bState.alpha - last_odom_state.value().alpha;       
+      float current_odom_angle = last_odom_state.value().alpha;
+      float c = cos(-current_odom_angle);
+      float s = sin(-current_odom_angle);
+      float dx_r = dx * c - dy * s;
+      float dy_r = dx * s + dy * c;
+      
+      // Apply to our tracking pose
+      robot_pose.translate(Eigen::Vector2d(dx_r, dy_r));
+      robot_pose.rotate(da);
+  }
+  last_odom_state = bState;
+
+
+  // Display Robot Pose (Room Coordinates) instead of raw Odometry
+  lcdNumber_x->display(robot_pose.translation().x());
+  lcdNumber_y->display(robot_pose.translation().y());
+  double da = std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
+  lcdNumber_angle->display(qRadiansToDegrees(da));
+  
+  lcdNumber_adv->display(adv);
+  lcdNumber_rot->display(rot);
+  lcdNumber_room->display(current_room_index);
+  label_state->setText(to_string(state));
+
+  // Update Error Graph
+  if (time_series_plotter) {
+      float plot_val = last_match_error;
+      if (std::isinf(plot_val)) plot_val = 10.0f; // Clamp max for plot
+      
+      time_series_plotter->addDataPoint(match_error_graph, plot_val);
+      time_series_plotter->update();
+  }
+}
+
+
+// -------------------------------------------------------------------
+// -------------------------------------------------------------------
+// ----------------------- STATE MACHINE FUNCTIONS -------------------
+// -------------------------------------------------------------------
+// -------------------------------------------------------------------
+
+
+// Methods extracted to NavigationStateMachine
+// process_state, goto_room_center, turn, goto_door, orient_to_door, cross_door, switch_room
+
+void SpecificWorker::execute_localiser() {
+
+  // Use graph heading (if available) as hint for grid search
+  std::optional<float> ref_heading = std::nullopt;
+  if (!initial_localisation_done && !corners.empty() && 
+      room_recognized[current_room_index] && topology_graph->is_room_in_graph(current_room_index)) {
+      ref_heading = topology_graph->get_room_heading(current_room_index);
+  }
+
+  // --- Process Localization via Localiser Class ---
+  const auto& room = nominal_rooms[current_room_index];
+  bool was_initial_done = initial_localisation_done;
+  
+  auto result = localiser.process(corners, room, robot_pose, 
+                                  initial_localisation_done, 
+                                  localised, 
+                                  ref_heading, 
+                                  expected_restart_position, // New arg: position hint from entry door
+                                  debug_runtime);
+
+  // Update State from Result
+  localised = result.localised;
+  last_matched = result.matches;
+  last_match_error = result.max_match_error;
+
+  // Handle Pose Update
+  if (result.new_pose.has_value()) {
+      robot_pose = result.new_pose.value();
+  }
+  
+  // Capture entry position on first lock
+  if (!was_initial_done && initial_localisation_done) {
+      if (debug_runtime) qInfo() << "[LOCALISER] Initial localization done. Setting entry position.";
+      room_entry_position = Eigen::Vector2f(robot_pose.translation().x(), robot_pose.translation().y());
+  }
+}
+// -------------------------------------------------------------------
+// ----------------------- MOVEMENT FUNCTIONS -----------------------
+// -------------------------------------------------------------------
+
+void SpecificWorker::move_robot(float adv, float rot, float max_match_error) {
+  // Movement is decided by the state machine in compute(); do not gate here.
+  try {
+    if (debug_runtime)
+      qInfo() << "move_robot: adv=" << adv << " rot=" << rot
+              << " max_match_error=" << max_match_error;
+    omnirobot_proxy->setSpeedBase(0, adv, rot);
+  } catch (const Ice::Exception &e) {
+    qWarning() << "move_robot: exception calling setSpeedBase:" << e.what();
+    return;
+  }
+}
+
+// -------------------------------------------------------------------
+// ----------------------- DOOR CAPTURE -----------------------------
+// -------------------------------------------------------------------
+
+void SpecificWorker::capture_doors_for_current_room() {
+  
+  // Calculate the centroid of all accumulated doors to essentially find the "center" of the door arrangement.
+  // This is used as a reference point for angular sorting.
+  if (!accumulated_doors_for_room.empty()) {
+      Eigen::Vector2f centroid(0.f, 0.f);
+      for (const auto &d : accumulated_doors_for_room) {
+          centroid += d.center();
+      }
+      centroid /= static_cast<float>(accumulated_doors_for_room.size());
+      
+      // Sort the doors based on their angle relative to the calculated centroid.
+      // This ensures a deterministic order (e.g., counter-clockwise) for the doors in the list,
+      // which allows for consistent identification and traversal order.
+      std::sort(accumulated_doors_for_room.begin(), accumulated_doors_for_room.end(),
+                [centroid](const Door &a, const Door &b) {
+                    float angle_a = std::atan2(a.center().y() - centroid.y(), a.center().x() - centroid.x());
+                    float angle_b = std::atan2(b.center().y() - centroid.y(), b.center().x() - centroid.x());
+                    return angle_a < angle_b;
+                });
+  }
+
+  // Store the sorted list of doors into the nominal room structure for the current room.
+  nominal_rooms[current_room_index].doors = accumulated_doors_for_room;
+  
+  if (debug_runtime)
+    qInfo() << "[DOORS] Captured" << nominal_rooms[current_room_index].doors.size()
+            << "doors for room" << current_room_index << "(from accumulation)";
+            
+  // Clear the accumulation vector to prepare for detecting doors in the next room or next scan.
+  accumulated_doors_for_room.clear();
+}
+
+int SpecificWorker::select_door_from_graph() {
+  // Get room node from graph
+  int room_id = topology_graph->get_room_node_id(current_room_index);
+  if (room_id < 0) return -1;  // Room not in graph yet
+  
+  int entry_door = topology_graph->get_entry_door(current_room_index);
+  auto unexplored = topology_graph->get_unexplored_doors(current_room_index);
+  
+  std::vector<int> candidates;
+  
+  // 1. Prefer unexplored, non-entry doors
+  for (int door_id : unexplored) {
+    if (door_id != entry_door) {
+      candidates.push_back(door_id);
+    }
+  }
+  if (!candidates.empty()) {
+    std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
+    int selected = candidates[dist(rd)];
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose unexplored non-entry door" << selected 
+              << "(from" << candidates.size() << "candidates)";
+    return selected;
+  }
+  
+  // 2. Any unexplored door (even if entry)
+  if (!unexplored.empty()) {
+    std::uniform_int_distribution<> dist(0, static_cast<int>(unexplored.size()) - 1);
+    int selected = unexplored[dist(rd)];
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose unexplored door" << selected;
+    return selected;
+  }
+  
+  // 3. Any explored non-entry door (Round Robin)
+  candidates.clear();
+  for (int door_id : topology_graph->get_neighbors(room_id)) {
+    if (topology_graph->get_node(door_id).type == NodeType::DOOR) {
+      // Room 0: Include all (including entry if it loops back)
+      if (current_room_index == 0) {
+          candidates.push_back(door_id);
+      }
+      // Other rooms: Prefer non-entry (traversal)
+      else if (door_id != entry_door) {
+          candidates.push_back(door_id);
+      }
+    }
+  }
+  if (!candidates.empty()) {
+    // Round-robin selection
+    int selected = candidates[0];
+    if (last_exit_door_for_room.count(current_room_index)) {
+        int last_id = last_exit_door_for_room[current_room_index];
+        // Find index of last_id
+        auto it = std::find(candidates.begin(), candidates.end(), last_id);
+        if (it != candidates.end()) {
+            size_t index = std::distance(candidates.begin(), it);
+            selected = candidates[(index + 1) % candidates.size()];
+        }
+    }
+    
+    // Update memory
+    last_exit_door_for_room[current_room_index] = selected;
+
+    if (debug_runtime)
+      qInfo() << "[GRAPH_SELECT] Chose explored non-entry door" << selected << "(Round-Robin)";
+    return selected;
+  }
+  
+  // 4. Backtrack through entry door
+  if (debug_runtime)
+    qInfo() << "[GRAPH_SELECT] Backtracking via entry door" << entry_door;
+  last_exit_door_for_room[current_room_index] = entry_door;
+  return entry_door;
+}
+
+void SpecificWorker::set_entry_door_by_proximity() {
+  // 1. Validate that current room is in the graph and we have an entry position recorded
+  int room_id = topology_graph->get_room_node_id(current_room_index);
+  if (room_id < 0 || !room_entry_position.has_value()) {
+    qInfo() << "[ENTRY_DOOR] Skip: room_id=" << room_id 
+            << "has_position=" << room_entry_position.has_value();
+    return;
+  }
+  
+  qInfo() << "[ENTRY_DOOR] Room" << current_room_index 
+          << "robot entry position: (" << room_entry_position.value().x() 
+          << "," << room_entry_position.value().y() << ")";
+  
+  int closest_door = -1;
+  float min_dist = std::numeric_limits<float>::max();
+  
+  // 2. Iterate through neighbors (doors) of the current room to find the one closest to entry position
+  for (int neighbor_id : topology_graph->get_neighbors(room_id)) {
+    const auto& node = topology_graph->get_node(neighbor_id);
+    if (node.type == NodeType::DOOR) {
+      // Filter: Only consider doors belonging to THIS room (based on naming convention)
+      std::string prefix = "Door_R" + std::to_string(current_room_index) + "_";
+      if (node.name.rfind(prefix, 0) != 0) {
+        qInfo() << "[ENTRY_DOOR] Skipping door" << neighbor_id 
+                << "(" << QString::fromStdString(node.name) << ") - not from this room";
+        continue;
+      }
+      
+      auto door_pos = node.position;
+      float dist = (door_pos - room_entry_position.value()).norm();
+      
+      qInfo() << "[ENTRY_DOOR] Door" << neighbor_id 
+              << "at (" << door_pos.x() << "," << door_pos.y() << ")"
+              << "dist=" << dist;
+      
+      // Update closest door
+      if (dist < min_dist) {
+        min_dist = dist;
+        closest_door = neighbor_id;
+      }
+    }
+  }
+  
+  // 3. If a valid closest door is found, register it and attempt to learn connections
+  if (closest_door >= 0) {
+    topology_graph->set_entry_door(current_room_index, closest_door);
+    
+    // Set localization hint: Robot should restart localization near this door
+    const auto& dnode = topology_graph->get_node(closest_door);
+    expected_restart_position = dnode.position;
+
+    qInfo() << "[ENTRY_DOOR] Selected door" << closest_door 
+            << "for room" << current_room_index << "(closest). Hint pos:" 
+            << expected_restart_position.value().x() << "," << expected_restart_position.value().y();
+            
+    // 4. Connect previous room's exit door to this room's entry door
+    if (previous_traversed_door_id != -1 && topology_graph->has_node(previous_traversed_door_id)) {
+        // Validation: Ensure we are not connecting two doors of the SAME room (loopback)
+        bool same_room = false;
+        bool door_already_linked = false;
+
+        auto prev_neighbors = topology_graph->get_neighbors(previous_traversed_door_id);
+        auto curr_neighbors = topology_graph->get_neighbors(closest_door);
+        
+        // Check 4a: Are these doors already connected to the SAME room node?
+        for (int p_neighbor : prev_neighbors) {
+            for (int c_neighbor : curr_neighbors) {
+                if (p_neighbor == c_neighbor) {
+                    same_room = true; 
+                    break;
+                }
+            }
+            if (same_room) break;
+        }
+
+        // Check 4b: Door Exclusivity (Max degree 2: 1 Room + 1 Door)
+        // Ensure neither door is already connected to ANOTHER door (topology constraint)
+        
+        // Check 'previous' door
+        for (int p_neighbor : prev_neighbors) {
+             if (topology_graph->get_node(p_neighbor).type == NodeType::DOOR) {
+                 door_already_linked = true;
+                 qInfo() << "[ENTRY_DOOR] Blocked: Previous door" << previous_traversed_door_id 
+                         << "already linked to door" << p_neighbor;
+                 break;
+             }
+        }
+        // Check 'current' door
+        if (!door_already_linked) {
+            for (int c_neighbor : curr_neighbors) {
+                if (topology_graph->get_node(c_neighbor).type == NodeType::DOOR) {
+                    door_already_linked = true;
+                     qInfo() << "[ENTRY_DOOR] Blocked: Current door" << closest_door 
+                             << "already linked to door" << c_neighbor;
+                    break;
+                }
+            }
+        }
+
+        // If validation passes, create the edge
+        if (!same_room && !door_already_linked) {
+            topology_graph->connect(previous_traversed_door_id, closest_door);
+            qInfo() << "[ENTRY_DOOR] LEARNED connection:" << previous_traversed_door_id 
+                    << "<->" << closest_door;
+        } else {
+            qInfo() << "[ENTRY_DOOR] Connection blocked. Same Room:" << same_room 
+                    << "Already Linked:" << door_already_linked;
+        }
+        // Reset previous ID to prevent duplicate connection attempts
+        previous_traversed_door_id = -1; 
+    }
+  }
+  // Clear entry position buffer
+  room_entry_position.reset();
+}
+
+// -------------------------------------------------------------------
+// ----------------------- DRAWING FUNCTIONS -------------------------
+// -------------------------------------------------------------------
+
 void SpecificWorker::draw_mainViewer() {
   data = lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
   // qInfo() << "full" << data.points.size();
@@ -294,136 +727,11 @@ void SpecificWorker::draw_mainViewer() {
 
   // Draw the room center as a separate visual indicator if it exists
   if (center_opt.has_value()) {
-    target_room_center = center_opt.value(); // Store for controller
+    navigation_sm->set_target_room_center(center_opt.value()); // Store for controller
     draw_room_center(center_opt.value(), &viewer->scene);
   }
 
-  draw_door_target(target_door_point, &viewer->scene);
-}
-
-void SpecificWorker::emergency() {}
-
-// Execute one when exiting to emergencyState
-void SpecificWorker::restore() {
-  std::cout << "Restore worker" << std::endl;
-  // restoreCODE
-  // Restore emergency component
-}
-
-int SpecificWorker::startup_check() {
-  std::cout << "Startup check" << std::endl;
-  QTimer::singleShot(200, QCoreApplication::instance(), SLOT(quit()));
-  return 0;
-}
-
-void SpecificWorker::compute() {
-  // QThread::msleep(500); // wait for viewer to be ready
-  if (debug_runtime)
-    qInfo()
-        << "--------------------------- Compute ---------------------------";
-
-  // Draw main viewer (LIDAR points, corners, room center)
-  draw_mainViewer();
-
-  // Draw axes at center (always visible)
-  auto center = nominal_rooms[current_room_index].rect().center();
-  viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350,
-                             center.y(), QPen(Qt::red, 20));
-  viewer_room->scene.addLine(center.x(), center.y(), center.x(),
-                             center.y() + 350, QPen(Qt::green, 20));
-
-  // Draw room walls and doors only if room is recognized
-  if (room_recognized[current_room_index]) {
-    // Draw walls
-    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
-                               QPen(Qt::black, 30));
-    // Draw doors
-    draw_room_doors(nominal_rooms[current_room_index].doors, &viewer_room->scene);
-
-    localiser.update_pose(robot_room_draw, robot_pose);
-  
-  }
-
-  // Run localisation logic
-  execute_localiser();
-
-  // Draw the topological graph
-  draw_topology_graph(&viewer_graph->scene);
-
-
-
-  // Execute state machine using last matching results and command robot
-  auto ret_val =
-      this->process_state(data.points, corners, last_matched, viewer);
-  auto [st, adv, rot] = ret_val;
-  state = st;
-
-  // Send velocities (movement independent of localisation as requested)
-  move_robot(adv, rot, last_match_error);
-
-  // Get image from camera
-  RoboCompCamera360RGB::TImage img;
-  try {
-    img = camera360rgb_proxy->getROI(-1, -1, -1, -1, -1, -1);
-  } catch (const Ice::Exception &e) {
-    std::cout << e.what() << " Error reading 360 camera " << std::endl;
-  }
-
-  if (img.width > 0 && img.height > 0) {
-    // convert to cv::Mat
-    cv::Mat cv_img(img.height, img.width, CV_8UC3, img.image.data());
-
-    // Convert BGR -> RGB for display
-    cv::Mat display_img;
-    cv::cvtColor(cv_img, display_img, cv::COLOR_BGR2RGB);
-
-    // optionally update the label with the ROI preview even when not detected
-    QImage qimg(display_img.data, display_img.cols, display_img.rows,
-                static_cast<int>(display_img.step), QImage::Format_RGB888);
-    label_img->setPixmap(QPixmap::fromImage(qimg).scaled(
-        label_img->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-  }
-
-  // Update UI
-  RoboCompGenericBase::TBaseState bState;
-  omnirobot_proxy->getBaseState(bState);
-  lcdNumber_x->display(bState.x);
-  lcdNumber_y->display(bState.z);
-  lcdNumber_angle->display(qRadiansToDegrees(bState.alpha));
-  lcdNumber_adv->display(adv);
-  lcdNumber_rot->display(rot);
-  lcdNumber_rot->display(rot);
-  lcdNumber_room->display(current_room_index);
-  label_state->setText(to_string(state));
-}
-
-void SpecificWorker::execute_localiser() {
-  
-  // Use graph heading (if available) as hint for grid search
-  std::optional<float> ref_heading = std::nullopt;
-  if (!initial_localisation_done && !corners.empty() && 
-      room_recognized[current_room_index] && topology_graph->is_room_in_graph(current_room_index)) {
-      ref_heading = topology_graph->get_room_heading(current_room_index);
-  }
-
-  // --- Process Localization via Localiser Class ---
-  const auto& room = nominal_rooms[current_room_index];
-  
-  auto result = localiser.process(corners, room, robot_pose, 
-                                  initial_localisation_done, 
-                                  localised, 
-                                  ref_heading, 
-                                  debug_runtime);
-
-  // Update State from Result
-  localised = result.localised;
-  last_matched = result.matches;
-  last_match_error = result.max_match_error;
-
-  // Handle Pose Update
-  if (result.new_pose.has_value()) {
-      robot_pose = result.new_pose.value();
-  }
+  draw_door_target(navigation_sm->get_target_door_point(), &viewer->scene);
 }
 
 void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &filtered_points,
@@ -468,15 +776,6 @@ void SpecificWorker::draw_lidar(const RoboCompLidar3D::TPoints &filtered_points,
   }
 }
 
-/**
- * @brief Draws the estimated room center as a visual indicator.
- *
- * This function draws a cross marker and circle at the estimated center
- * of the room to help visualize where the room center has been calculated.
- *
- * @param center The estimated center position of the room
- * @param scene  Pointer to the QGraphicsScene where the center should be drawn
- */
 void SpecificWorker::draw_room_center(const Eigen::Vector2d &center,
                                       QGraphicsScene *scene) {
   // Static vector to store the drawn center items so we can delete them later
@@ -576,26 +875,28 @@ void SpecificWorker::draw_topology_graph(QGraphicsScene *scene) {
 
   if (!topology_graph) return;
 
-// Force-directed layout parameters
-  const float REPULSION_FORCE = 5000000.f;
-  const float SPRING_FORCE = 0.05f;
-  const float SPRING_LENGTH = 800.f;  // Target distance for connected nodes
-  const float CENTER_FORCE = 0.01f;
-  const int ITERATIONS = 50; // Run layout multiple times per frame if needed
+  // Force-directed layout parameters
+  const float REPULSION_FORCE = 10000000.f; // Stronger repulsion spreading
+  const float SPRING_FORCE = 0.08f;
+  const float SPRING_LENGTH = 1000.f;  // Longer edges to allow space for nodes
+  const float CENTER_FORCE = 0.02f;
+  const int ITERATIONS = 100; // More iterations for stability
+  const float MAX_DISPLACEMENT = 100.0f; // Limit movement per frame to prevent explosion
 
   // 1. Initialize new nodes
   for (const auto &[id, node] : topology_graph->get_nodes()) {
       if (graph_vis_positions.find(id) == graph_vis_positions.end()) {
-          // New node: place near neighbors or at random
+          // New node
           Eigen::Vector2f init_pos(0,0);
           auto neighbors = topology_graph->get_neighbors(id);
           if (!neighbors.empty() && graph_vis_positions.count(neighbors[0])) {
                // Place near first neighbor with random offset
-               Eigen::Vector2f offset = Eigen::Vector2f::Random() * 100.f;
+               Eigen::Vector2f offset = Eigen::Vector2f::Random().normalized() * SPRING_LENGTH;
                init_pos = graph_vis_positions[neighbors[0]] + offset;
           } else {
-               // Random start
-               init_pos = Eigen::Vector2f::Random() * 500.f;
+               // Random circular init
+               float angle = (float(rand()) / RAND_MAX) * 2 * M_PI;
+               init_pos = Eigen::Vector2f(std::cos(angle), std::sin(angle)) * 500.f;
           }
           graph_vis_positions[id] = init_pos;
       }
@@ -614,19 +915,28 @@ void SpecificWorker::draw_topology_graph(QGraphicsScene *scene) {
               if (id1 == id2) continue;
               Eigen::Vector2f diff = pos1 - pos2;
               float dist_sq = diff.squaredNorm();
-              if (dist_sq < 1) dist_sq = 1; // Avoid singularity
+              if (dist_sq < 100) dist_sq = 100; // Avoid singularity
               float dist = std::sqrt(dist_sq);
               
               forces[id1] += (diff / dist) * (REPULSION_FORCE / dist_sq);
           }
           
-          // Spring (Connected nodes attract)
+          // Spring (Connected nodes attract/repel to target length)
           for (int neighbor_id : topology_graph->get_neighbors(id1)) {
               if (graph_vis_positions.count(neighbor_id)) {
                   Eigen::Vector2f diff = graph_vis_positions[neighbor_id] - pos1;
                   float dist = diff.norm();
-                  float displacement = dist - SPRING_LENGTH;
-                  // F = k * x
+                  if(dist < 0.1f) dist = 0.1f; 
+                  
+                  // Use shorter spring for door-to-door connections (merging)
+                  float target_length = SPRING_LENGTH;
+                  if (topology_graph->get_node(id1).type == NodeType::DOOR && 
+                      topology_graph->get_node(neighbor_id).type == NodeType::DOOR) {
+                      target_length = SPRING_LENGTH / 4.f; // Much shorter for door pairs
+                  }
+                  
+                  // Hooke's Law with Target Length
+                  float displacement = dist - target_length;
                   forces[id1] += (diff / dist) * (displacement * SPRING_FORCE);
               }
           }
@@ -635,9 +945,14 @@ void SpecificWorker::draw_topology_graph(QGraphicsScene *scene) {
           forces[id1] -= pos1 * CENTER_FORCE;
       }
       
-      // Apply Forces
+      // Apply Forces with Limit
       for (auto &[id, pos] : graph_vis_positions) {
-          pos += forces[id]; // Assuming unit mass and dt=1 for simplicity
+          Eigen::Vector2f displacement = forces[id];
+          float disp_len = displacement.norm();
+          if(disp_len > MAX_DISPLACEMENT) {
+            displacement = displacement.normalized() * MAX_DISPLACEMENT;
+          }
+          pos += displacement; 
       }
   }
 
@@ -700,185 +1015,12 @@ void SpecificWorker::draw_topology_graph(QGraphicsScene *scene) {
   }
 }
 
-void SpecificWorker::capture_doors_for_current_room() {
-  // Use accumulated doors from TURN phase instead of single snapshot
-  nominal_rooms[current_room_index].doors = accumulated_doors_for_room;
-  
-  if (debug_runtime)
-    qInfo() << "[DOORS] Captured" << nominal_rooms[current_room_index].doors.size()
-            << "doors for room" << current_room_index << "(from accumulation)";
-            
-  // Clear accumulation for next room
-  accumulated_doors_for_room.clear();
-}
 
-int SpecificWorker::select_door_from_graph() {
-  // Get room node from graph
-  int room_id = topology_graph->get_room_node_id(current_room_index);
-  if (room_id < 0) return -1;  // Room not in graph yet
-  
-  int entry_door = topology_graph->get_entry_door(current_room_index);
-  auto unexplored = topology_graph->get_unexplored_doors(current_room_index);
-  
-  std::vector<int> candidates;
-  
-  // 1. Prefer unexplored, non-entry doors
-  for (int door_id : unexplored) {
-    if (door_id != entry_door) {
-      candidates.push_back(door_id);
-    }
-  }
-  if (!candidates.empty()) {
-    std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
-    int selected = candidates[dist(rd)];
-    if (debug_runtime)
-      qInfo() << "[GRAPH_SELECT] Chose unexplored non-entry door" << selected 
-              << "(from" << candidates.size() << "candidates)";
-    return selected;
-  }
-  
-  // 2. Any unexplored door (even if entry)
-  if (!unexplored.empty()) {
-    std::uniform_int_distribution<> dist(0, static_cast<int>(unexplored.size()) - 1);
-    int selected = unexplored[dist(rd)];
-    if (debug_runtime)
-      qInfo() << "[GRAPH_SELECT] Chose unexplored door" << selected;
-    return selected;
-  }
-  
-  // 3. Any explored non-entry door
-  candidates.clear();
-  for (int door_id : topology_graph->get_neighbors(room_id)) {
-    if (topology_graph->get_node(door_id).type == NodeType::DOOR) {
-      // Room 0: True random (include entry door)
-      if (current_room_index == 0) {
-          candidates.push_back(door_id);
-      }
-      // Other rooms: Prefer non-entry (traversal)
-      else if (door_id != entry_door) {
-          candidates.push_back(door_id);
-      }
-    }
-  }
-  if (!candidates.empty()) {
-    std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
-    int selected = candidates[dist(rd)];
-    if (debug_runtime)
-      qInfo() << "[GRAPH_SELECT] Chose explored non-entry door" << selected;
-    return selected;
-  }
-  
-  // 4. Backtrack through entry door
-  if (debug_runtime)
-    qInfo() << "[GRAPH_SELECT] Backtracking via entry door" << entry_door;
-  return entry_door;
-}
+// -------------------------------------------------------------------
+// ----------------------- FILTERING FUNCTIONS -----------------------
+// -------------------------------------------------------------------
 
-void SpecificWorker::set_entry_door_by_proximity() {
-  int room_id = topology_graph->get_room_node_id(current_room_index);
-  if (room_id < 0 || !room_entry_position.has_value()) {
-    qInfo() << "[ENTRY_DOOR] Skip: room_id=" << room_id 
-            << "has_position=" << room_entry_position.has_value();
-    return;
-  }
-  
-  qInfo() << "[ENTRY_DOOR] Room" << current_room_index 
-          << "robot entry position: (" << room_entry_position.value().x() 
-          << "," << room_entry_position.value().y() << ")";
-  
-  int closest_door = -1;
-  float min_dist = std::numeric_limits<float>::max();
-  
-  for (int neighbor_id : topology_graph->get_neighbors(room_id)) {
-    const auto& node = topology_graph->get_node(neighbor_id);
-    if (node.type == NodeType::DOOR) {
-      // Only consider doors from THIS room (filter out doors from other rooms)
-      std::string prefix = "Door_R" + std::to_string(current_room_index) + "_";
-      if (node.name.rfind(prefix, 0) != 0) {
-        qInfo() << "[ENTRY_DOOR] Skipping door" << neighbor_id 
-                << "(" << QString::fromStdString(node.name) << ") - not from this room";
-        continue;
-      }
-      
-      auto door_pos = node.position;
-      float dist = (door_pos - room_entry_position.value()).norm();
-      
-      qInfo() << "[ENTRY_DOOR] Door" << neighbor_id 
-              << "at (" << door_pos.x() << "," << door_pos.y() << ")"
-              << "dist=" << dist;
-      
-      if (dist < min_dist) {
-        min_dist = dist;
-        closest_door = neighbor_id;
-      }
-    }
-  }
-  
-  if (closest_door >= 0) {
-    topology_graph->set_entry_door(current_room_index, closest_door);
-    qInfo() << "[ENTRY_DOOR] Selected door" << closest_door 
-            << "for room" << current_room_index << "(closest)";
-            
-    // LEARN: Connect previous door to this closest door if valid
-    if (previous_traversed_door_id != -1 && topology_graph->has_node(previous_traversed_door_id)) {
-        // Validation: Ensure we are not connecting two doors of the SAME room
-        bool same_room = false;
-        bool door_already_linked = false;
 
-        auto prev_neighbors = topology_graph->get_neighbors(previous_traversed_door_id);
-        auto curr_neighbors = topology_graph->get_neighbors(closest_door);
-        
-        // Check 1: Same Room?
-        for (int p_neighbor : prev_neighbors) {
-            for (int c_neighbor : curr_neighbors) {
-                if (p_neighbor == c_neighbor) {
-                    same_room = true; 
-                    break;
-                }
-            }
-            if (same_room) break;
-        }
-
-        // Check 2: Door Exclusivity (Max degree 2: 1 Room + 1 Door)
-        // Check if 'previous' door already has a DOOR neighbor
-        for (int p_neighbor : prev_neighbors) {
-             if (topology_graph->get_node(p_neighbor).type == NodeType::DOOR) {
-                 door_already_linked = true;
-                 qInfo() << "[ENTRY_DOOR] Blocked: Previous door" << previous_traversed_door_id 
-                         << "already linked to door" << p_neighbor;
-                 break;
-             }
-        }
-        // Check if 'current' door already has a DOOR neighbor
-        if (!door_already_linked) {
-            for (int c_neighbor : curr_neighbors) {
-                if (topology_graph->get_node(c_neighbor).type == NodeType::DOOR) {
-                    door_already_linked = true;
-                     qInfo() << "[ENTRY_DOOR] Blocked: Current door" << closest_door 
-                             << "already linked to door" << c_neighbor;
-                    break;
-                }
-            }
-        }
-
-        if (!same_room && !door_already_linked) {
-            topology_graph->connect(previous_traversed_door_id, closest_door);
-            qInfo() << "[ENTRY_DOOR] LEARNED connection:" << previous_traversed_door_id 
-                    << "<->" << closest_door;
-        } else {
-            qInfo() << "[ENTRY_DOOR] Connection blocked. Same Room:" << same_room 
-                    << "Already Linked:" << door_already_linked;
-        }
-        previous_traversed_door_id = -1; // Reset attempt regardless of success
-    }
-  }
-  room_entry_position.reset();
-}
-
-// Esta función recibe un conjunto de puntos del LiDAR (cada punto tiene
-// coordenadas x, y, r y phi) y devuelve, para cada ángulo 'phi', el punto más
-// cercano (menor distancia 'r'). Se usa std::optional para devolver un
-// resultado vacío si no hay puntos válidos.
 std::optional<RoboCompLidar3D::TPoints>
 SpecificWorker::filter_min_distance_cppitertools(
     const RoboCompLidar3D::TPoints &points) {
@@ -927,45 +1069,6 @@ SpecificWorker::filter_data_basic(const RoboCompLidar3D::TPoints &data) {
   return result;
 }
 
-std::vector<RoboCompLidar3D::TPoint> SpecificWorker::read_data() {
-  // 1. Declara 'filter_data' en el alcance de la función (aquí fuera)
-  RoboCompLidar3D::TPoints filter_data = {}; // Inicialízala vacía
-
-  try {
-    const auto data =
-        lidar3d_proxy->getLidarDataWithThreshold2d("helios", 12000, 1);
-
-    // 2. Asigna el valor (sin 'RoboCompLidar3D::TPoints' delante)
-    //    Usamos .value_or() para desenvolver el 'optional' que devuelve la
-    //    función
-    filter_data = filter_min_distance_cppitertools(data.points)
-                      .value_or(RoboCompLidar3D::TPoints{});
-
-    if (data.points.empty()) {
-      qWarning() << "No points received";
-      return {};
-    }
-  } catch (const Ice::Exception &e) {
-    std::cout << e.what() << std::endl;
-    return {}; // Devuelve vacío también si hay un error
-  }
-
-  // 3. Ahora 'filter_data' SÍ existe aquí, y es un TPoints (un vector),
-  //    así que no uses .value()
-  return filter_isolated_points(filter_data, 200.0f);
-}
-
-std::expected<int, std::string>
-SpecificWorker::closest_lidar_index_to_given_angle(const auto &points,
-                                                   float angle) {
-  return std::expected<int, std::string>();
-}
-
-RoboCompLidar3D::TPoints
-SpecificWorker::filter_same_phi(const RoboCompLidar3D::TPoints &points) {
-  return RoboCompLidar3D::TPoints();
-}
-
 RoboCompLidar3D::TPoints
 SpecificWorker::filter_isolated_points(const RoboCompLidar3D::TPoints &points,
                                        float d) {
@@ -1003,750 +1106,63 @@ SpecificWorker::filter_isolated_points(const RoboCompLidar3D::TPoints &points,
   return result;
 }
 
-void SpecificWorker::print_match(const Match &match, const float error) const {}
+// Helper function to detect the red frame in the image 
+// We need this method for print the green frame in the principal frame
+std::optional<cv::Rect> SpecificWorker::detect_frame(const cv::Mat& img) {
+    cv::Mat hsv;
+    // Convert RGB to HSV for color-based segmentation
+    cv::cvtColor(img, hsv, cv::COLOR_RGB2HSV); 
 
-bool SpecificWorker::update_robot_pose(Eigen::Vector3d pose) {
-
-  if (debug_runtime) {
-    qInfo() << "Nueva pose estimada:";
-    qInfo() << "X:" << pose(0) << "Y:" << pose(1) << "Theta:" << pose(2);
-  }
-
-  if (pose.array().isNaN().any())
-    return false;
-
-  robot_pose.translate(Eigen::Vector2d(pose(0), pose(1)));
-  robot_pose.rotate(pose(2));
-
-  return true;
-}
-
-void SpecificWorker::move_robot(float adv, float rot, float max_match_error) {
-  // Movement is decided by the state machine in compute(); do not gate here.
-  try {
-    if (debug_runtime)
-      qInfo() << "move_robot: adv=" << adv << " rot=" << rot
-              << " max_match_error=" << max_match_error;
-    omnirobot_proxy->setSpeedBase(0, adv, rot);
-  } catch (const Ice::Exception &e) {
-    qWarning() << "move_robot: exception calling setSpeedBase:" << e.what();
-    return;
-  }
-}
-
-
-
-/**
- * @brief Angle-distance controller to navigate robot to room center.
- *
- * Implements the controller from RoboLab Technical Report RL0021:
- * - PD controller for rotation (angular velocity ω)
- * - Gaussian angle-brake for smooth turns
- * - Sigmoid distance-brake for smooth stopping
- *
- * @param points LiDAR points (unused in current implementation)
- * @return RetVal {next_state, advance_velocity, rotation_velocity}
- */
-std::tuple<float, float>
-SpecificWorker::robot_controller(const Eigen::Vector2f &target) {
-  // 1. Calculate distance and angle to target (robot frame coordinates)
-  float d = target.norm();
-  if (d < 100.f)
-    return {0.f, 0.f};
-  float theta_e = std::atan2(target.x(), target.y());
-
-  // 2. Higher rotation gain for faster alignment (was 0.5)
-  float theta_dot_e = 0.8f * theta_e;
-
-  // 3. Wider Gaussian falloff for smoother speed curve (was π/6)
-  float omega = exp((-theta_e * theta_e) / (M_PI / 4.f));
-
-  // 4. Distance-based speed scaling for smooth approach
-  float dist_factor = std::min(1.0f, d / 500.f);
-
-  float v = 1000.f * omega * dist_factor;
-
-  return {v, theta_dot_e};
-}
-
-SpecificWorker::RetVal
-SpecificWorker::goto_room_center(const RoboCompLidar3D::TPoints &points) {
-  // Check if we have a valid target
-  if (!target_room_center.has_value()) {
-    if (debug_runtime)
-      qInfo() << "[GOTO_ROOM_CENTER] No target available, returning to IDLE";
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
-    return {STATE::IDLE, 0.0f, 0.0f};
-  }
-
-  const auto &target = target_room_center.value();
-
-  // 1. Calculate distance
-  float d = target.norm();
-  // float theta_e = std::atan2(target.y(), target.x());
-
-  // 2. Check if we've arrived at the target
-  if (d < 100.f) {
-    if (debug_runtime)
-      qInfo() << "[GOTO_ROOM_CENTER] Target reached! d=" << d << "mm";
-    target_room_center.reset();
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
+    cv::Mat mask1, mask2, mask;
+    // Define HSV ranges for the red color
+    // Red wraps around the hue value of 180, usually requiring two ranges:
+    // Range 1: Lower red values
+    cv::inRange(hsv, cv::Scalar(0, 70, 50), cv::Scalar(10, 255, 255), mask1);
+    // Range 2: Upper red values
+    cv::inRange(hsv, cv::Scalar(170, 70, 50), cv::Scalar(180, 255, 255), mask2);
     
-    // Skip TURN for recognized rooms - go directly to GOTO_DOOR
-    if (room_recognized[current_room_index]) {
-      if (debug_runtime)
-        qInfo() << "[GOTO_ROOM_CENTER] Room already recognized, skipping TURN";
-      return {STATE::GOTO_DOOR, 0.0f, 0.0f};
-    }
-    return {STATE::TURN, 0.0f, 0.0f};
-  }
-  auto [v, omega] = robot_controller(target.cast<float>());
-
-  if (debug_runtime)
-    qInfo() << "[GOTO_ROOM_CENTER] Target:" << target.x() << "," << target.y()
-            << "Dist:" << d << "mm. V:" << v << "mm/s, W:" << omega << "rad/s";
-  omnirobot_proxy->setSpeedBase(0, v, omega);
-
-  return {STATE::GOTO_ROOM_CENTER, v, omega};
-}
-SpecificWorker::RetVal SpecificWorker::turn(const Corners &corners) {
-  bool detected = false;
-  int direction = 1;
-  float rot_speed = 0.8f;
-  
-  // Accumulate doors during rotation to capture all doors from different angles
-  auto current_doors = door_detector.doors();
-  for (const auto& door : current_doors) {
-    Eigen::Vector2d center_robot(door.center().x(), door.center().y());
-    Eigen::Vector2d center_world = robot_pose * center_robot;
+    // Combine both masks to capture the full red spectrum
+    cv::add(mask1, mask2, mask);
     
-    // Check if this door is already in accumulated list (by proximity)
-    bool is_new = true;
-    for (const auto& existing : accumulated_doors_for_room) {
-        Eigen::Vector2f existing_center = (existing.p1 + existing.p2) / 2.f;
-        if ((existing_center - center_world.cast<float>()).norm() < 500.f) {
-            is_new = false;
-            break;
-        }
-    }
+    // Apply morphological operations to clean up noise
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    // Opening: Removes small noise spots
+    cv::morphologyEx(mask, mask, cv::MORPH_OPEN, kernel);
+    // Closing: Fills small holes within the detected objects
+    cv::morphologyEx(mask, mask, cv::MORPH_CLOSE, kernel);
     
-    if (is_new) {
-        // Transform and add to accumulated list
-        Eigen::Vector2d p1_world = robot_pose * Eigen::Vector2d(door.p1.x(), door.p1.y());
-        Eigen::Vector2d p2_world = robot_pose * Eigen::Vector2d(door.p2.x(), door.p2.y());
+    // Find contours in the processed mask
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    
+    double max_area = 0;
+    std::optional<cv::Rect> best_rect = std::nullopt;
+    
+    // Evaluate contours to find the most likely candidate for the frame
+    for (const auto& cnt : contours) {
+        double area = cv::contourArea(cnt);
+        // Desecard small contours
+        if (area < 500) continue;
         
-        // Align to wall
-        Eigen::Vector2f center_f = center_world.cast<float>();
-        const auto& room = nominal_rooms[current_room_index];
-        const auto wall = room.get_closest_wall_to_point(center_f);
-        const auto& wall_line = std::get<0>(wall);
+        // Get the bounding rectangle
+        cv::Rect r = cv::boundingRect(cnt);
+        float aspect = (float)r.width / (float)r.height;
         
-        Eigen::Vector2f p1_aligned = wall_line.projection(p1_world.cast<float>());
-        Eigen::Vector2f p2_aligned = wall_line.projection(p2_world.cast<float>());
-        
-        Door world_door(p1_aligned, door.p1_angle, p2_aligned, door.p2_angle);
-        accumulated_doors_for_room.push_back(world_door);
-        
-        if (debug_runtime)
-          qInfo() << "[TURN] Accumulated new door. Total:" << accumulated_doors_for_room.size();
-    }
-  }
-  
-  if (debug_runtime)
-    qInfo() << "[TURN] Searching for" << (search_green ? "GREEN" : "RED")
-            << "panel. Rot speed:" << rot_speed;
-
-  if (search_green) {
-    // Check for Green Panel
-    auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(
-        camera360rgb_proxy, rc::ImageProcessor::Color::GREEN, nullptr, 200);
-    detected = det;
-    direction = dir;
-  } else {
-    // Check for Red Panel
-    auto [det, dir] = rc::ImageProcessor::check_color_patch_in_image(
-        camera360rgb_proxy, rc::ImageProcessor::Color::RED, nullptr);
-    detected = det;
-    direction = dir;
-  }
-
-  if (debug_runtime)
-    qInfo() << "[TURN] Detected: " << detected;
-
-  // Logic to handle detection
-  if (detected) {
-    if (debug_runtime)
-      qInfo() << "[TURN] Panel centered! Stopping.";
-    badge_found = true;
-    
-    // Recognize room and add to graph if not already done
-    if (!room_recognized[current_room_index]) {
-      // Capture doors for this room
-      capture_doors_for_current_room();
-      
-      // Add room to topology graph
-      auto& room = nominal_rooms[current_room_index];
-      auto center = room.rect().center();
-      int room_node_id = topology_graph->add_room(
-          "Room_" + std::to_string(current_room_index),
-          current_room_index,
-          room.width, room.length,
-          Eigen::Vector2f(center.x(), center.y()));
-      
-      // Add doors to graph and connect to room
-      for (size_t i = 0; i < room.doors.size(); ++i) {
-        const auto& door = room.doors[i];
-        Eigen::Vector2f door_mid = (door.p1 + door.p2) / 2.0f;
-        int door_node_id = topology_graph->get_door_by_position(door_mid, 600.0f);
-        
-        if (door_node_id == -1) {
-             door_node_id = topology_graph->add_door(
-                "Door_R" + std::to_string(current_room_index) + "_" + std::to_string(i),
-                door.p1, door.p2);
-        } else {
-             if (debug_runtime)
-                qInfo() << "Reusing existing door node" << door_node_id << "for Room" << current_room_index;
-        }
-
-        topology_graph->connect(room_node_id, door_node_id);
-      }
-      
-      // Set entry door by proximity (find door closest to where robot entered)
-      set_entry_door_by_proximity();
-      
-      room_recognized[current_room_index] = true;
-      
-      // Store robot heading for future re-entry (breaks 180° ambiguity)
-      float current_heading = std::atan2(robot_pose.rotation()(1,0), robot_pose.rotation()(0,0));
-      topology_graph->set_room_heading(current_room_index, current_heading);
-      
-      if (debug_runtime)
-        qInfo() << "[TURN] Room" << current_room_index << "recognized and added to graph";
-    }
-    
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
-    return {STATE::IDLE, 0.0f, 0.0f}; // Found and centered
-  }
-  // If not detected or not centered, rotate
-  // omnirobot_proxy->setSpeedBase(0, 0, rot_speed * -direction); // Overridden
-  // by compute()
-  return {STATE::TURN, 0.0f, rot_speed * direction};
-}
-SpecificWorker::RetVal
-SpecificWorker::goto_door(const RoboCompLidar3D::TPoints &points) {
-  auto doors = door_detector.doors();
-  if (doors.empty()) {
-    if (debug_runtime)
-      qInfo() << "[GOTO_DOOR] No door found. Rotating.";
-    // Don't reset target_door_point here - keep navigating to last known target if we have one
-    omnirobot_proxy->setSpeedBase(0, 0, 0.2);
-    return {STATE::GOTO_DOOR, 0.0f, 0.2f};
-  }
-
-  // Sort doors by angle (or some consistent metric) to ensure indices are
-  // stable
-  std::sort(doors.begin(), doors.end(), [](const auto &a, const auto &b) {
-    return a.direction() < b.direction();
-  });
-
-  int selected_index = 0;
-
-  // Use graph-based selection for recognized rooms
-  if (room_recognized[current_room_index]) {
-    // Only select once (sticky) - reuse until door is crossed
-    if (selected_graph_door_id < 0) {
-      selected_graph_door_id = select_door_from_graph();
-    }
-    
-    if (selected_graph_door_id >= 0) {
-      // Get door position from graph
-      const auto& door_node = topology_graph->get_node(selected_graph_door_id);
-      Eigen::Vector2d door_world_pos = door_node.position.cast<double>();
-      
-      // Find the detected door closest to graph door position
-      float min_dist = std::numeric_limits<float>::max();
-      for (size_t i = 0; i < doors.size(); ++i) {
-        Eigen::Vector2d detected_world = robot_pose * doors[i].center().cast<double>();
-        float dist = (detected_world - door_world_pos).norm();
-        if (dist < min_dist) {
-          min_dist = dist;
-          selected_index = static_cast<int>(i);
-        }
-      }
-      
-      // Set chosen_door_world_pos for sticky tracking
-      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
-      
-      // Explicitly set traversing_door_id for the sticky case
-      traversing_door_id = selected_graph_door_id;
-      
-      if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Graph selected door" << selected_graph_door_id
-                << "matched to index" << selected_index;
-      
-      // Skip the room-specific logic below
-      goto navigate_to_door;
-    }
-  }
-
-  // Fallback: Room 0: Random selection, track by world position
-  if (current_room_index == 0) {
-    if (!chosen_door_world_pos.has_value()) {
-      // First time: randomly select
-      if (doors.size() > 1) {
-        std::uniform_int_distribution<> dist(0, static_cast<int>(doors.size()) - 1);
-        selected_index = dist(rd);
-      } else {
-        selected_index = 0;
-      }
-      // Save world position and left/right for Room 1
-      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
-      chosen_door_was_on_left = (doors[selected_index].center().x() < 0);
-      if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 0: Selected door" << selected_index 
-                << "x=" << doors[selected_index].center().x()
-                << "world=(" << chosen_door_world_pos.value().x() << "," 
-                << chosen_door_world_pos.value().y() << ")";
-    } else {
-      // Sticky: find door closest to saved world position
-      float min_dist = std::numeric_limits<float>::max();
-      for (size_t i = 0; i < doors.size(); ++i) {
-        Eigen::Vector2d door_world = robot_pose * doors[i].center().cast<double>();
-        float dist = (door_world - chosen_door_world_pos.value()).norm();
-        if (dist < min_dist) {
-          min_dist = dist;
-          selected_index = i;
-        }
-      }
-      // Update saved position for next frame
-      chosen_door_world_pos = robot_pose * doors[selected_index].center().cast<double>();
-      if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 0: Sticky selection, door" << selected_index
-                << "world_dist=" << min_dist;
-    }
-  }
-  // Room 1: SAME side (coordinates are mirrored because badges are on opposite walls)
-  else {
-    if (!chosen_door_world_pos_room1.has_value() && chosen_door_was_on_left.has_value()) {
-      // First frame: select by min/max x
-      bool want_left = chosen_door_was_on_left.value();
-      float target_x = want_left ? std::numeric_limits<float>::max() 
-                                  : std::numeric_limits<float>::lowest();
-      for (size_t i = 0; i < doors.size(); ++i) {
-        float x = doors[i].center().x();
-        if ((want_left && x < target_x) || (!want_left && x > target_x)) {
-          target_x = x;
-          selected_index = i;
-        }
-      }
-      // Save world position for sticky tracking
-      chosen_door_world_pos_room1 = robot_pose * doors[selected_index].center().cast<double>();
-      if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 1: Selected door" << selected_index
-                << "x=" << doors[selected_index].center().x()
-                << "want_left=" << want_left;
-    } else if (chosen_door_world_pos_room1.has_value()) {
-      // Sticky: find door closest to saved world position
-      float min_dist = std::numeric_limits<float>::max();
-      for (size_t i = 0; i < doors.size(); ++i) {
-        Eigen::Vector2d door_world = robot_pose * doors[i].center().cast<double>();
-        float dist = (door_world - chosen_door_world_pos_room1.value()).norm();
-        if (dist < min_dist) {
-          min_dist = dist;
-          selected_index = i;
-        }
-      }
-      // Update saved position
-      chosen_door_world_pos_room1 = robot_pose * doors[selected_index].center().cast<double>();
-      if (debug_runtime)
-        qInfo() << "[GOTO_DOOR] Room 1: Sticky selection, door" << selected_index
-                << "world_dist=" << min_dist;
-    }
-  }
-
-  // Safety check
-  if (selected_index >= static_cast<int>(doors.size()))
-    selected_index = 0;
-
-  // IMPORTANT: Identify the Graph Node ID for the selected door
-  // This ensures 'traversing_door_id' is set correctly for the connection logic in 'switch_room'
-  {
-      int room_graph_id = topology_graph->get_room_node_id(current_room_index);
-      if (room_graph_id >= 0) {
-          Eigen::Vector2d selected_world_pos = robot_pose * doors[selected_index].center().cast<double>();
-          
-          int closest_node_id = -1;
-          float best_dist = 2000.0f; // Threshold (mm) - increased to 2m to handle drift
-          
-          for (int neighbor_id : topology_graph->get_neighbors(room_graph_id)) {
-              const auto& node = topology_graph->get_node(neighbor_id);
-              if (node.type == NodeType::DOOR) {
-                  float d = (node.position.cast<double>() - selected_world_pos).norm();
-                  if (d < best_dist) {
-                      best_dist = d;
-                      closest_node_id = neighbor_id;
-                  }
-              }
-          }
-          
-          if (closest_node_id != -1) {
-              traversing_door_id = closest_node_id;
-              if (debug_runtime)
-                qInfo() << "[GOTO_DOOR] Identified traversing_door_id =" << traversing_door_id 
-                        << "for physical door index" << selected_index;
-          }
-      }
-  }
-
-navigate_to_door:
-  const auto &door = doors[selected_index];
-  Eigen::Vector2f target =
-      door.center_before(Eigen::Vector2d(0, 0), params.DOOR_APPROACH_DISTANCE);
-  target_door_point = target;
-  auto [v, w] = robot_controller(target);
-
-  if (v == 0.0f && w == 0.0f) {
-    if (debug_runtime)
-      qInfo() << "[GOTO_DOOR] Reached door approximation point.";
-
-    // Update graph tracking
-
-
-    auto_nav_sequence_running = false;
-    target_door_point.reset();
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
-
-    // 1. Calculate vectors:
-    //    - door_parallel: used as the TARGET for alignment (system expects
-    //    parallel to align perpendicular).
-    //    - door_normal: used for the STABLE check against the inward vector.
-    Eigen::Vector2f door_parallel = door.p2 - door.p1;
-    Eigen::Vector2f door_normal =
-        Eigen::Vector2f(-door_parallel.y(), door_parallel.x());
-    Eigen::Vector2f target_vector = door_parallel;
-
-    // 2. Determine the correct direction for the vector (it should //    We use
-    // the nominal room's center as a stable reference for the "inward"
-    // direction.
-    QPointF room_center_qpoint =
-        nominal_rooms[current_room_index].rect().center();
-    Eigen::Vector2d room_center_eigen(room_center_qpoint.x(),
-                                      room_center_qpoint.y());
-    Eigen::Vector2d world_inward_vector =
-        room_center_eigen - robot_pose.translation();
-    Eigen::Vector2d robot_inward_vector =
-        robot_pose.rotation().inverse() * world_inward_vector;
-
-    if (debug_runtime) {
-      qInfo() << "DEBUG: Door p1 = (" << door.p1.x() << ", " << door.p1.y()
-              << ")";
-      qInfo() << "DEBUG: Door p2 = (" << door.p2.x() << ", " << door.p2.y()
-              << ")";
-      qInfo() << "DEBUG: door_parallel = (" << door_parallel.x() << ", "
-              << door_parallel.y() << ")";
-      qInfo() << "DEBUG: door_normal = (" << door_normal.x() << ", "
-              << door_normal.y() << ")";
-      qInfo()
-          << "DEBUG: nominal_rooms[current_room_index].center() (QPointF) = ("
-          << room_center_qpoint.x() << ", " << room_center_qpoint.y() << ")";
-      qInfo() << "DEBUG: robot_pose.translation() = ("
-              << robot_pose.translation().x() << ", "
-              << robot_pose.translation().y() << ")";
-      qInfo() << "DEBUG: world_inward_vector = (" << world_inward_vector.x()
-              << ", " << world_inward_vector.y() << ")";
-      qInfo() << "DEBUG: robot_inward_vector = (" << robot_inward_vector.x()
-              << ", " << robot_inward_vector.y() << ")";
-      qInfo() << "DEBUG: dot product (normal . inward) = "
-              << door_normal.cast<double>().dot(robot_inward_vector);
-    }
-    bool flipped = false;
-    // 3. Check stability using NORMAL vector.
-    //    We want the normal to point OUTWARD (towards the door), i.e., OPPOSED
-    //    to the inward vector. So if it is ALIGNED (dot > 0), we flip it.
-    if (door_normal.cast<double>().dot(robot_inward_vector) > 0.0) {
-      // If normal is opposed, we flip the TARGET vector.
-      target_vector = -target_vector;
-      flipped = true;
-    }
-    if (debug_runtime) {
-      qInfo() << "DEBUG: Flipped = " << (flipped ? "true" : "false");
-      qInfo() << "DEBUG: Final target_vector = (" << target_vector.x() << ", "
-              << target_vector.y() << ")";
-    }
-
-    // 4. Calculate the angle of this desired vector in the robot's frame.
-    const float target_angle_robot =
-        std::atan2(target_vector.y(), target_vector.x());
-    // 5. Convert the relative angle to a world angle for the orientation
-    // target.
-    const double current_robot_angle =
-        std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
-    const double door_target_angle_world =
-        current_robot_angle + target_angle_robot;
-    orient_target_angle =
-        atan2(sin(door_target_angle_world), cos(door_target_angle_world));
-    if (debug_runtime)
-      qInfo() << "[GOTO_DOOR] Setting sticky world orientation target:"
-              << orient_target_angle.value();
-
-    return {STATE::ORIENT_TO_DOOR, 0.0f, 0.0f};
-  }
-  if (debug_runtime)
-    qInfo() << "[GOTO_DOOR] Door found. Target:" << target.x() << ","
-            << target.y() << ". V:" << v << "mm/s, W:" << w << "rad/s";
-
-  omnirobot_proxy->setSpeedBase(v, 0, w);
-  return {STATE::GOTO_DOOR, v, w};
-}
-
-SpecificWorker::RetVal
-SpecificWorker::orient_to_door(const RoboCompLidar3D::TPoints &points) {
-  // 1. Check for a sticky target
-  if (!orient_target_angle.has_value()) {
-    qWarning()
-        << "ORIENT_TO_DOOR: No orientation target set. Transitioning to IDLE.";
-    return {STATE::IDLE, 0.0f, 0.0f};
-  }
-
-  // 2. Calculate current rotational error
-  double current_robot_angle =
-      std::atan2(robot_pose.rotation()(1, 0), robot_pose.rotation()(0, 0));
-  float rot_error = orient_target_angle.value() - current_robot_angle;
-  rot_error = atan2(sin(rot_error), cos(rot_error)); // Normalize error
-
-  // 3. State Transition Check
-  const float angle_tolerance = 0.1f; // approx 5.7 degrees
-  if (std::abs(rot_error) < angle_tolerance) {
-    if (debug_runtime)
-      qInfo() << "[ORIENT_TO_DOOR] Aligned! Transitioning to CROSS_DOOR.";
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
-    orient_target_angle.reset(); // Clear the sticky target
-    
-    // NOTE: traversing_door_id is already set correctly during goto_door() 
-    // at lines 1440 (graph-based) or 1552 (proximity-based). Do not overwrite.
-    
-    return {STATE::CROSS_DOOR, 0.0f, 0.0f};
-  }
-
-  // 4. Rotation Control
-  const float rot_speed = 0.5f;
-  float rot_velocity = -std::copysign(rot_speed, rot_error);
-
-  if (debug_runtime) {
-    qInfo() << "[ORIENT_TO_DOOR] World Target:" << orient_target_angle.value()
-            << "rad, Current World:" << current_robot_angle
-            << "rad, Rotational Error:" << rot_error
-            << "rad, Velocity:" << rot_velocity << "rad/s";
-    Eigen::Vector2d robot_vector(cos(current_robot_angle),
-                                 sin(current_robot_angle));
-    Eigen::Vector2d door_vector(cos(orient_target_angle.value()),
-                                sin(orient_target_angle.value()));
-    qInfo() << "    [VECTORS] Door: (" << door_vector.x() << ","
-            << door_vector.y() << ") Robot: (" << robot_vector.x() << ","
-            << robot_vector.y() << ") Angle: " << qRadiansToDegrees(rot_error)
-            << " deg";
-  }
-
-  // Send command to robot (only rotation)
-  omnirobot_proxy->setSpeedBase(0, 0, rot_velocity);
-
-  // Remain in the current state
-  return {STATE::ORIENT_TO_DOOR, 0.0f, rot_velocity};
-}
-
-SpecificWorker::RetVal
-SpecificWorker::cross_door(const RoboCompLidar3D::TPoints &points) {
-  const float adv_speed = 400.0f; // mm/s
-
-  // 1. Initialize start time if not set
-  if (!cross_door_start_time.has_value()) {
-    cross_door_start_time = std::chrono::steady_clock::now();
-    if (debug_runtime)
-      qInfo() << "[CROSS_DOOR] Starting cross door maneuver (Timer-based).";
-  }
-
-  // 2. Calculate elapsed time
-  auto now = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed = now - cross_door_start_time.value();
-
-  // 3. Required duration (Hardcoded as per user request)
-  double required_duration = 5.0;
-
-  // 4. Check termination condition
-  if (elapsed.count() >= required_duration) {
-    if (debug_runtime)
-      qInfo() << "[CROSS_DOOR] Timer expired (" << elapsed.count()
-              << "s). Transitioning to GOTO_ROOM_CENTER.";
-    omnirobot_proxy->setSpeedBase(0, 0, 0);
-    cross_door_start_time.reset();
-    switch_room();
-    return {STATE::GOTO_ROOM_CENTER, 0.0f, 0.0f};
-  }
-
-  // 5. Move straight forward
-  omnirobot_proxy->setSpeedBase(adv_speed, 0, 0);
-
-  if (debug_runtime)
-    qInfo() << "[CROSS_DOOR] Crossing... Time: " << elapsed.count() << "/"
-            << required_duration << " s";
-
-  return {STATE::CROSS_DOOR, adv_speed, 0.0f};
-}
-
-void SpecificWorker::switch_room() {
-  // 1. Update room index
-  current_room_index = (current_room_index + 1) % nominal_rooms.size();
-  if (debug_runtime)
-    qInfo() << "[SWITCH_ROOM] Switching to room index: " << current_room_index;
-
-  // 2. Clear and redraw viewer_room
-  viewer_room->scene.clear();
-  room_door_items
-      .clear(); // Clear the vector as items are deleted by scene.clear()
-
-  // Re-add robot to viewer_room (since clear removed it)
-  auto [rr, re] = viewer_room->add_robot(
-      params.ROBOT_WIDTH, params.ROBOT_LENGTH, 0, 100, QColor("Blue"));
-  robot_room_draw = rr;
-
-  // Draw axes at center (always visible)
-  auto center = nominal_rooms[current_room_index].rect().center();
-  // X-axis (Red)
-  viewer_room->scene.addLine(center.x(), center.y(), center.x() + 350,
-                             center.y(), QPen(Qt::red, 20));
-  // Y-axis (Green)
-  viewer_room->scene.addLine(center.x(), center.y(), center.x(),
-                             center.y() + 350, QPen(Qt::green, 20));
-
-  // Draw walls only if room is already recognized
-  if (room_recognized[current_room_index]) {
-    // Draw room walls
-    viewer_room->scene.addRect(nominal_rooms[current_room_index].rect(),
-                               QPen(Qt::black, 30));
-  }
-
-  // 3. Reset robot pose and re-run Ultra-localiser for new entry position
-  robot_pose.setIdentity();
-  initial_localisation_done = false;  // Force grid search to find correct entry pose
-
-  // 3b. Update graph: store previous door and check for learned connections
-  previous_traversed_door_id = traversing_door_id;
-  
-  if (previous_traversed_door_id != -1 && topology_graph->is_room_in_graph(current_room_index)) {
-    // Check if we already have a learned connection to the new room
-    int connected_door = -1;
-    for (int neighbor : topology_graph->get_neighbors(previous_traversed_door_id)) {
-        const auto& node = topology_graph->get_node(neighbor);
-        // If neighbor is a door belonging to the NEW room, we found our entry!
-        std::string prefix = "Door_R" + std::to_string(current_room_index) + "_";
-        if (node.type == NodeType::DOOR && node.name.find(prefix) == 0) {
-            connected_door = neighbor;
-            break;
+        // Filter based on aspect ratio constraints
+        if (aspect >= 0.5f && aspect <= 2.0f) {
+             // Keep the largest valid contour
+             if (area > max_area) {
+                 max_area = area;
+                 
+                 // Apply margin to extract the inner region of interest
+                 int mx = (int)(r.width * 0.15);
+                 int my = (int)(r.height * 0.15);
+                 best_rect = cv::Rect(r.x + mx, r.y + my, r.width - 2*mx, r.height - 2*my);
+             }
         }
     }
-
-    if (connected_door != -1) {
-        topology_graph->set_entry_door(current_room_index, connected_door);
-        if (debug_runtime)
-          qInfo() << "[ENTRY_DOOR] Found learned connection:" << previous_traversed_door_id 
-                  << "<->" << connected_door << ". Set entry door immediately.";
-        previous_traversed_door_id = -1; // Connection found, no need to learn again
-    } else {
-        if (debug_runtime)
-          qInfo() << "[SWITCH_ROOM] No learned connection from door" << previous_traversed_door_id 
-                  << "yet. Will learn via proximity.";
-    }
-  }
-  
-  traversing_door_id = -1;  // Reset
-  selected_graph_door_id = -1;  // Reset sticky door selection for new room
-
-  // 4. Reset badge_found status for the new room
-  badge_found = false;
-
-  // 5. Set search_green based on room index (Room 0 = Red, Room 1 = Green)
-  if (current_room_index == 1)
-    search_green = true;
-  else
-    search_green = false;
-
-  if (debug_runtime)
-    qInfo() << "[SWITCH_ROOM] search_green set to: "
-            << (search_green ? "TRUE" : "FALSE");
-
-  // 6. If we are back to Room 0, reset the door memory so we choose randomly
-  // again next time
-  if (current_room_index == 0) {
-    chosen_door_was_on_left.reset();
-    chosen_door_world_pos.reset();
-    chosen_door_world_pos_room1.reset();
-    if (debug_runtime)
-      qInfo() << "[SWITCH_ROOM] Resetting door memory for new cycle.";
-  }
-}
-
-SpecificWorker::RetVal
-SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data,
-                              const Corners &corners, const Match &match,
-                              AbstractGraphicViewer *viewer) {
-  // State machine for robot navigation
-  switch (state) {
-  case STATE::IDLE:
-    if (debug_runtime)
-      qInfo() << "[IDLE] In IDLE state. auto_nav:" << auto_nav_sequence_running
-              << "has_target:" << target_room_center.has_value()
-              << "localised:" << localised;
-    // Check if we should transition to GOTO_ROOM_CENTER
-    if (auto_nav_sequence_running && target_room_center.has_value()) {
-      qInfo() << "State transition: IDLE -> GOTO_ROOM_CENTER";
-      return goto_room_center(data);
-    } // Stay in IDLE, do nothing
-    return {STATE::IDLE, 0.0f, 0.0f};
-
-  case STATE::GOTO_ROOM_CENTER: {
-    auto [next_s, v, w] = goto_room_center(data);
-    if (next_s == STATE::IDLE &&
-        target_room_center.has_value()) // Reached center (and we had a target)
-    {
-      // If room is already recognized, skip TURN and go to GOTO_DOOR
-      if (room_recognized[current_room_index]) {
-        qInfo() << "State transition: GOTO_ROOM_CENTER -> GOTO_DOOR (room recognized)";
-        return {STATE::GOTO_DOOR, 0.0f, 0.0f};
-      }
-      qInfo() << "State transition: GOTO_ROOM_CENTER -> TURN";
-      return {STATE::TURN, 0.0f, 0.0f};
-    }
-    return {next_s, v, w};
-  }
-
-  case STATE::TURN: {
-    auto [next_s, v, w] = turn(corners);
-    if (next_s == STATE::IDLE) {
-      qInfo() << "State transition: TURN -> GOTO_DOOR";
-
-
-
-      return {STATE::GOTO_DOOR, 0.0f, 0.0f};
-    }
-    return {next_s, v, w};
-  }
-
-  case STATE::GOTO_DOOR:
-    return goto_door(data);
-
-  case STATE::ORIENT_TO_DOOR:
-    return orient_to_door(data);
-
-  case STATE::CROSS_DOOR:
-    return cross_door(data);
-
-  // Other states can be added here in the future
-  case STATE::LOCALISE:
-  default:
-    qWarning() << "Unimplemented state:" << to_string(state)
-               << ", returning to IDLE";
-    return {STATE::IDLE, 0.0f, 0.0f};
-  }
+    // Return the best detected region, or nullopt if none found
+    return best_rect;
 }
 
 /**************************************/
@@ -1786,5 +1202,6 @@ SpecificWorker::process_state(const RoboCompLidar3D::TPoints &data,
 /**************************************/
 // From the RoboCompOmniRobot you can use this types:
 // RoboCompOmniRobot::TMechParams
+
 
 

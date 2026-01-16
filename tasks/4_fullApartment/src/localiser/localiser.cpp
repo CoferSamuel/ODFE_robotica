@@ -13,6 +13,7 @@ Localiser::LocaliserResult Localiser::process(const Corners& detected_corners,
                                               bool& initial_localisation_done,
                                               bool previously_localised,
                                               std::optional<float> predefined_heading,
+                                              std::optional<Eigen::Vector2f> reference_position,
                                               bool debug) 
 {
     LocaliserResult result;
@@ -24,7 +25,7 @@ Localiser::LocaliserResult Localiser::process(const Corners& detected_corners,
 
     // Bootstrap: If not yet localized, try multi-hypothesis grid search
     if (!initial_localisation_done && !detected_corners.empty()) {
-        working_pose = find_best_initial_pose(detected_corners, room, predefined_heading, debug);
+        working_pose = find_best_initial_pose(detected_corners, room, predefined_heading, reference_position, debug);
         initial_localisation_done = true;
         
         // We might want to return this initial pose immediately
@@ -104,6 +105,7 @@ Localiser::LocaliserResult Localiser::process(const Corners& detected_corners,
 Eigen::Affine2d Localiser::find_best_initial_pose(const Corners &detected_corners,
                                                   const NominalRoom& room,
                                                   std::optional<float> reference_heading,
+                                                  std::optional<Eigen::Vector2f> reference_position,
                                                   bool debug) {
   const float w = room.width / 2.0f;
   const float l = room.length / 2.0f;
@@ -126,6 +128,15 @@ Eigen::Affine2d Localiser::find_best_initial_pose(const Corners &detected_corner
 
   for (float x = -w * 0.8f; x <= w * 0.8f; x += w * 0.4f) {
     for (float y = -l * 0.8f; y <= l * 0.8f; y += l * 0.4f) {
+      
+      // If reference position is provided, filter candidates that are too far
+      if (reference_position.has_value()) {
+          float dist = (Eigen::Vector2f(x, y) - reference_position.value()).norm();
+          if (dist > 1500.0f) { // 1.5m tolerance
+              continue;
+          }
+      }
+
       for (float theta = theta_start; theta <= theta_end; theta += theta_step) {
         Eigen::Affine2d candidate;
         candidate.setIdentity();
@@ -185,6 +196,7 @@ void Localiser::update_pose(QGraphicsPolygonItem *room, const Eigen::Affine2d& c
     // Update robot graphic in room viewer
     room->setPos(current_pose.translation().x(), current_pose.translation().y());
     double current_angle = std::atan2(current_pose.rotation()(1, 0), current_pose.rotation()(0, 0));
-    room->setRotation(current_angle + M_PI_2); 
+    // Convert to degrees for Qt
+    room->setRotation(current_angle * 180.0 / M_PI); 
 }
 

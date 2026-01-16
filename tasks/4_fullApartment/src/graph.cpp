@@ -72,6 +72,11 @@ void Graph::connect(int node1_id, int node2_id) {
         return;
     }
 
+    // Check if edge already exists
+    for (int neighbor : adjacency_[node1_id]) {
+        if (neighbor == node2_id) return; // Already connected
+    }
+
     // Add undirected edge
     adjacency_[node1_id].push_back(node2_id);
     adjacency_[node2_id].push_back(node1_id);

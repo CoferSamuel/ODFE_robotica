@@ -1,62 +1,43 @@
-# Purpose: CMake fragment for the source directory.
-# It appends sources/headers and locates required dependencies (OpenCV).
-
-# --- Sources set ---
+# Sources set
 LIST(APPEND SOURCES
   ../src/specificworker.cpp
+  ../src/qcustomplot.cpp
+  ../src/door_detector.cpp
+  ../src/graph.cpp
+  ../src/hungarian.cpp
+  ../src/ransac_line_detector.cpp
+  ../src/room_detector.cpp
+  ../src/time_series_plotter.cpp
   ../src/localiser/localiser.cpp
-
-  ../src/room_detector.cpp          # Room feature extraction
-  ../src/graph.cpp                  # Graph for room/door topology
-  ../src/hungarian.cpp              # Hungarian algorithm wrapper
-  ../src/ransac_line_detector.cpp   # RANSAC-based 2D line segment detector
-  ../src/time_series_plotter.cpp     # Time series plotter utility
-  ../src/door_detector.cpp        # Door detection logic
-  ../src/qcustomplot.cpp       # QCustomPlot library source
+  ../src/navigation_state_machine.cpp
 )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
-# Dependiendo de cómo use RoboComp este archivo, a veces es mejor
-# poner las cabeceras externas en HEADERS o simplemente incluirlas,
-# pero si necesitas que aparezca en el IDE, déjalo aquí.
-# Asegúrate de que la variable de entorno ROBOCOMP esté definida.
-if(DEFINED ENV{ROBOCOMP})
-  LIST(APPEND HEADERS # Generalmente mejor en HEADERS que en SOURCES si es .h
-    $ENV{ROBOCOMP}/classes/abstract_graphic_viewer/abstract_graphic_viewer.h
-  )
-  include_directories($ENV{ROBOCOMP}/classes/abstract_graphic_viewer)
-else()
-  message(WARNING "La variable de entorno ROBOCOMP no está definida. Puede faltar abstract_graphic_viewer.h")
-endif()
-
-# --- Headers set ---
+# Headers set
 LIST(APPEND HEADERS
   ../src/specificworker.h
-  ../src/localiser/localiser.h
-
-  ../src/room_detector.h
+  ../src/qcustomplot.h
+  ../src/door_detector.h
   ../src/graph.h
   ../src/hungarian.h
+  ../src/image_processor.h
   ../src/ransac_line_detector.h
-  ../src/common_types.h
-  ../src/munkres.hpp
+  ../src/room_detector.h
   ../src/time_series_plotter.h
-  ../src/door_detector.h
-  ../src/qcustomplot.h
+  ../src/localiser/localiser.h
+  ../src/common_types.h
+  ../src/nominal_room.h
+  ../src/navigation_state_machine.h
 )
 
-# --- Find Dependencies ---
-# Find OpenCV (REQUIRED lanzará error si no lo encuentra, no hace falta if(OpenCV_FOUND) redundante para el error)
-find_package(OpenCV REQUIRED COMPONENTS core imgproc)
 
-INCLUDE($ENV{ROBOCOMP}/cmake/modules/opencv4.cmake)
+find_package(OpenCV REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS PrintSupport)
+find_package(TBB REQUIRED)
+INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_LIST_DIR})
 
-# Si llega aquí, OpenCV fue encontrado.
-include_directories(${OpenCV_INCLUDE_DIRS})
-list(APPEND LIBS ${OpenCV_LIBS})
+LIST(APPEND LIBS ${LIBS} ${OpenCV_LIBS} Qt6::PrintSupport TBB::tbb)
 
-# --- Compiler Definitions ---
 # no-char8_t to avoid a problem with ICE Connection lib.
 add_definitions(-fmax-errors=1 -fno-char8_t)
 
-SET(LIBS ${LIBS} tbb Qt6PrintSupport)
