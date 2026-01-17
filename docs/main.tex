@@ -835,13 +835,48 @@ As explained previously, robot navigation behavior is defined by a finite set of
         \item \textbf{Termination and Context Switch:} The system calculates the elapsed time $\Delta t = t_{now} - t_{start}$ at each control cycle. The maneuver terminates when $\Delta t$ exceeds a pre-defined safety duration ($T_{limit} = 5.0$ s).
         \item \textbf{Room Transition:} Upon timeout, the robot halts, resets the timer, and executes the \texttt{switch\_room()} routine. This function updates the robot's topological belief (switching the active map or reference frame) before transitioning the FSM to \texttt{GO\_TO\_ROOM\_CENTER} to begin operation in the new environment.
     \end{enumerate}
+
+    \subsubsection{MOTION CONTROLER (Velocity Computation)}
+    To guide the robot towards specific spatial targets (e.g., room center or door approach points), a closed-loop kinematic controller was implemented. This module takes the target coordinates $\mathbf{t} = (t_x, t_y)$ expressed in the robot's local reference frame and computes the coupled linear ($v$) and angular ($\omega$) velocities.
     
+    \vspace{0.1cm}
+    
+    The control law prioritizes orientation over translation to ensure smooth natural motion. It uses a Gaussian function to suppress linear velocity when the heading error is large, forcing the robot to turn before accelerating.
+
+    \vspace{0.1cm}
+    
+    \textbf{1. Angular Control:}
+    The angular error $\theta_e$ is computed from the target coordinates. The rotational velocity command is generated using a proportional controller with a high gain ($K_\omega = 0.8$) to ensure fast alignment:
+    \begin{equation}
+        \omega = K_\omega \cdot \text{atan2}(t_x, t_y)
+    \end{equation}
+    
+    \textbf{2. Linear Control:}
+    The linear velocity $v$ is modulated by two distinct factors:
+    \begin{itemize}
+        \item \textbf{Alignment Factor ($\Omega$)}: A Gaussian function that reduces speed as the alignment error increases. This acts as a "soft" interlock, preventing linear motion during sharp turns.
+        \begin{equation}
+            \Omega = \exp\left( \frac{-\theta_e^2}{\pi/4} \right)
+        \end{equation}
+        \item \textbf{Distance Factor ($D$)}: A linear saturation function that creates a smooth deceleration ramp when the robot is within 500 mm of the target, preventing overshoot.
+        \begin{equation}
+            D = \min\left(1.0, \frac{||\mathbf{t}||}{500}\right)
+        \end{equation}
+    \end{itemize}
+    
+    The final linear velocity command is the product of the maximum speed ($V_{max} = 1000$ mm/s) and these modulation factors:
+    \begin{equation}
+        v = V_{max} \cdot \Omega \cdot D
+    \end{equation}    
     \subsection{Experimental Results}
     The proposed navigation system was evaluated within a simulated environment developed in Webots. The testing arena consists of two adjacent rectangular rooms connected by a single, centrally located doorway. Both rooms are devoid of obstacles to isolate the door traversal performance. 
     
     To facilitate the visual recognition task, colored fiducial markers (patches) are aligned with the door frame to guide the robot's approach. The initialization room is characterized by a red marker, while the destination room features a green marker.
     
     Regarding the simulation interface, a real-time Heads-Up Display (HUD) provides critical telemetry data, including the robot's instantaneous linear and angular velocities, as well as the current active state of the Finite State Machine. Additionally, a dynamic plot visualizes the evolution of the minimization error metric throughout the trial.
+    
+    \vspace{0.1cm}
+
     % --- PÁGINA 1 ---
     \begin{figure}[H]
         \centering
@@ -850,9 +885,8 @@ As explained previously, robot navigation behavior is defined by a finite set of
         \caption{Visual comparison of the simulation environment (Part 1).}
         \label{fig:experiment_layout} % Etiqueta de la figura principal
     \end{figure}
-    \clearpage % Forzamos el salto a la siguiente hoja
     % --- PÁGINA 2 ---
-    \begin{figure}[t!]
+    \begin{figure}[H]
         \ContinuedFloat % Mantiene el número de la figura anterior
         \centering
         \includegraphics[width=1\linewidth]{multimedia/task3/TwoRoomsSimpleResult.png}
@@ -866,252 +900,297 @@ As explained previously, robot navigation behavior is defined by a finite set of
     These results validate the architecture's robustness for reliable topological transitions in multi-room environments.
 
 
-% Activity 4: Multi-Room Autonomous Navigation
-\section{Activity 4: Multi-Room Autonomous Navigation}
+    % Activity 4: Multi-Room Autonomous Navigation
+    \section{Activity 4: Multi-Room Autonomous Navigation}
 
-\subsection{Objective}
-The primary objective of this task is to extend the robot's navigation capabilities to handle a multi-room environment consisting of two rooms connected by two doors. The system must enable autonomous exploration without requiring a specific starting position, building and maintaining a topological graph map of the environment in real-time.
+    \subsection{Objective}
+    The primary objective of this task is to extend the robot's navigation capabilities to handle a multi-room environment consisting of two rooms connected by two doors. The system must enable autonomous exploration without requiring a specific starting position, building and maintaining a topological graph map of the environment in real-time.
 
-\textbf{TODO (Partner's Task):} Implement AI-based room identification by reading wall numbers to determine the current room.
+    \subsection{Ultra-Localiser (Grid Search Bootstrap)}
+    A key challenge in multi-room navigation is that the robot may enter a room from any position and orientation. The standard localiser only works when the robot starts at the room center. To solve this, the Ultra-Localiser implements a bootstrap phase using multi-hypothesis grid search.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\columnwidth]{multimedia/task4/twoRoomtwoDoors_map.png}
-    \caption{Simulation environment: Two rooms connected by two doors, with red and green badges on opposite walls for orientation reference.}
-    \label{fig:environment_overview}
-\end{figure}
+    \vspace{0.1cm}
 
-\subsection{Ultra-Localiser (Grid Search Bootstrap)}
-A key challenge in multi-room navigation is that the robot may enter a room from any position and orientation. The standard localiser only works when the robot starts at the room center. To solve this, the Ultra-Localiser implements a bootstrap phase using multi-hypothesis grid search.
+    Initial localization facilitates downstream operations. Specifically, approximate positioning is required post-traversal to ascertain which door was crossed and to identify the adjacent rooms linked by that connection.
 
-\subsubsection{Algorithm Overview}
-The Ultra-Localiser operates in two phases:
-\begin{enumerate}
-    \item \textbf{Coarse Localization (Grid Search):} Tests 200 candidate poses across the room:
+    \vspace{0.1cm}
+
+    \subsubsection{\textbf{Algorithm Overview}}
+    The Ultra-Localiser operates in two phases:
+    \begin{enumerate}[label=\alph*)]
+        \item \textit{Coarse Localization (Grid Search):} Tests 200 candidate poses across the room:
+        \begin{itemize}
+            \item $5 \times 5$ spatial grid covering 80\% of the room dimensions
+            \item 8 angular orientations (every $45°$)
+            \item Total: $25 \times 8 = 200$ hypotheses
+        \end{itemize}
+        \item \textit{Fine Localization (Incremental SVD):} After bootstrap, the standard pose correction takes over, refining the position each control cycle.
+    \end{enumerate}
+
+    \subsubsection{\textbf{Hypothesis Evaluation}}
+    For each candidate pose $(x, y, \theta)$, the algorithm:
+    \begin{enumerate}[label=\alph*)]
+        \item Transforms nominal room corners to the robot frame using the candidate pose:
+        \begin{equation}
+            \tilde{C} = R(\theta)^\top (C_{world} - T)
+        \end{equation}
+        where $C_{world}$ is the corner in world coordinates, $T = (x, y)$ is the candidate position, and $R(\theta)$ is the rotation matrix.
+        \item Matches detected LiDAR corners against transformed nominal corners using the Hungarian algorithm.
+        \item Computes the maximum matching error.
+    \end{enumerate}
+
+    The pose with the \textbf{lowest maximum matching error} is selected as the initial robot pose. Localization is considered successful when:
     \begin{itemize}
-        \item $5 \times 5$ spatial grid covering 80\% of the room dimensions
-        \item 8 angular orientations (every $45°$)
-        \item Total: $25 \times 8 = 200$ hypotheses
+        \item Match error $< 3500$ mm (configurable threshold)
+        \item At least 3 corners are matched
     \end{itemize}
-    \item \textbf{Fine Localization (Incremental SVD):} After bootstrap, the standard pose correction takes over, refining the position each control cycle.
-\end{enumerate}
 
-\subsubsection{Hypothesis Evaluation}
-For each candidate pose $(x, y, \theta)$, the algorithm:
-\begin{enumerate}
-    \item Transforms nominal room corners to the robot frame using the candidate pose:
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\columnwidth]{multimedia/task4/localised_enteringInRoom1.png}
+        \caption{Ultra-Localiser result: Robot successfully localized after entering Room 1 from an arbitrary position.}
+        \label{fig:ultra_localiser}
+    \end{figure}
+
+    \subsubsection{\textbf{Two-Phase Convergence}}
+    The grid search finds the \textit{closest grid point}, not the exact robot position. The incremental solver then refines the pose:
+
+    \begin{table}[H]
+    \centering
+    \caption{Two-Phase Localization Accuracy}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Phase} & \textbf{Function} & \textbf{Accuracy} \\
+    \midrule
+    Grid Search & Approximate position & Within $\sim$300--500 mm \\
+    Incremental SVD & Continuous refinement & Within $\sim$20 mm \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+
+    \subsubsection{\textbf{Grid Search Mathematics}}
+    The search space consists of candidate poses sampled across the room:
+
+    \textbf{Position Grid:}
+    \begin{align}
+        x_k &\in \{-0.8w, -0.4w, 0, 0.4w, 0.8w\} \\
+        y_k &\in \{-0.8l, -0.4l, 0, 0.4l, 0.8l\} \nonumber
+    \end{align}
+
+    \textbf{Orientation Set:}
     \begin{equation}
-        \tilde{C} = R(\theta)^\top (C_{world} - T)
+        \theta_k \in \left\{0, \frac{\pi}{4}, \frac{\pi}{2}, \frac{3\pi}{4}, \pi, \frac{5\pi}{4}, \frac{3\pi}{2}, \frac{7\pi}{4}\right\}
     \end{equation}
-    where $C_{world}$ is the corner in world coordinates, $T = (x, y)$ is the candidate position, and $R(\theta)$ is the rotation matrix.
-    \item Matches detected LiDAR corners against transformed nominal corners using the Hungarian algorithm.
-    \item Computes the maximum matching error.
-\end{enumerate}
 
-The pose with the \textbf{lowest maximum matching error} is selected as the initial robot pose. Localization is considered successful when:
-\begin{itemize}
-    \item Match error $< 3500$ mm (configurable threshold)
-    \item At least 3 corners are matched
-\end{itemize}
+    For each candidate pose $(x_k, y_k, \theta_k)$, the algorithm computes the maximum matching error:
+    \begin{equation}
+        E_k = \max_{i \in \text{matches}} \left\| \tilde{C}_i^k - C_i^{detected} \right\|
+    \end{equation}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{multimedia/task4/localised_enteringInRoom1.png}
-    \caption{Ultra-Localiser result: Robot successfully localized after entering Room 1 from an arbitrary position.}
-    \label{fig:ultra_localiser}
-\end{figure}
+    The optimal initial pose is selected as:
+    \begin{align}
+        k^* &= \arg\min_k E_k \\
+        &\text{subject to: } E_{k^*} < 3500 \text{ mm and } |\text{matches}| \geq 3 \nonumber
+    \end{align}
 
-\subsubsection{Two-Phase Convergence}
-The grid search finds the \textit{closest grid point}, not the exact robot position. The incremental solver then refines the pose:
+    \subsubsection{\textbf{Incremental Pose Correction}}
+    After the grid search bootstrap, the system uses the same SVD-based incremental pose solver described in Activity 2 (Section 2.3). This solver continuously refines the robot's position by solving the linearized least-squares system $Wr = b$ using the pseudoinverse.
+    \vspace{0.1cm}
+    \subsection{Topological Graph Mapping}
+    The robot builds a semantic graph of the environment in real-time, replacing transient decision-making with a persistent memory structure.
 
-\begin{table}[H]
-\centering
-\caption{Two-Phase Localization Accuracy}
-\begin{tabular}{lll}
-\toprule
-\textbf{Phase} & \textbf{Function} & \textbf{Accuracy} \\
-\midrule
-Grid Search & Approximate position & Within $\sim$300--500 mm \\
-Incremental SVD & Continuous refinement & Within $\sim$20 mm \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsubsection{Grid Search Mathematics}
-The search space consists of candidate poses sampled across the room:
-
-\textbf{Position Grid:}
-\begin{align}
-    x_k &\in \{-0.8w, -0.4w, 0, 0.4w, 0.8w\} \\
-    y_k &\in \{-0.8l, -0.4l, 0, 0.4l, 0.8l\} \nonumber
-\end{align}
-
-\textbf{Orientation Set:}
-\begin{equation}
-    \theta_k \in \left\{0, \frac{\pi}{4}, \frac{\pi}{2}, \frac{3\pi}{4}, \pi, \frac{5\pi}{4}, \frac{3\pi}{2}, \frac{7\pi}{4}\right\}
-\end{equation}
-
-For each candidate pose $(x_k, y_k, \theta_k)$, the algorithm computes the maximum matching error:
-\begin{equation}
-    E_k = \max_{i \in \text{matches}} \left\| \tilde{C}_i^k - C_i^{detected} \right\|
-\end{equation}
-
-The optimal initial pose is selected as:
-\begin{align}
-    k^* &= \arg\min_k E_k \\
-    &\text{subject to: } E_{k^*} < 3500 \text{ mm and } |\text{matches}| \geq 3 \nonumber
-\end{align}
-
-\subsubsection{Incremental Pose Correction}
-After the grid search bootstrap, the system uses the same SVD-based incremental pose solver described in Activity 2 (Section 2.3). This solver continuously refines the robot's position by solving the linearized least-squares system $Wr = b$ using the pseudoinverse.
-
-\subsection{Topological Graph Mapping}
-The robot builds a semantic graph of the environment in real-time, replacing transient decision-making with a persistent memory structure.
-
-\subsubsection{Graph Structure}
-The graph consists of two types of nodes:
-\begin{itemize}
-    \item \textbf{ROOM Nodes}: Represent physical rooms (e.g., Room 0, Room 1). Store metadata including dimensions, entry heading, and the ID of the door used to enter.
-    \item \textbf{DOOR Nodes}: Represent physical connections between rooms. Store geometric endpoints ($p_1$, $p_2$) and their center position.
-\end{itemize}
-
-\subsubsection{Dynamic Construction}
-\begin{enumerate}
-    \item When the robot enters a new room, it calls \texttt{add\_room()}.
-    \item Detected doors are added via \texttt{add\_door()} and immediately connected to the current Room node.
-\end{enumerate}
-
-\subsubsection{Topological Linking}
-The system handles the fact that the same physical door is seen as two different ``Door Nodes'' from different rooms (different coordinates in local frames). When moving from Room A to Room B, the graph \textbf{links} the exit door of Room A to the entry door of Room B:
-\begin{equation*}
-    \text{Room\_A} \leftrightarrow \text{Door\_Node\_A} \leftrightarrow \text{Door\_Node\_B} \leftrightarrow \text{Room\_B}
-\end{equation*}
-
-\subsubsection{Exploration State}
-A door is considered \textbf{Explored} if it has connections to 2 different neighbors (Parent Room + Linked Door). This allows the robot to query unexplored doors and intelligently select new targets, prioritizing unknown areas over backtracking.
-
-\subsubsection{Data Structure}
-The graph node structure is defined as:
-\begin{lstlisting}[language=C++, basicstyle=\ttfamily\small]
-struct GraphNode {
-    int id;
-    NodeType type;       // ROOM or DOOR
-    Eigen::Vector2f pos; // Center coordinates
-    // Room specifics
-    int entry_door_id;
-    float reference_heading;
-    // Door specifics
-    Eigen::Vector2f p1, p2;
-};
-\end{lstlisting}
-
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}[b]{0.32\columnwidth}
-        \includegraphics[width=\textwidth]{multimedia/task4/graph_room0.png}
-        \caption{Room 0 recognized}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.32\columnwidth}
-        \includegraphics[width=\textwidth]{multimedia/task4/graph_room1.png}
-        \caption{Room 1 recognized}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.32\columnwidth}
-        \includegraphics[width=\textwidth]{multimedia/task4/graph_room0_re-entry.png}
-        \caption{Re-entry to Room 0}
-    \end{subfigure}
-    \caption{Topological graph evolution: (a) Initial state with Room 0 and its 2 doors, (b) After entering Room 1 with door connections established, (c) Re-entry to Room 0 showing complete topology.}
-    \label{fig:topo_graph_gui}
-\end{figure}
-
-\subsection{Door Target Selection Strategy}
-The door selection system uses the topological graph to make intelligent navigation decisions, combining entry identification with a priority-based selection algorithm.
-
-\subsubsection{Entry Door Identification}
-When the robot enters a room, it must identify which door it came through:
-\begin{itemize}
-    \item \textbf{First Visit}: Uses the robot's localized pose to find the closest door (``Proximity'') and registers it as the Entry Door. Crucially, the system \textbf{learns} a bidirectional connection in the Graph between this door and the previous room's exit door.
-    \item \textbf{Re-entry}: Uses the \textbf{Learned Connection} from the Graph to identify the entry door instantly. This bypasses proximity checks, making the system immune to localization symmetry errors (e.g., if the robot localizes upside-down due to room symmetry).
-\end{itemize}
-
-\subsubsection{Graph-Based Door Selection (Priority System)}
-The \texttt{select\_door\_from\_graph()} function implements a priority-based algorithm to choose the next target door:
-
-\begin{enumerate}
-    \item \textbf{Priority 1 -- Unexplored, Non-Entry Doors}: The system first searches for doors that are both unexplored (fewer than 2 connections in the graph) AND not the entry door. This prioritizes exploration of new areas while avoiding immediate backtracking.
-    
-    \item \textbf{Priority 2 -- Any Unexplored Door}: If no non-entry unexplored doors exist, the system accepts any unexplored door, even if it is the entry door. This ensures exploration continues.
-    
-    \item \textbf{Priority 3 -- Traversal Logic}: When all doors are explored:
+    \subsubsection{\textbf{Graph Structure}}
+    The graph consists of two types of nodes:
     \begin{itemize}
-        \item \textbf{Room 0}: Selects randomly from ALL doors (including the entry door). This prevents deterministic loops and allows the robot to change direction.
-        \item \textbf{Room 1+}: Selects only from non-entry doors, ensuring the robot crosses the room rather than immediately returning.
+        \item \textit{ROOM Nodes}: Represent physical rooms (e.g., Room 0, Room 1). Store metadata including dimensions, entry heading, and the ID of the door used to enter.
+        \item \textit{DOOR Nodes}: Represent physical connections between rooms. Store geometric endpoints ($p_1$, $p_2$) and their center position.
     \end{itemize}
+
+    \subsubsection{\textbf{Dynamic Construction}}
+    \begin{enumerate}
+        \item When the robot enters a new room, it calls \texttt{add\_room()}.
+        \item Detected doors are added via \texttt{add\_door()} and immediately connected to the current Room node.
+    \end{enumerate}
+
+    \subsubsection{\textbf{Topological Linking}}
+    The system handles the fact that the same physical door is seen as two different ``Door Nodes'' from different rooms (different coordinates in local frames). When moving from Room A to Room B, the graph \textbf{links} the exit door of Room A to the entry door of Room B:
+    \begin{equation*}
+        \text{Room\_A} \leftrightarrow \text{Door\_Node\_A} \leftrightarrow \text{Door\_Node\_B} \leftrightarrow \text{Room\_B}
+    \end{equation*}
+
+    \subsubsection{\textbf{Exploration State}}
+    A door is considered \textbf{Explored} if it has connections to 2 different neighbors (Parent Room + Linked Door). This allows the robot to query unexplored doors and intelligently select new targets, prioritizing unknown areas over backtracking.
+
+    \subsubsection{\textbf{Data Structure}}
+    The graph node structure is defined as:
+    \begin{lstlisting}[language=C++, basicstyle=\ttfamily\small]
+    struct GraphNode {
+        int id;
+        NodeType type;       // ROOM or DOOR
+        Eigen::Vector2f pos; // Center coordinates
+        // Room specifics
+        int entry_door_id;
+        float reference_heading;
+        // Door specifics
+        Eigen::Vector2f p1, p2;
+    };
+    \end{lstlisting}
+
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.32\columnwidth}
+            \includegraphics[width=\textwidth]{multimedia/task4/graph_room0.png}
+            \caption{Room 0 recognized}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.32\columnwidth}
+            \includegraphics[width=\textwidth]{multimedia/task4/graph_room1.png}
+            \caption{Room 1 recognized}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.32\columnwidth}
+            \includegraphics[width=\textwidth]{multimedia/task4/graph_room0_re-entry.png}
+            \caption{Re-entry to Room 0}
+        \end{subfigure}
+        \caption{Topological graph evolution: (a) Initial state with Room 0 and its 2 doors, (b) After entering Room 1 with door connections established, (c) Re-entry to Room 0 showing complete topology.}
+        \label{fig:topo_graph_gui}
+    \end{figure}
+
+    \subsection{Door Target Selection Strategy}
+    The door selection system uses the topological graph to make intelligent navigation decisions, combining entry identification with a priority-based selection algorithm.
+
+    \subsubsection{\textbf{Entry Door Identification}}
+    When the robot enters a room, it must identify which door it came through:
+    \begin{itemize}
+        \item \textbf{First Visit}: Uses the robot's localized pose to find the closest door (``Proximity'') and registers it as the Entry Door. Crucially, the system \textbf{learns} a bidirectional connection in the Graph between this door and the previous room's exit door.
+        \item \textbf{Re-entry}: Uses the \textbf{Learned Connection} from the Graph to identify the entry door instantly. This bypasses proximity checks, making the system immune to localization symmetry errors (e.g., if the robot localizes upside-down due to room symmetry).
+    \end{itemize}
+
+    \subsubsection{\textbf{Graph-Based Door Selection (Priority System)}}
+    The \texttt{select\_door\_from\_graph()} function implements a priority-based algorithm to choose the next target door:
+
+    \begin{enumerate}
+        \item \textit{Priority 1 -- Unexplored, Non-Entry Doors}: The system first searches for doors that are both unexplored (fewer than 2 connections in the graph) AND not the entry door. This prioritizes exploration of new areas while avoiding immediate backtracking.
+        
+        \item \textit{Priority 2 -- Any Unexplored Door}: If no non-entry unexplored doors exist, the system accepts any unexplored door, even if it is the entry door. This ensures exploration continues.
+        
+        \item \textit{Priority 3 -- Traversal Logic}: When all doors are explored:
+        \begin{itemize}
+            \item \textbf{Room 0}: Selects randomly from ALL doors (including the entry door). This prevents deterministic loops and allows the robot to change direction.
+            \item \textbf{Room 1+}: Selects only from non-entry doors, ensuring the robot crosses the room rather than immediately returning.
+        \end{itemize}
+        
+        \item \textit{Priority 4 -- Backtrack}: As a last resort (when no other options exist), the robot backtracks through the entry door.
+    \end{enumerate}
+
+    \subsubsection{\textbf{Sticky World-Coordinate Tracking}}
+    Once a door is selected from the graph, the robot locks onto its world position to prevent target switching during motion:
+    \begin{equation}
+        P_{world} = R(\theta_{robot}) \cdot P_{local} + T_{robot}
+    \end{equation}
+    In subsequent control cycles, the system finds the detected door closest to this stored world coordinate, ensuring stable navigation even as the robot moves and the door's apparent position changes in the sensor frame.
+
+    \subsection{Additional Improvements}
+
+    \subsubsection{\textbf{Door Visualization}}
+    Detected doors are rendered in the room viewer to provide real-time feedback on the robot's perception:
+    \begin{itemize}
+        \item \textbf{Cyan lines}: Connect the two endpoints of each detected door, clearly marking the opening.
+        \item \textbf{Dark blue circles}: Mark the door endpoints ($p_1$, $p_2$), providing precise visual reference for the door boundaries.
+        \item \textbf{Wall projection}: Door endpoints are projected onto the closest wall to ensure consistent geometry and prevent visual artifacts from localization drift.
+    \end{itemize}
+
+    The wall projection algorithm works in two steps:
+    \begin{enumerate}
+        \item \textbf{Find closest wall}: For the door's center point, compute the perpendicular distance to each room wall and select the wall with minimum distance.
+        \item \textbf{Project endpoints}: Both door endpoints $p_1$ and $p_2$ are orthogonally projected onto this wall using the formula:
+    \end{enumerate}
+
+    Given a wall defined by endpoints $\mathbf{w}_1$ and $\mathbf{w}_2$, the projection of a door endpoint $\mathbf{p}$ onto the wall is:
+    \begin{equation}
+        \text{proj}(\mathbf{p}) = \mathbf{w}_1 + \frac{(\mathbf{p} - \mathbf{w}_1) \cdot (\mathbf{w}_2 - \mathbf{w}_1)}{||\mathbf{w}_2 - \mathbf{w}_1||^2} (\mathbf{w}_2 - \mathbf{w}_1)
+    \end{equation}
+
+    This ensures both door endpoints lie exactly on the wall line, eliminating visual distortions caused by sensor noise or localization inaccuracies.
+
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.9\columnwidth]{multimedia/task4/doors_drawn.png}
+        \caption{Detected doors rendered as cyan lines with dark blue endpoint markers in the room viewer.}
+        \label{fig:door_visualization}
+    \end{figure}
+
+    \subsubsection{\textbf{GUI Reorganization}}
+    The graphical user interface was reorganized to accommodate the new topological graph visualization. The main changes include:
+    \begin{itemize}
+        \item \textbf{Topological Graph Frame}: New widget added to display Room and Door nodes with their connections in real-time.
+        \item \textbf{Camera View Resized}: The panoramic camera view was moved to the bottom-left and reduced in size.
+        \item \textbf{Match Error Graph Repositioned}: Moved to share space with the graph frame.
+        \item \textbf{Layout Reorganization}: Overall layout adjusted from 4 to 5 main panels.
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\columnwidth]{multimedia/task4/fullGUI.png}
+        \caption{Updated GUI layout with the new topological graph visualization frame.}
+        \label{fig:gui_reorganization}
+    \end{figure}
+
+    \subsection{AI Room Number Recognition}
+    To enable semantic understanding of the environment, specifically room identification, a deep learning-based perception system was implemented. This system allows the robot to read handwritten digits (0-9) placed on the walls, determining the current room index (e.g., "0" or "1").
+
+    \subsubsection{\textbf{Component Architecture: MNIST Detector}}
+    Due to the computational cost of deep neural networks, the recognition logic was decoupled from the main control loop and encapsulated in a dedicated RoboComp component named \texttt{mnist\_detector}. This component, written in Python to leverage the PyTorch ecosystem, communicates with the main C++ controller via the Ice middleware.
+
+    The component exposes a remote interface \texttt{getNumber()}, which returns the verified digit and a confidence score. This asynchronous architecture ensures that the heavy inference tasks do not block the robot's real-time navigation loop. To optimize resources, the component implements a dynamic execution period: it runs at 5 Hz (200 ms) when actively queried by the robot and drops to 0.5 Hz (2000 ms) when idle.
+
+    \subsubsection{\textbf{Neural Network Design and Training}}
+    The core of the recognition system is a Convolutional Neural Network (CNN) trained on the MNIST dataset, a standard benchmark consisting of 60,000 training images of handwritten digits.
+
+    The network architecture, implemented using the PyTorch framework, consists of:
+    \begin{itemize}
+        \item \textbf{Input Layer}: Accepts 28x28 grayscale images.
+        \item \textbf{Convolutional Layers}: Two layers (Conv2d) with 32 and 64 filters respectively, using 3x3 kernels and ReLU activation, followed by Max Pooling.
+        \item \textbf{Fully Connected Layers}: A dense layer mapping features to 128 neurons, and a final output layer producing probabilities for the 10 digit classes.
+    \end{itemize}
+
+    The model was trained offline using the Negative Log Likelihood loss function and the SGD optimizer. The resulting weights were serialized to a \texttt{.pt} file and loaded by the component at runtime.
+
+    \subsubsection{\textbf{Computer Vision Pipeline}}
+    Before feeding the image to the neural network, a classic computer vision pipeline is applied to locate and isolate the target numbers within the camera feed:
+
+    \begin{enumerate}
+        \item \textbf{ROI Detection}: The system converts the image to HSV color space and applies a red color mask to detect the square badges containing the numbers.
+        \item \textbf{Contour Filtering}: Contours are filtered by area and aspect ratio to identify valid candidate frames.
+        \item \textbf{Preprocessing}: The region of interest (ROI) is cropped, converted to grayscale, and resized to 28x28 pixels. Crucially, a bitwise inversion is applied to correct the contrast (transforming the white-background real-world image to the black-background format expected by the MNIST-trained model).
+        \item \textbf{Inference}: The processed tensor is passed through the CNN, which outputs the most probable digit and its confidence level.
+    \end{enumerate}
+
+    This hybrid approach, combining robust color-based segmentation with deep learning classification, provides a reliable mechanism for the robot to semantically ground its location within the topological map.
+
+    \subsection{Experimental Results}
+    The multi-room navigation system was evaluated within a simulated environment developed in Webots. The testing arena consists of two adjacent rectangular rooms connected by two distinct doorways, allowing for cyclic navigation patterns. Unlike previous single-door scenarios, this setup tests the robot's ability to handle multiple transition points and re-entry logic.
     
-    \item \textbf{Priority 4 -- Backtrack}: As a last resort (when no other options exist), the robot backtracks through the entry door.
-\end{enumerate}
-
-\subsubsection{Sticky World-Coordinate Tracking}
-Once a door is selected from the graph, the robot locks onto its world position to prevent target switching during motion:
-\begin{equation}
-    P_{world} = R(\theta_{robot}) \cdot P_{local} + T_{robot}
-\end{equation}
-In subsequent control cycles, the system finds the detected door closest to this stored world coordinate, ensuring stable navigation even as the robot moves and the door's apparent position changes in the sensor frame.
-
-\subsection{Additional Improvements}
-
-\subsubsection{Door Visualization}
-Detected doors are rendered in the room viewer to provide real-time feedback on the robot's perception:
-\begin{itemize}
-    \item \textbf{Cyan lines}: Connect the two endpoints of each detected door, clearly marking the opening.
-    \item \textbf{Dark blue circles}: Mark the door endpoints ($p_1$, $p_2$), providing precise visual reference for the door boundaries.
-    \item \textbf{Wall projection}: Door endpoints are projected onto the closest wall to ensure consistent geometry and prevent visual artifacts from localization drift.
-\end{itemize}
-
-The wall projection algorithm works in two steps:
-\begin{enumerate}
-    \item \textbf{Find closest wall}: For the door's center point, compute the perpendicular distance to each room wall and select the wall with minimum distance.
-    \item \textbf{Project endpoints}: Both door endpoints $p_1$ and $p_2$ are orthogonally projected onto this wall using the formula:
-\end{enumerate}
-
-Given a wall defined by endpoints $\mathbf{w}_1$ and $\mathbf{w}_2$, the projection of a door endpoint $\mathbf{p}$ onto the wall is:
-\begin{equation}
-    \text{proj}(\mathbf{p}) = \mathbf{w}_1 + \frac{(\mathbf{p} - \mathbf{w}_1) \cdot (\mathbf{w}_2 - \mathbf{w}_1)}{||\mathbf{w}_2 - \mathbf{w}_1||^2} (\mathbf{w}_2 - \mathbf{w}_1)
-\end{equation}
-
-This ensures both door endpoints lie exactly on the wall line, eliminating visual distortions caused by sensor noise or localization inaccuracies.
+    To facilitate the semantic localization task,  digitsare used as visual markers instead of colored patches. These digits (0-9) are placed on the walls to identify each room, requiring the robot to use the AI-based perception system to determine its topological location.
+    % --- PÁGINA 1 ---
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\linewidth]{multimedia/task4/twoRoomsSimpleNumbers.png}
+        \caption*{Map Configuration} % Subtítulo manual como tenías
+        \caption{Simulation result. A full video of the execution is available at: \\ \url{https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing}}        \label{fig:experiment_layout} % Etiqueta de la figura principal
+    \end{figure}
 
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{multimedia/task4/doors_drawn.png}
-    \caption{Detected doors rendered as cyan lines with dark blue endpoint markers in the room viewer.}
-    \label{fig:door_visualization}
-\end{figure}
 
-\subsubsection{GUI Reorganization}
-The graphical user interface was reorganized to accommodate the new topological graph visualization. The main changes include:
-\begin{itemize}
-    \item \textbf{Topological Graph Frame}: New widget added to display Room and Door nodes with their connections in real-time.
-    \item \textbf{Camera View Resized}: The panoramic camera view was moved to the bottom-left and reduced in size.
-    \item \textbf{Match Error Graph Repositioned}: Moved to share space with the graph frame.
-    \item \textbf{Layout Reorganization}: Overall layout adjusted from 4 to 5 main panels.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\columnwidth]{multimedia/task4/fullGUI.png}
-    \caption{Updated GUI layout with the new topological graph visualization frame.}
-    \label{fig:gui_reorganization}
-\end{figure}
-
-\subsection{AI Room Number Recognition}
-\textbf{TODO:} This section will describe the AI-based room identification system that reads wall numbers to determine the current room. This functionality is currently under development by a team partner.
-
-\subsection{Conclusions}
-\textbf{TODO:} This section will summarize the achievements of Activity 4, discuss the effectiveness of the multi-room navigation system, and outline potential future improvements.
-
+    \subsection{Conclusions}
+    Activity 4 represents the culmination of the project, successfully integrating advanced localization, navigation, and perception capabilities into a coherent autonomous system. The development of the \textit{Ultra-Localiser} proved critical, enabling the robot to solve the global localization (kidnapped robot) problem through its robust multi-hypothesis grid search initialization.
+    
+    The implementation of the real-time Topological Graph provided the robot with persistent spatial memory. This data structure allowed the transition from purely reactive behaviors to intelligent, deliberative decision-making. The priority-based door selection algorithm demonstrated effective exploration, ensuring complete coverage of the environment while preventing the robot from becoming trapped in deterministic loops.
+    
+    Furthermore, the integration of the deep learning-based \texttt{mnist\_detector} added essential semantic grounding to the system. By combining geometric awareness (Localiser) with semantic understanding (AI), the robot could not only navigate between rooms but also identify \textit{where} it was within the larger global context.
+    
+    In summary, the system achieved its primary goal of autonomous multi-room exploration. The Component-Based Software Engineering approach facilitated the parallel development and seamless integration of these complex subsystems, validating the RoboComp framework for advanced robotic applications.
 
 \begin{thebibliography}{00} 
 % Task 1 --------------------

@@ -615,10 +615,52 @@ void SpecificWorker::set_entry_door_by_proximity() {
               << "at (" << door_pos.x() << "," << door_pos.y() << ")"
               << "dist=" << dist;
       
-      // Update closest door
-      if (dist < min_dist) {
+      // Check if this door is already linked to another door (degree > 1 typically, or check edge types)
+      bool is_linked = false;
+      for (int n : topology_graph->get_neighbors(neighbor_id)) {
+          if (topology_graph->get_node(n).type == NodeType::DOOR) {
+              is_linked = true; 
+              break;
+          }
+      }
+
+      // Update closest door with priority logic:
+      // 1. If no door selected yet, pick this one.
+      // 2. If this door is SIGNIFICANTLY closer (>500mm), pick it regardless of status.
+      // 3. If distances are SIMILAR (within 500mm), prefer UNLINKED doors over linked ones.
+      
+      if (closest_door == -1) {
         min_dist = dist;
         closest_door = neighbor_id;
+      } else {
+        // Case A: New door is clearly closer
+        if (dist < min_dist - 500.0f) {
+             min_dist = dist;
+             closest_door = neighbor_id;
+        }
+        // Case B: Similar distance -> Check Priority
+        else if (dist < min_dist + 500.0f) {
+             bool current_linked = false;
+             for (int n : topology_graph->get_neighbors(closest_door)) {
+                 if (topology_graph->get_node(n).type == NodeType::DOOR) { current_linked = true; break; }
+             }
+             
+             // If current is Linked and candidate is Unlinked -> Switch to Unlinked
+             if (current_linked && !is_linked) {
+                 min_dist = dist;
+                 closest_door = neighbor_id;
+                 qInfo() << "[ENTRY_DOOR] Priority Switch: Unlinked door" << neighbor_id 
+                         << "preferred over Linked door" << closest_door;
+             }
+             // If both have same status (both Linked or both Unlinked) -> Pick closest
+             else if (current_linked == is_linked) {
+                 if (dist < min_dist) {
+                     min_dist = dist;
+                     closest_door = neighbor_id;
+                 }
+             }
+             // Implicit Case C: Current is Unlinked, Candidate is Linked -> Keep Current (Do nothing)
+        }
       }
     }
   }
