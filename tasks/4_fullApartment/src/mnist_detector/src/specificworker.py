@@ -84,20 +84,7 @@ class SpecificWorker(GenericWorker, ifaces.RoboCompMNIST.MNIST):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = Net().to(self.device)
         
-        # Ruta absoluta al archivo de pesos entrenados (.pt)
-        # specificworker.py está en src/mnist_detector/src/
-        # my_network.pt está en src/ (del proyecto C++)
-        # Así que subimos: src/ -> mnist_detector/ -> src/ (del proyecto) -> raiz component -> my_network.pt ??
-        # No, la estructura es: tasks/4_fullApartment/src/my_network.pt
-        # __file__ es .../tasks/4_fullApartment/src/mnist_detector/src/specificworker.py
-        # .. -> .../tasks/4_fullApartment/src/mnist_detector/
-        # ../.. -> .../tasks/4_fullApartment/src/
-        # ../../.. -> .../tasks/4_fullApartment/ (Si my_network.pt estuviera aqui)
-        
-        # EL USUARIO TIENE my_network.pt en src/DNN/my_network.pt
-        # specificworker.py está en src/mnist_detector/src/
-        # ../.. nos lleva a src/ (del proyecto tareas)
-        # ../../DNN/my_network.pt es la ruta correcta
+
         model_path = os.path.join(os.path.dirname(__file__), '../../DNN/my_network.pt')
         
         try:
@@ -172,17 +159,17 @@ class SpecificWorker(GenericWorker, ifaces.RoboCompMNIST.MNIST):
         now = time.time()
         # If there was a request in the last 2 seconds, run at 50ms
         if now - self.last_request_time < 2.0:
-            new_period = 50
+            new_period = 200
         else:
-            new_period = 500
+            new_period = 2000
             
         if new_period != self.current_period:
             self.current_period = new_period
             self.timer.setInterval(self.current_period)
-            if self.current_period == 50:
-                print("DEBUG: MNIST Mode -> FAST (50ms)")
+            if self.current_period == 200:
+                print("DEBUG: MNIST Mode -> FAST (200ms)")
             else:
-                print("DEBUG: MNIST Mode -> IDLE (500ms)")
+                print("DEBUG: MNIST Mode -> IDLE (2000ms)")
 
         try:
             # 1. Obtener imagen de la cámara (WebotsBridge)

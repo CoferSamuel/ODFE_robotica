@@ -6,8 +6,8 @@ Proxies.Camera360RGB = camera360rgb:tcp -h localhost -p 10098
 # Endpoints for implements interfaces
 Endpoints.MNIST = tcp -p 10111
 
-Period.Compute = 50
-Period.Emergency = 500
+Period.Compute = 200
+Period.Emergency = 2000
 
 Ice.Warn.Connections = 0
 Ice.Trace.Network = 0

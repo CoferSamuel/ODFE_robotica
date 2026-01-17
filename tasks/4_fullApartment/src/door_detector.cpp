@@ -118,7 +118,7 @@ Doors DoorDetector::detect(const RoboCompLidar3D::TPoints &points, QGraphicsScen
     for (const auto &[p, a] : peaks)
     {
         if (const bool too_close = std::ranges::any_of(nms_peaks, [&p](const auto &p2)
-            { return (p - std::get<0>(p2)).norm() < 500.f; }); not too_close)
+            { return (p - std::get<0>(p2)).norm() < 800.f; }); not too_close)
         {
             nms_peaks.emplace_back(p, a);
         }
@@ -137,6 +137,32 @@ Doors DoorDetector::detect(const RoboCompLidar3D::TPoints &points, QGraphicsScen
             doors.emplace_back(Door(p1, phi1, p2, phi2));
         }
     }
+
+    // 4. Merge overlapping/close doors to filter noise (Ghost detection)
+    Doors merged_doors;
+    for (const auto &d : doors)
+    {
+        bool merged = false;
+        for (auto &md : merged_doors)
+        {
+            // Center distance threshold
+            float dist = (d.center() - md.center()).norm();
+            if (dist < 800.f)
+            {
+                // Merge strategies: Average endpoints
+                md.p1 = (md.p1 + d.p1) * 0.5f;
+                md.p2 = (md.p2 + d.p2) * 0.5f;
+                // Re-calculate center/length if cached, but assuming struct is simple
+                merged = true;
+                break;
+            }
+        }
+        if (!merged)
+        {
+            merged_doors.push_back(d);
+        }
+    }
+    doors = merged_doors;
 
     // Draw detected doors in red
     draw_doors(doors, std::nullopt, scene);

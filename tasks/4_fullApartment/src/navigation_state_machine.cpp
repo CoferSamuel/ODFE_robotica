@@ -137,7 +137,7 @@ NavigationStateMachine::RetVal NavigationStateMachine::turn(const Corners &corne
     bool is_new = true;
     for (const auto& existing : worker->accumulated_doors_for_room) {
         Eigen::Vector2f existing_center = (existing.p1 + existing.p2) / 2.f;
-        if ((existing_center - center_world.cast<float>()).norm() < 500.f) {
+        if ((existing_center - center_world.cast<float>()).norm() < 800.f) {
             is_new = false;
             break;
         }
@@ -350,42 +350,24 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
   }
   // Room 1: SAME side (coordinates are mirrored because badges are on opposite walls)
   else {
-    if (!worker->chosen_door_world_pos_room1.has_value()) {
-      // First frame: Select a door that is NOT the entry door (Exploration)
-      // 1. Identify Entry Door (Closest to origin/robot start)
-      int entry_index = -1;
-      float min_dist_origin = std::numeric_limits<float>::max();
-      
+    if (!worker->chosen_door_world_pos_room1.has_value() && worker->chosen_door_was_on_left.has_value()) {
+      // First frame: select by min/max x
+      bool want_left = worker->chosen_door_was_on_left.value();
+      float target_x = want_left ? std::numeric_limits<float>::max() 
+                                  : std::numeric_limits<float>::lowest();
       for (size_t i = 0; i < doors.size(); ++i) {
-          float d = doors[i].center().norm(); // Distance to (0,0)
-          if (d < min_dist_origin) {
-              min_dist_origin = d;
-              entry_index = static_cast<int>(i);
-          }
+        float x = doors[i].center().x();
+        if ((want_left && x < target_x) || (!want_left && x > target_x)) {
+          target_x = x;
+          selected_index = i;
+        }
       }
-      
-      // 2. Pick a candidate that is DIFFERENT from entry_index
-      std::vector<int> candidates;
-      for (size_t i = 0; i < doors.size(); ++i) {
-          if (static_cast<int>(i) != entry_index) {
-              candidates.push_back(i);
-          }
-      }
-      
-      if (!candidates.empty()) {
-          // Found exit doors! Pick one (e.g. random or first)
-           std::uniform_int_distribution<> dist(0, static_cast<int>(candidates.size()) - 1);
-           selected_index = candidates[dist(worker->rd)];
-           if (worker->debug_runtime) qInfo() << "[GOTO_DOOR] Exploration: Chose candidate door" << selected_index << "(avoiding entry door" << entry_index << ")";
-      } else {
-          // Dead end? Go back.
-          selected_index = entry_index;
-          if (worker->debug_runtime) qInfo() << "[GOTO_DOOR] Dead End: Backtracking via entry door" << selected_index;
-      }
-
       // Save world position for sticky tracking
       worker->chosen_door_world_pos_room1 = worker->robot_pose * doors[selected_index].center().cast<double>();
-
+      if (worker->debug_runtime)
+        qInfo() << "[GOTO_DOOR] Room 1: Selected door" << selected_index
+                << "x=" << doors[selected_index].center().x()
+                << "want_left=" << want_left;
     } else if (worker->chosen_door_world_pos_room1.has_value()) {
       // Sticky: find door closest to saved world position
       float min_dist = std::numeric_limits<float>::max();
@@ -409,63 +391,42 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
   if (selected_index >= static_cast<int>(doors.size()))
     selected_index = 0;
 
+  // IMPORTANT: Identify the Graph Node ID for the selected door
+  // This ensures 'traversing_door_id' is set correctly for the connection logic in 'switch_room'
+  {
+      int room_graph_id = worker->topology_graph->get_room_node_id(worker->current_room_index);
+      if (room_graph_id >= 0) {
+          Eigen::Vector2d selected_world_pos = worker->robot_pose * doors[selected_index].center().cast<double>();
+          
+          int closest_node_id = -1;
+          float best_dist = 2000.0f; // Threshold (mm) - increased to 2m to handle drift
+          
+          for (int neighbor_id : worker->topology_graph->get_neighbors(room_graph_id)) {
+              const auto& node = worker->topology_graph->get_node(neighbor_id);
+              if (node.type == NodeType::DOOR) {
+                  float d = (node.position.cast<double>() - selected_world_pos).norm();
+                  if (d < best_dist) {
+                      best_dist = d;
+                      closest_node_id = neighbor_id;
+                  }
+              }
+          }
+          
+          if (closest_node_id != -1) {
+              worker->traversing_door_id = closest_node_id;
+              if (worker->debug_runtime)
+                qInfo() << "[GOTO_DOOR] Identified traversing_door_id =" << worker->traversing_door_id 
+                        << "for physical door index" << selected_index;
+          }
+      }
+  }
 
-
-  navigate_to_door:
-    // IMPORTANT: Identify the Graph Node ID for the selected door (Correct Placement)
-    {
-        int room_graph_id = worker->topology_graph->get_room_node_id(worker->current_room_index);
-        if (room_graph_id >= 0 && !worker->nominal_rooms[worker->current_room_index].doors.empty()) {
-            
-            // 1. Transform selected physical door to World/Map Frame
-            Eigen::Vector2d selected_world_pos = worker->robot_pose * doors[selected_index].center().cast<double>();
-            
-            // 2. Find the corresponding index in 'nominal_rooms' (which aligns with Graph Names)
-            // Since we are in the same room, 'robot_pose' is accurate relative to 'nominal_rooms', so this is drift-safe.
-            int matched_nominal_index = -1;
-            float min_dist_nominal = std::numeric_limits<float>::max();
-            
-            const auto& nom_doors = worker->nominal_rooms[worker->current_room_index].doors;
-            for (size_t k = 0; k < nom_doors.size(); ++k) {
-                 Eigen::Vector2f nom_center = nom_doors[k].center();
-                 float d = (nom_center.cast<double>() - selected_world_pos).norm();
-                 if (d < min_dist_nominal) {
-                     min_dist_nominal = d;
-                     matched_nominal_index = static_cast<int>(k);
-                 }
-            }
-            
-            if (matched_nominal_index != -1) {
-                // 3. Generate Name based on the MATCHED Nominal Index
-                std::string target_name = "Door_R" + std::to_string(worker->current_room_index) + "_" + std::to_string(matched_nominal_index);
-                
-                int found_node_id = -1;
-                for (int neighbor_id : worker->topology_graph->get_neighbors(room_graph_id)) {
-                    const auto& node = worker->topology_graph->get_node(neighbor_id);
-                    if (node.type == NodeType::DOOR && node.name == target_name) {
-                        found_node_id = neighbor_id;
-                        break; 
-                    }
-                }
-                
-                if (found_node_id != -1) {
-                    worker->traversing_door_id = found_node_id;
-                    if (worker->debug_runtime)
-                      qInfo() << "[GOTO_DOOR] Mapped visible index" << selected_index 
-                              << "to Nominal Index" << matched_nominal_index 
-                              << "-> Graph ID" << worker->traversing_door_id;
-                } else {
-                    if (worker->debug_runtime) qInfo() << "[GOTO_DOOR] Name match failed for " << QString::fromStdString(target_name);
-                }
-            }
-        }
-    }
-
-    const auto &door = doors[selected_index];
-    Eigen::Vector2f target =
-        door.center_before(Eigen::Vector2d(0, 0), worker->params.DOOR_APPROACH_DISTANCE);
-    target_door_point = target;
-    auto [v, w] = robot_controller(target);
+navigate_to_door:
+  const auto &door = doors[selected_index];
+  Eigen::Vector2f target =
+      door.center_before(Eigen::Vector2d(0, 0), worker->params.DOOR_APPROACH_DISTANCE);
+  target_door_point = target;
+  auto [v, w] = robot_controller(target);
 
   if (v == 0.0f && w == 0.0f) {
     if (worker->debug_runtime)
@@ -478,13 +439,18 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
     target_door_point.reset();
     worker->omnirobot_proxy->setSpeedBase(0, 0, 0);
 
-    // Calculate vectors for orientation
+    // 1. Calculate vectors:
+    //    - door_parallel: used as the TARGET for alignment (system expects
+    //    parallel to align perpendicular).
+    //    - door_normal: used for the STABLE check against the inward vector.
     Eigen::Vector2f door_parallel = door.p2 - door.p1;
     Eigen::Vector2f door_normal =
         Eigen::Vector2f(-door_parallel.y(), door_parallel.x());
     Eigen::Vector2f target_vector = door_parallel;
 
-    // Determine direction
+    // 2. Determine the correct direction for the vector (it should //    We use
+    // the nominal room's center as a stable reference for the "inward"
+    // direction.
     QPointF room_center_qpoint =
         worker->nominal_rooms[worker->current_room_index].rect().center();
     Eigen::Vector2d room_center_eigen(room_center_qpoint.x(),
@@ -494,9 +460,34 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
     Eigen::Vector2d robot_inward_vector =
         worker->robot_pose.rotation().inverse() * world_inward_vector;
 
+    if (worker->debug_runtime) {
+      qInfo() << "DEBUG: Door p1 = (" << door.p1.x() << ", " << door.p1.y()
+              << ")";
+      qInfo() << "DEBUG: Door p2 = (" << door.p2.x() << ", " << door.p2.y()
+              << ")";
+      qInfo() << "DEBUG: door_parallel = (" << door_parallel.x() << ", "
+              << door_parallel.y() << ")";
+      qInfo() << "DEBUG: door_normal = (" << door_normal.x() << ", "
+              << door_normal.y() << ")";
+      qInfo()
+          << "DEBUG: nominal_rooms[current_room_index].center() (QPointF) = ("
+          << room_center_qpoint.x() << ", " << room_center_qpoint.y() << ")";
+      qInfo() << "DEBUG: robot_pose.translation() = ("
+              << worker->robot_pose.translation().x() << ", "
+              << worker->robot_pose.translation().y() << ")";
+      qInfo() << "DEBUG: world_inward_vector = (" << world_inward_vector.x()
+              << ", " << world_inward_vector.y() << ")";
+      qInfo() << "DEBUG: robot_inward_vector = (" << robot_inward_vector.x()
+              << ", " << robot_inward_vector.y() << ")";
+      qInfo() << "DEBUG: dot product (normal . inward) = "
+              << door_normal.cast<double>().dot(robot_inward_vector);
+    }
     bool flipped = false;
-    // Check stability using NORMAL vector.
+    // 3. Check stability using NORMAL vector.
+    //    We want the normal to point OUTWARD (towards the door), i.e., OPPOSED
+    //    to the inward vector. So if it is ALIGNED (dot > 0), we flip it.
     if (door_normal.cast<double>().dot(robot_inward_vector) > 0.0) {
+      // If normal is opposed, we flip the TARGET vector.
       target_vector = -target_vector;
       flipped = true;
     }
@@ -506,10 +497,11 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
               << target_vector.y() << ")";
     }
 
-    // Calculate the angle of this desired vector in the robot's frame.
+    // 4. Calculate the angle of this desired vector in the robot's frame.
     const float target_angle_robot =
         std::atan2(target_vector.y(), target_vector.x());
-    // Convert relative angle to world angle
+    // 5. Convert the relative angle to a world angle for the orientation
+    // target.
     const double current_robot_angle =
         std::atan2(worker->robot_pose.rotation()(1, 0), worker->robot_pose.rotation()(0, 0));
     const double door_target_angle_world =
@@ -529,6 +521,7 @@ NavigationStateMachine::goto_door(const RoboCompLidar3D::TPoints &points) {
   worker->omnirobot_proxy->setSpeedBase(v, 0, w);
   return {State::GOTO_DOOR, v, w};
 }
+
 
 NavigationStateMachine::RetVal
 NavigationStateMachine::orient_to_door(const RoboCompLidar3D::TPoints &points) {
@@ -589,8 +582,8 @@ NavigationStateMachine::cross_door(const RoboCompLidar3D::TPoints &points) {
   auto now = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed = now - cross_door_start_time.value();
 
-  // 3. Required duration (7 seconds)
-  double required_duration = 7.0;
+  // 3. Required duration (4.3 seconds)
+  double required_duration = 4.5;
 
   // 4. Check termination condition
   if (elapsed.count() >= required_duration) {
@@ -694,13 +687,11 @@ void NavigationStateMachine::switch_room() {
 
   // 5. If we are back to Room 0, reset the door memory so we choose randomly
   // again next time
-  if (worker->current_room_index == 0) {
-    worker->chosen_door_was_on_left.reset();
-    worker->chosen_door_world_pos.reset();
-    worker->chosen_door_world_pos_room1.reset();
-    if (worker->debug_runtime)
-      qInfo() << "[SWITCH_ROOM] Resetting door memory for new cycle.";
-  }
+  worker->chosen_door_was_on_left.reset();
+  worker->chosen_door_world_pos.reset();
+  worker->chosen_door_world_pos_room1.reset();
+  if (worker->debug_runtime)
+    qInfo() << "[SWITCH_ROOM] Resetting door memory for new cycle.";
 }
 
 std::tuple<float, float>
