@@ -9,7 +9,6 @@ For complete project documentation, please refer to:
 
 ## Project Structure
 
-```
 .
 ├── docs/                    # Documentation files
 │   ├── main.pdf            # Full project documentation
@@ -18,10 +17,11 @@ For complete project documentation, please refer to:
 │   └── scripts/            # Documentation-related scripts
 │
 ├── tasks/                  # Main project tasks and components
-│   ├── chocachoca/        # Chocachoca task
-│   ├── localiser/         # Localiser component
-│   ├── multiRoom/         # Multi-room navigation task
-│   └── pretasks/          # Preliminary tasks and examples
+│   ├── 0_pretasks/         # Preliminary tasks and examples
+│   ├── 1_chocachoca/       # Activity 1: Sweeping robot
+│   ├── 2_localiser/        # Activity 2: Localiser component
+│   ├── 3_multiRoom/        # Activity 3: Multi-room navigation
+│   └── 4_multiroom_advanced/ # Activity 4: Full apartment navigation
 │
 └── others/                # Additional components and utilities
     └── initializeComponents/  # Component initialization
@@ -29,9 +29,10 @@ For complete project documentation, please refer to:
 
 ## Tasks Overview
 
-- **chocachoca**: [See README](tasks/chocachoca/README.md)
-- **localiser**: [See README](tasks/localiser/README.md)
-- **multiRoom**: [See README](tasks/multiRoom/README.md)
+- **chocachoca**: [See README](tasks/1_chocachoca/README.md)
+- **localiser**: [See README](tasks/2_localiser/README.md)
+- **multiRoom**: [See README](tasks/3_multiRoom/README.md)
+- **multiroom_advanced**: [See README](tasks/4_multiroom_advanced/README.md)
 
 ## Getting Started
 
@@ -39,4 +40,4 @@ Refer to the [main documentation](docs/main.pdf) for detailed information.
 
 ---
 
-*Last updated: December 2, 2025*
+*Last updated: January 18, 2026*
