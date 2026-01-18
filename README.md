@@ -9,6 +9,7 @@ For complete project documentation, please refer to:
 
 ## Project Structure
 
+```
 .
 ├── docs/                    # Documentation files
 │   ├── main.pdf            # Full project documentation
