@@ -1,35 +1,59 @@
-[[components]]
-name = "bridge"
-cwd = "~/robocomp/components/webots-bridge"
-cmd = "bin/Webots2Robocomp etc/config"
-ice_name = "Webots2Robocomp:tcp -h localhost -p 10006"
+# ── Machine-specific paths (only these need changing on a new computer) ────────
+robocomp_root = "~/robocomp"   # root of the RoboComp installation
+# webots_bin  = ""             # leave empty → auto-detected via `which webots`
+# rcnode_script = ""           # leave empty → ${robocomp_root}/tools/rcnode/rcnode.sh
+
+# Seconds to wait between launching each component (after CPU headroom is clear).
+# Prevents CPU spike from all processes starting simultaneously.
+startup_delay = 5
+
+# ── Launch order: heaviest first, then lightweight, then camera last ──────────
+# bridge starts alone and gets full CPU headroom.
+# camera (2nd heaviest) is last so the system is fully settled before it starts.
 
 [[components]]
-name = "camera"
-cwd = "~/robocomp/components/robocomp-robolab/components/hardware/camera/ricoh_omni"
-cmd = "killall -9 RicohOmni; bin/RicohOmni etc/config_wb"
-ice_name = "Camera360RGB:tcp -h localhost -p 10097"
+name = "bridge"
+cwd = "${robocomp_root}/components/webots-bridge"
+cmd = "bin/Webots2Robocomp etc/config"
+ice_name = "Webots2Robocomp:tcp -h localhost -p 10006"
+nice = 10  # lower OS priority — keeps desktop responsive
+
+[[components]]
+name = "gridder"
+cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced tasks/gridder"
+cmd = "bin/gridder etc/config.toml"
+ice_name = "Gridder:tcp -h localhost -p 13541"
+nice = 10  # lower OS priority — keeps desktop responsive
+max_cpu = 300  # OpenMP uses multiple cores — 130-200% CPU is normal and expected
 
 [[components]]
 name = "helios"
-cwd = "~/robocomp/components/robocomp-robolab/components/hardware/laser/lidar3D"
+cwd = "${robocomp_root}/components/robocomp-robolab/components/hardware/laser/lidar3D"
 cmd = "bin/Lidar3D etc/config_helios_webots"
 ice_name = "Lidar3D:tcp -h localhost -p 10098"
 
 [[components]]
 name = "pearl"
-cwd = "~/robocomp/components/robocomp-robolab/components/hardware/laser/lidar3D"
+cwd = "${robocomp_root}/components/robocomp-robolab/components/hardware/laser/lidar3D"
 cmd = "bin/Lidar3D etc/config_pearl_webots"
 ice_name = "Lidar3D:tcp -h localhost -p 11990"
 
-#[[components]]
-#name = "rgbd"
-#cwd = "~/robocomp/components/robocomp-shadow/insect/RGBD_360"
-#cmd = "bin/RGBD_360 etc/config_wb"
-#ice_name = "RGBD360:tcp -h localhost -p 11989
-
 [[components]]
 name = "joy"
-cwd = "~/robocomp/components/robocomp-robolab/components/hardware/external_control/joystickpublish"
+cwd = "${robocomp_root}/components/robocomp-robolab/components/hardware/external_control/joystickpublish"
 cmd = "bin/JoystickPublish etc/config_shadow"
 ice_name = "JoystickPublish:tcp -h localhost -p 11230"
+
+# camera is last — starts only after bridge has fully settled
+[[components]]
+name = "camera"
+cwd = "${robocomp_root}/components/robocomp-robolab/components/hardware/camera/ricoh_omni"
+cmd = "killall -9 RicohOmni; bin/RicohOmni etc/config_wb"
+ice_name = "Camera360RGB:tcp -h localhost -p 10097"
+nice = 10  # lower OS priority — keeps desktop responsive
+
+#[[components]]
+#name = "rgbd"
+#cwd = "${robocomp_root}/components/robocomp-shadow/insect/RGBD_360"
+#cmd = "bin/RGBD_360 etc/config_wb"
+#ice_name = "RGBD360:tcp -h localhost -p 11989"

@@ -1,31 +1,52 @@
-tasks/4_multiroom_advanced/cmake_install.cmake
-tasks/4_multiroom_advanced/Makefile
-tasks/4_multiroom_advanced/CMakeFiles
-tasks/4_multiroom_advanced/.qt/QtDeploySupport.cmake
-tasks/4_multiroom_advanced/CMakeFiles/cmake.check_cache
-tasks/4_multiroom_advanced/bin/multiroom
-others/initializeComponents/output/bridge.err
-others/initializeComponents/output/camera.err
-others/initializeComponents/output/joy.err
-others/initializeComponents/output/helios.err
-others/initializeComponents/output/pearl.err
-tasks/4_multiroom_advanced/generated/CMakeFiles/multiroom_autogen_timestamp_deps.dir/build.make
-tasks/4_multiroom_advanced/personalREADME.md
-tasks/4_multiroom_advanced/generated/CMakeFiles/
-tasks/4_multiroom_advanced/generated/Makefile
-tasks/4_multiroom_advanced/mcp_server/
+# ==============================================================================
+# Python
+# ==============================================================================
+__pycache__/
+*.pyc
+*.pyo
+
+# ==============================================================================
+# C++ / CMake build artifacts
+# ==============================================================================
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+build/
+bin/
+.qt/
+*_autogen/
+*.d
+
+# ==============================================================================
+# LaTeX
+# ==============================================================================
+*.aux
 *.fdb_latexmk
 *.fls
 *.log
 *.out
 *.synctex.gz
-tasks/4_multiroom_advanced/docs/personalREADME.md
-tasks/4_multiroom_advanced/src/mnist_detector/generated/__pycache__/
 
+# ==============================================================================
+# Component-specific
+# ==============================================================================
+
+# initializeComponents runtime output logs
+others/initializeComponents/output/bridge.err
+others/initializeComponents/output/camera.err
+others/initializeComponents/output/joy.err
+others/initializeComponents/output/helios.err
+others/initializeComponents/output/pearl.err
+
+# Personal notes
+tasks/4_multiroom_advanced/personalREADME.md
+tasks/4_multiroom_advanced/docs/personalREADME.md
+
+# MCP server (local tooling, not project code)
+tasks/4_multiroom_advanced/mcp_server/
+
+# MNIST dataset raw files (large binary data)
 tasks/4_multiroom_advanced/src/mnist_detector/data/MNIST/raw/
-tasks/4_multiroom_advanced/src/DNN/__pycache__/train_mnist.cpython-310.pyc
 tasks/4_multiroom_advanced/src/DNN/data/MNIST/raw/
-tasks/4_multiroom_advanced/src/DNN/__pycache__/train_mnist.cpython-312.pyc
 tasks/4_multiroom_advanced/src/data/MNIST/raw/
-tasks/4_multiroom_advanced/src/mnist_detector/__pycache__/
-*.aux
