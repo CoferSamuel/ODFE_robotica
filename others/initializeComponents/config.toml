@@ -13,7 +13,7 @@ startup_delay = 5
 
 [[components]]
 name = "bridge"
-cwd = "${robocomp_root}/components/webots-bridge"
+cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced tasks/bridge_odfe"
 cmd = "bin/Webots2Robocomp etc/config"
 ice_name = "Webots2Robocomp:tcp -h localhost -p 10006"
 nice = 10  # lower OS priority — keeps desktop responsive
