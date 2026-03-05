@@ -202,6 +202,7 @@ def toml_loader():
     config = toml.load(args.file_name)
     components = config["components"]
     startup_delay = config.get("startup_delay", 0)  # seconds between component launches
+    watchdog_enabled = config.get("watchdog_enabled", True)  # enable/disable CPU watchdog
 
     # Expand ${robocomp_root} in all cwd/cmd values so the config is portable
     robocomp_root = os.path.expanduser(config.get("robocomp_root", "~/robocomp"))
@@ -210,7 +211,7 @@ def toml_loader():
             if comp.get(key):
                 comp[key] = comp[key].replace("${robocomp_root}", robocomp_root)
 
-    return components, startup_delay
+    return components, startup_delay, watchdog_enabled
 
 # Single persistent ICE communicator — created once, reused for all pings
 if _ICE_AVAILABLE:
@@ -368,7 +369,7 @@ def launch_process(command, cwd=None, name=None, nice_level=None):
         ps_proc = psutil.Process(proc.pid)
     return proc, ps_proc
 
-components, startup_delay = toml_loader()
+components, startup_delay, watchdog_enabled = toml_loader()
 
 def wait_for_cpu_headroom(max_cpu=CPU_HEADROOM_THRESHOLD, timeout=CPU_HEADROOM_TIMEOUT):
     """Block until system-wide CPU drops below max_cpu%, or timeout expires."""
@@ -408,34 +409,23 @@ def print_components_table(components):
 
 print_components_table(components)
 
-if startup_delay > 0:
-    console.print(f"[dim]Startup delay: {startup_delay}s between components[/dim]")
-
-for i, comp in enumerate(components):
-    # Wait for CPU headroom before every component (skip only the very first)
-    if i > 0:
-        wait_for_cpu_headroom()
-        if startup_delay > 0:
-            time.sleep(startup_delay)
-
+# Register all components as paused — the user starts them manually via number keys
+for comp in components:
     cwd = expand_path(comp.get("cwd"))
-    command = comp["cmd"]
-    nice_level = comp.get("nice")  # optional per-component nice level
-    console.print(f"Starting [cyan]{comp['name']}[/cyan]...")
-    proc, ps_proc = launch_process(command, cwd=cwd, name=comp["name"], nice_level=nice_level)
-    ps_proc.cpu_percent(interval=None)  # initialise CPU tracking
     processes[comp["name"]] = {
-        "process": proc,
-        "psutil_proc": ps_proc,
+        "process": None,
+        "psutil_proc": None,
         "ice_name": comp.get("ice_name"),
         "start_time": time.time(),
-        "ice_status": "[yellow]⏳ Starting...[/yellow]",
-        # Keep original config so we can restart after pause
+        "ice_status": "[dim]⏸ Paused[/dim]",
+        # Keep original config so we can launch on toggle
         "_cwd": cwd,
-        "_cmd": command,
-        "_nice": nice_level,
-        "paused": False,
+        "_cmd": comp["cmd"],
+        "_nice": comp.get("nice"),
+        "paused": True,
     }
+
+console.print("[cyan]All components registered as paused. Press a number key to start a component.[/cyan]")
 
 # Ordered list of component names the user can toggle (includes Webots and rcnode)
 _toggleable = []
@@ -542,17 +532,21 @@ def toggle_component(index):
             info["paused"] = False
         else:
             console.print(f"[green]Resuming {name}...[/green]")
-            proc, ps_proc = launch_process(
-                info["_cmd"], cwd=info["_cwd"], name=name, nice_level=info["_nice"]
-            )
-            ps_proc.cpu_percent(interval=None)
-            info["process"] = proc
-            info["psutil_proc"] = ps_proc
-            info["start_time"] = time.time()
-            info["ice_status"] = "[yellow]⏳ Starting...[/yellow]"
-            info["mem_last"] = 0.0
-            info["cpu_last"] = 0.0
-            info["paused"] = False
+            try:
+                proc, ps_proc = launch_process(
+                    info["_cmd"], cwd=info["_cwd"], name=name, nice_level=info["_nice"]
+                )
+                if ps_proc:
+                    ps_proc.cpu_percent(interval=None)
+                info["process"] = proc
+                info["psutil_proc"] = ps_proc
+                info["start_time"] = time.time()
+                info["ice_status"] = "[yellow]⏳ Starting...[/yellow]"
+                info["mem_last"] = 0.0
+                info["cpu_last"] = 0.0
+                info["paused"] = False
+            except Exception as e:
+                console.print(f"[red]Error resuming {name}: {e}[/red]")
     else:
         # --- Pause/Stop: terminate the process ---
         if is_system:
@@ -587,6 +581,9 @@ def toggle_component(index):
             info["cpu_last"] = 0.0
             info["paused"] = True
 
+# Save terminal settings BEFORE cbreak mode so we can restore on exit
+_orig_term_settings = termios.tcgetattr(sys.stdin.fileno())
+
 def read_keys():
     """Background thread: reads single keypresses and toggles components."""
     fd = sys.stdin.fileno()
@@ -599,8 +596,8 @@ def read_keys():
                 idx = int(ch) - 1  # '1' -> index 0
                 if 0 <= idx < len(_toggleable):
                     toggle_component(idx)
-    except Exception:
-        pass
+    except Exception as e:
+        console.print(f"[red]Error reading keys: {e}[/red]")
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
@@ -723,7 +720,10 @@ def update_cpu_mem():
 
 threading.Thread(target=update_cpu_mem, daemon=True).start()
 threading.Thread(target=read_keys,      daemon=True).start()
-threading.Thread(target=watchdog_loop,  daemon=True).start()
+if watchdog_enabled:
+    threading.Thread(target=watchdog_loop,  daemon=True).start()
+else:
+    console.print("[yellow]⚠ CPU watchdog disabled (watchdog_enabled = false in config)[/yellow]")
 
 try:
     with Live(build_table(), refresh_per_second=1, console=console, screen=False) as live:
@@ -731,6 +731,12 @@ try:
             time.sleep(1)
             live.update(build_table())
 except KeyboardInterrupt:
+    # Restore terminal settings FIRST so output is visible
+    try:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, _orig_term_settings)
+    except Exception:
+        pass
+
     console.print("\n[yellow]Exiting. Terminating all processes...[/yellow]")
     
     # First, try graceful termination

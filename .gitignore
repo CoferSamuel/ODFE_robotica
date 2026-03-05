@@ -33,11 +33,9 @@ bin/
 # ==============================================================================
 
 # initializeComponents runtime output logs
-others/initializeComponents/output/bridge.err
-others/initializeComponents/output/camera.err
-others/initializeComponents/output/joy.err
-others/initializeComponents/output/helios.err
-others/initializeComponents/output/pearl.err
+others/initializeComponents/output/
+others/initializeComponents/*.old
+others/initializeComponents/__pycache__/
 
 # Personal notes
 tasks/4_multiroom_advanced/personalREADME.md

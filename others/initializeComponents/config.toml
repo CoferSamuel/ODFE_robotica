@@ -7,24 +7,30 @@ robocomp_root = "~/robocomp"   # root of the RoboComp installation
 # Prevents CPU spike from all processes starting simultaneously.
 startup_delay = 5
 
+# Set to true to enable the CPU watchdog that auto-pauses components exceeding their CPU threshold.
+watchdog_enabled = false
+
 # ── Launch order: heaviest first, then lightweight, then camera last ──────────
 # bridge starts alone and gets full CPU headroom.
 # camera (2nd heaviest) is last so the system is fully settled before it starts.
 
 [[components]]
 name = "bridge"
-cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced tasks/bridge_odfe"
+cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced_tasks/bridge_odfe"
 cmd = "bin/Webots2Robocomp etc/config"
 ice_name = "Webots2Robocomp:tcp -h localhost -p 10006"
 nice = 10  # lower OS priority — keeps desktop responsive
 
 [[components]]
-name = "gridder"
-cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced tasks/gridder"
-cmd = "bin/gridder etc/config.toml"
-ice_name = "Gridder:tcp -h localhost -p 13541"
-nice = 10  # lower OS priority — keeps desktop responsive
-max_cpu = 300  # OpenMP uses multiple cores — 130-200% CPU is normal and expected
+name = "ainf_slamo"
+cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced_tasks/ainf_slamo"
+cmd = "bin/ainf_slamo etc/config"
+ice_name = "Navigator:tcp -h localhost -p 13212"
+
+[[components]]
+name = "ainf_mission_planner"
+cwd = "~/Documents/University/Robotics/Work/ODFE_robotica/advanced_tasks/ainf_mission_planner"
+cmd = "bin/ainf_mission_planner etc/config"
 
 [[components]]
 name = "helios"
