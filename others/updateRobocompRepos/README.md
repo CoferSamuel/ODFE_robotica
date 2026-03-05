@@ -4,11 +4,12 @@ A small utility script to keep all local RoboComp-related git repositories up to
 
 ## What it does
 
-`update_robocomp_repos.sh` iterates over every subdirectory of a target directory and executes `git pull` on each one that is a git repository. Non-git directories are skipped with a notice.
+`update_robocomp_repos.sh` recursively searches a target directory (up to depth 4) for git repositories and executes `git pull` on each one. This ensures nested repos (e.g. under `components/`) are not missed.
+
+- **Untracked files** (build artifacts like `CMakeCache.txt`) are ignored and never block pulls.
+- **Tracked modifications** cause the repo to be skipped (unless `--force` is used).
 
 ## Usage
-
-Run from anywhere — including directly from this project's repo:
 
 ```bash
 # Default target: ~/robocomp
@@ -16,17 +17,17 @@ bash others/updateRobocompRepos/update_robocomp_repos.sh
 
 # Custom target directory
 bash others/updateRobocompRepos/update_robocomp_repos.sh /path/to/repos
-```
 
-Or make it executable first:
+# Discard tracked changes and pull anyway
+bash others/updateRobocompRepos/update_robocomp_repos.sh --force
 
-```bash
-chmod +x others/updateRobocompRepos/update_robocomp_repos.sh
-./others/updateRobocompRepos/update_robocomp_repos.sh
+# Custom target + force
+bash others/updateRobocompRepos/update_robocomp_repos.sh /path/to/repos --force
 ```
 
 ## Output
 
 - ✅ Green — successful pull
-- ❌ Red — failed pull (e.g. local conflicts)
-- 🟡 Yellow — directory skipped (not a git repo)
+- ❌ Red — failed pull (e.g. network issues)
+- 🟡 Yellow — tracked changes detected, skipped (or discarded with `--force`)
+
