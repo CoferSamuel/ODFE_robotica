@@ -27,8 +27,6 @@
 	#include <QtGui>
 #endif
 #include <ui_mainUI.h>
-#define USE_QTGUI
-
 #include <grafcetStep/GRAFCETStep.h>
 #include <ConfigLoader/ConfigLoader.h>
 #include <QStateMachine>
