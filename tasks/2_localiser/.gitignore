@@ -1,0 +1,71 @@
+# C/C++ build artifacts
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.lib
+*.exp
+*.pdb
+
+# Coverage / profiling
+*.gcno
+*.gcda
+*.gcov
+*.prof
+
+# Binaries / executables
+/bin/
+*.exe
+*.out
+*.app
+
+# CMake build folders & files
+/build/
+/build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+Makefile2
+install_manifest.txt
+CTestTestfile.cmake
+Testing/
+
+# Compilation database
+compile_commands.json
+compile_flags.txt
+
+# Qt generated files
+*_autogen/
+*.moc
+moc_*.cpp
+moc_*.h
+ui_*.h
+qrc_*.cpp
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.user
+*.user.*
+*.pro.user
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.tmp
+*.bak
+.cache/
+
+# Project-specific temporary configs
+etc/*.new
+
+# Logs
+*.log

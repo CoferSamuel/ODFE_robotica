@@ -1,0 +1,17 @@
+import "Lidar3D.idsl";
+import "OmniRobot.idsl";
+import "Camera360RGB.idsl";
+import "JoystickAdapter.idsl";
+
+
+Component multiroom
+{
+   Communications
+   {
+       requires Lidar3D, OmniRobot, Camera360RGB, JoystickAdapter;
+   };
+   language Cpp11;
+   gui Qt(QWidget);
+};
+
+
