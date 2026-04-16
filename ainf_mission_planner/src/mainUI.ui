@@ -147,20 +147,90 @@
         </layout>
      </item>
      <item>
-        <widget class="QFrame" name="frame">
-         <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-         </property>
-         <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_views">
+         <item>
+            <widget class="QLabel" name="label_camera">
+             <property name="text">
+                <string>Cámara</string>
+             </property>
+             <property name="alignment">
+                <set>Qt::AlignCenter</set>
+             </property>
+             <property name="minimumSize">
+                <size>
+                 <width>320</width>
+                 <height>240</height>
+                </size>
+             </property>
+             <property name="frameShape">
+                <enum>QFrame::Box</enum>
+             </property>
+            </widget>
+         </item>
+         <item>
+            <widget class="QFrame" name="frame">
+             <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+             </property>
+             <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+             </property>
+            </widget>
+         </item>
+        </layout>
+     </item>
+     <item>
+        <layout class="QVBoxLayout" name="verticalLayout_chat">
+         <item>
+            <widget class="QTextEdit" name="textEdit_chat">
+             <property name="readOnly">
+                <bool>true</bool>
+             </property>
+             <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+             </property>
+             <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>120</height>
+                </size>
+             </property>
+             <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>200</height>
+                </size>
+             </property>
+            </widget>
+         </item>
+         <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_chatInput">
+             <item>
+                <widget class="QLineEdit" name="lineEdit_prompt">
+                 <property name="placeholderText">
+                    <string>Escribe aquí tu misión (ej. Ve a la maceta 6)...</string>
+                 </property>
+                </widget>
+             </item>
+             <item>
+                <widget class="QPushButton" name="pushButton_sendChat">
+                 <property name="text">
+                    <string>Enviar</string>
+                 </property>
+                </widget>
+             </item>
+            </layout>
+         </item>
+        </layout>
      </item>
     </layout>
  </widget>

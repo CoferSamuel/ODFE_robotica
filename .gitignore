@@ -1,0 +1,28 @@
+# RoboComp generated files
+generated/
+bin/
+build/
+*.o
+*.d
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+*.cmake
+*.dir/
+
+# Python caching
+__pycache__/
+*.pyc
+
+# IDEs
+.idea/
+.vscode/
+
+# Ignore backups
+*.new
+*~
+
+# Misc build artifacts
+*.pt
+episodic_memory/

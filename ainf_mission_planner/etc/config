@@ -1,5 +1,7 @@
 # Proxies for required interfaces
 Proxies.Navigator = "navigator:tcp -h localhost -p 13212"
+Proxies.CameraRGBDSimple = "camerargbdsimple:tcp -h localhost -p 10096"
+Proxies.OmniRobot = "omnirobot:tcp -h localhost -p 10004"
 
 Component.Debug.Verbose = false
 

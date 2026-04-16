@@ -17,7 +17,7 @@ SET(RC_COMPONENT_INSTALL_PATH $ENV{ROBOCOMP} CACHE STRING "component install pat
 #STRING(STRIP ${COMPONENT_NAME} COMPONENT_NAME)
 #SET(COMPONENT_NAME ${COMPONENT_NAME} CACHE STRING "component name" FORCE)
 
-add_subdirectory(generated)
+SUBDIRS(generated)
 
 INSTALL(FILES etc/config DESTINATION ${RC_COMPONENT_INSTALL_PATH}/etc-default/ RENAME ainf_mission_planner.conf )
 

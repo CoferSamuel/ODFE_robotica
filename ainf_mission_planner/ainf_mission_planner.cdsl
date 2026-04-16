@@ -1,10 +1,12 @@
 import "Navigator.idsl";
+import "CameraRGBDSimple.idsl";
+import "OmniRobot.idsl";
 
 Component ainf_mission_planner
 {
     Communications
     {
-        requires Navigator;
+        requires Navigator, CameraRGBDSimple, OmniRobot;
     };
     language Cpp11;
     gui Qt(QWidget);

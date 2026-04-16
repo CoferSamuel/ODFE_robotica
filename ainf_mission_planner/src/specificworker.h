@@ -35,12 +35,24 @@
 #include "abstract_graphic_viewer/abstract_graphic_viewer.h"
 #include <vector>
 
+// Aumentar timeouts de la librería HTTP embebida en ollama.hpp
+// para que modelos grandes (qwen3.5:9b) tengan tiempo de responder
+#define CPPHTTPLIB_READ_TIMEOUT_SECOND 300
+#define CPPHTTPLIB_WRITE_TIMEOUT_SECOND 300
+#define CPPHTTPLIB_KEEPALIVE_TIMEOUT_SECOND 300
+
+#include "ollama.hpp"
+#include <thread>    
+#include <atomic>
+#include <QBuffer>
+#include <QTimer>
 
 /**
  * \brief Class SpecificWorker implements the core functionality of the component.
  */
 class SpecificWorker : public GenericWorker
 {
+
 Q_OBJECT
 public:
     /**
@@ -96,13 +108,30 @@ private:
 	RoboCompNavigator::TPath planned_path_points;
 	RoboCompNavigator::TPoint last_target{0.f, 0.f};
 	bool has_target = false;
+	enum class MissionState {
+		IDLE,
+		NAVIGATING_TO_OBJECT,
+		ORIENTING_TO_OBJECT,
+		CENTERING_OBJECT,
+		WAITING_FOR_VISION,
+		FINISHED
+	};
+	std::atomic<MissionState> current_mission_state{MissionState::IDLE};
+	bool navigation_started = false;
+	RoboCompNavigator::TPoint target_object_pos{0.f, 0.f};
+	std::string target_object_name = "el objeto";
+
 	void redraw_planned_path(const RoboCompNavigator::TPoint &current_source);
+	void obtenerDestinoIA(const std::string& mision = "Misión: Ve a la maceta que esté más alejada.");
+	void llamarOllama(const std::string& contextoJSON, const std::string& mision);
+
 
 private slots:
 	void slot_new_target(QPointF target);
 
 signals:
-	//void customSignal();
+	void chatTokenReceived(const QString &token);
+	void chatMessageReceived(const QString &msg);
 };
 
 #endif

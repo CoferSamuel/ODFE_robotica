@@ -19,8 +19,14 @@
 #include "specificworker.h"
 #include <algorithm>
 #include <limits>
+#include <cmath>
 #include <QtMath>
 #include <QSettings>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QRegularExpression>
+#include <thread>
 
 SpecificWorker::SpecificWorker(const ConfigLoader& configLoader, TuplePrx tprx, bool startup_check) : GenericWorker(configLoader, tprx)
 {
@@ -63,21 +69,42 @@ void SpecificWorker::initialize()
 	viewer->show();
 	connect(viewer, &AbstractGraphicViewer::new_mouse_coordinates, this, &SpecificWorker::slot_new_target);
 
+	// Signals para actualizar chat en el hilo principal
+	connect(this, &SpecificWorker::chatMessageReceived, this, [this](const QString &msg) {
+		textEdit_chat->append(msg);
+	});
+	connect(this, &SpecificWorker::chatTokenReceived, this, [this](const QString &token) {
+		textEdit_chat->insertPlainText(token);
+		textEdit_chat->ensureCursorVisible();
+	});
+
+	// Conectar botón enviar chat
+	connect(pushButton_sendChat, &QPushButton::clicked, this, [this]() {
+		QString text = lineEdit_prompt->text();
+		if(text.trimmed().isEmpty()) return;
+		lineEdit_prompt->clear();
+		emit chatMessageReceived("<b>Yo:</b> " + text);
+		emit chatMessageReceived("<b>Ollama:</b> ");
+		try {
+			obtenerDestinoIA("Misión: " + text.toStdString());
+		} catch(const Ice::Exception &e) {
+			qWarning() << "Error starting AI evaluation:" << e.what();
+		}
+	});
+	connect(lineEdit_prompt, &QLineEdit::returnPressed, pushButton_sendChat, &QPushButton::click);
+
 	connect(pushButton_startFollow, &QPushButton::clicked, this, [this]()
 	{
-		if(not has_target)
-		{
-			qWarning() << "No target selected. Shift+Right click on the map first.";
-			return;
-		}
+		std::cout << "===========================================" << std::endl;
+		std::cout << "BOTON START FOLLOW PULSADO" << std::endl;
 		try
 		{
-			navigator_proxy->gotoPoint(last_target);
-			qInfo() << "Path following started toward" << last_target.x << last_target.y;
+			std::cout << "Iniciando peticion a IA..." << std::endl;
+			obtenerDestinoIA();
 		}
 		catch(const Ice::Exception &e)
 		{
-			qWarning() << "Error starting path following:" << e.what();
+			std::cerr << "Error starting AI evaluation:" << e.what() << std::endl;
 		}
 	});
 
@@ -230,10 +257,94 @@ void SpecificWorker::compute()
 		QString state_text = "UNKNOWN";
 		switch(status.state)
 		{
-			case RoboCompNavigator::NavigationState::IDLE: state_text = "IDLE"; break;
-			case RoboCompNavigator::NavigationState::NAVIGATING: state_text = "NAVIGATING"; break;
+			case RoboCompNavigator::NavigationState::IDLE: 
+			case RoboCompNavigator::NavigationState::REACHED: 
+				state_text = (status.state == RoboCompNavigator::NavigationState::REACHED) ? "REACHED" : "IDLE"; 
+				if(current_mission_state.load() == MissionState::NAVIGATING_TO_OBJECT && navigation_started)
+				{
+					current_mission_state = MissionState::CENTERING_OBJECT;
+					navigation_started = false;
+					std::cout << "\n===========================================\n" << std::endl;
+					std::cout << "[DEBUG] Destino alcanzado. Iniciando escaneo visual IA directamente..." << std::endl;
+				}
+
+				// FASE 2: Captura de imagen y verificación visual con IA
+				if (current_mission_state.load() == MissionState::CENTERING_OBJECT)
+				{
+					current_mission_state = MissionState::WAITING_FOR_VISION;
+					std::cout << "[DEBUG] Tomando fotografía para validación de centrado visual..." << std::endl;
+					try {
+						auto img = camerargbdsimple_proxy->getImage("");
+						if(!img.image.empty()) {
+							QImage qimage(reinterpret_cast<const uchar*>(img.image.data()), img.width, img.height, QImage::Format_RGB888);
+							label_camera->setPixmap(QPixmap::fromImage(qimage).scaled(label_camera->size(), Qt::KeepAspectRatio));
+							std::cout << "[DEBUG] Fotografía mostrada en UI." << std::endl;
+							
+							QByteArray byteArray;
+							QBuffer buffer(&byteArray);
+							buffer.open(QIODevice::WriteOnly);
+							qimage.save(&buffer, "JPEG");
+							std::string base64_img = byteArray.toBase64().toStdString();
+							
+							std::thread([this, base64_img]() {
+								std::cout << "[DEBUG] Enviando imagen a Ollama (llava:7b) para verificar centrado..." << std::endl;
+								ollama::request req;
+								req["model"] = "llava:7b";
+								req["system"] = "Eres el controlador visual de un robot. Analiza la imagen de la cámara del robot. "
+									"El robot ya está orientado aproximadamente hacia el objeto de interés (" + target_object_name + "). "
+									"Tu tarea es verificar si dicho objeto está centrado en la imagen. "
+									"Si el objeto está centrado (ocupa la zona central de la imagen), responde ÚNICAMENTE: {\"comando\": \"centrado\"}. "
+									"Si necesita un pequeño ajuste, responde ÚNICAMENTE con: {\"comando\": \"rotar\", \"giro_rads\": X} "
+									"donde X es un valor PEQUEÑO entre -0.3 y 0.3 radianes (positivo=izquierda, negativo=derecha). "
+									"NUNCA des explicaciones. SOLO el JSON.";
+								req["prompt"] = "¿Está el objeto centrado en esta imagen? Responde solo con JSON.";
+								req["stream"] = false;
+								req["images"] = std::vector<std::string>{base64_img};
+								try {
+									ollama::response res = ollama::generate(req);
+									std::string resp = res.as_simple_string();
+									std::cout << "\n[OLLAMA VISION]: " << resp << std::endl;
+									
+									if(resp.find("rotar") != std::string::npos) {
+										float angulo = 0.1f;
+										QRegularExpression regex(R"("giro_rads"\s*:\s*([\-\d\.]+))");
+										QRegularExpressionMatch match = regex.match(QString::fromStdString(resp));
+										if (match.hasMatch()) angulo = match.captured(1).toFloat();
+										angulo = std::clamp(angulo, -0.3f, 0.3f); // Limitar micro-ajustes
+
+										std::cout << "[DEBUG] Micro-ajuste visual de " << angulo << " rad/s durante 0.4s" << std::endl;
+										omnirobot_proxy->setSpeedBase(0.0f, 0.0f, angulo);
+										std::this_thread::sleep_for(std::chrono::milliseconds(400));
+										omnirobot_proxy->setSpeedBase(0.0f, 0.0f, 0.0f);
+										
+										std::cout << "[DEBUG] Ajuste completado. Volviendo a comprobar...\n" << std::endl;
+										current_mission_state = MissionState::CENTERING_OBJECT;
+									} else {
+										current_mission_state = MissionState::FINISHED;
+										std::cout << "\n[✓ MISSION COMPLETE] El objeto está perfectamente centrado en cámara." << std::endl;
+										emit chatMessageReceived("<br><font color='green'><b>MISIÓN SUPERADA: Objeto centrado.</b></font>");
+										QImage qimageGuardar = QImage::fromData(QByteArray::fromBase64(QString::fromStdString(base64_img).toUtf8()));
+										qimageGuardar.save("captura_objeto_centrado.jpg");
+										std::cout << "[DEBUG] Imagen guardada en captura_objeto_centrado.jpg" << std::endl;
+									}
+								} catch (const std::exception& e) {
+									std::cerr << "[ERROR VISION] " << e.what() << "\nAsumiendo finalizado por fallo IA." << std::endl;
+									current_mission_state = MissionState::FINISHED;
+								}
+							}).detach();
+						} else {
+							std::cerr << "[DEBUG] Error: La cámara devolvió una imagen vacía." << std::endl;
+						}
+					} catch(const Ice::Exception &e) {
+						std::cerr << "[DEBUG] Excepción Ice al leer cámara: " << e.what() << std::endl;
+					}
+				}
+				break;
+			case RoboCompNavigator::NavigationState::NAVIGATING: 
+				state_text = "NAVIGATING"; 
+				if(current_mission_state.load() == MissionState::NAVIGATING_TO_OBJECT) navigation_started = true;
+				break;
 			case RoboCompNavigator::NavigationState::PAUSED: state_text = "PAUSED"; break;
-			case RoboCompNavigator::NavigationState::REACHED: state_text = "REACHED"; break;
 			case RoboCompNavigator::NavigationState::BLOCKED: state_text = "BLOCKED"; break;
 			case RoboCompNavigator::NavigationState::ERROR: state_text = "ERROR"; break;
 		}
@@ -263,6 +374,7 @@ void SpecificWorker::compute()
 
 void SpecificWorker::slot_new_target(QPointF target)
 {
+	//obtenerDestinoIA();
 	if(viewer == nullptr)
 		return;
 
@@ -376,7 +488,176 @@ int SpecificWorker::startup_check()
 	return 0;
 }
 
+void SpecificWorker::obtenerDestinoIA(const std::string& mision)
+{
+    std::thread([this, mision]() 
+    {
+        try 
+        {
+            // 1. Obtener datos del mundo y del robot
+            const auto pose = navigator_proxy->getRobotPose();
+            const auto map_data = navigator_proxy->getLayout();
 
+            // 2. Crear el objeto JSON principal
+            QJsonObject estadoMundo;
+
+            // Añadir el robot al JSON
+            QJsonObject jsonRobot;
+            jsonRobot["x"] = pose.x;
+            jsonRobot["y"] = pose.y;
+            jsonRobot["theta"] = pose.r;
+            estadoMundo["robot"] = jsonRobot;
+
+            // Añadir los objetos al JSON
+            QJsonArray jsonObjetos;
+            for(const auto &obj : map_data.objects)
+            {
+                QJsonObject jsonObj;
+                jsonObj["id"] = QString::fromStdString(obj.name);
+                
+                // Calculamos el centro aproximado del objeto usando sus puntos (layout)
+                if(!obj.layout.empty()) {
+                    float sum_x = 0, sum_y = 0;
+                    for(const auto &p : obj.layout) {
+                        sum_x += p.x;
+                        sum_y += p.y;
+                    }
+                    jsonObj["x"] = sum_x / obj.layout.size();
+                    jsonObj["y"] = sum_y / obj.layout.size();
+                }
+                jsonObjetos.append(jsonObj);
+            }
+            estadoMundo["objetos"] = jsonObjetos;
+
+            // Convertir el JSON a un std::string
+            QJsonDocument doc(estadoMundo);
+            std::string contextoJSON = doc.toJson(QJsonDocument::Compact).toStdString();
+
+            // --- AQUÍ EMPIEZA LA CONEXIÓN CON OLLAMA ---
+            llamarOllama(contextoJSON, mision); // Separamos la lógica para que quede limpio
+            
+        }
+        catch(const Ice::Exception &e) {
+            qCritical() << "Error obteniendo datos del Ice:" << e.what();
+        }
+    }).detach();
+}
+
+void SpecificWorker::llamarOllama(const std::string& contextoJSON, const std::string& mision)
+{
+    // Las reglas estrictas para el modelo (System Prompt)
+    std::string sistema = 
+        "Eres el cerebro de navegación de un robot. "
+        "Recibirás el estado del mundo en formato JSON (posición del robot y lista de objetos). "
+        "Tu misión es decidir a qué objeto debe ir el robot basándote en la orden del usuario. "
+        "REGLAS CRÍTICAS:\n"
+        "1. Tu respuesta DEBE ser ÚNICAMENTE un objeto JSON válido con esta estructura exacta: "
+        "{\"comando\": \"goto\", \"target_id\": \"nombre_del_objeto\"}.\n"
+        "2. El valor de \"comando\" SIEMPRE debe ser \"goto\".\n"
+        "3. El valor de \"target_id\" DEBE ser EXACTAMENTE el mismo atributo \"id\" del objeto "
+        "en el JSON recibido. NUNCA modifiques el nombre (NO reemplaces espacios por guiones bajos, etc).\n"
+        "4. No incluyas saludos, explicaciones, ni etiquetas markdown. Devuelve SOLO el JSON.\n"
+        "EJEMPLO DE RESPUESTA PERFECTA: {\"comando\": \"goto\", \"target_id\": \"silla 1 beta\"}";
+
+    // La misión específica + el contexto inyectado
+    std::string promptCompleto = "Estado del mundo:\n" + contextoJSON + "\n\n" + mision;
+
+    std::cout << "\n===========================================\n";
+    std::cout << "ENVIANDO PROMPT A OLLAMA:\n";
+    std::cout << promptCompleto << "\n";
+    std::cout << "===========================================\n" << std::endl;
+
+    ollama::request req;
+    req["model"] = "qwen2.5:0.5b"; // Usa tu modelo local (ej. "llama3" o "mistral")
+    req["system"] = sistema;
+    req["prompt"] = promptCompleto;
+    req["stream"] = true;
+    // req["format"] = "json"; // Descomenta esta línea si tu librería y modelo soportan el modo JSON nativo de Ollama
+
+try 
+    {
+        std::cout << "Ollama pensando y respondiendo en tiempo real..." << std::endl;
+        
+        std::string respuestaTexto = "";
+        std::cout << "\nRespuesta cruda de IA:\n";
+        
+        // 1. Recibimos la respuesta de la IA (Streaming)
+        ollama::generate(req, [this, &respuestaTexto](const ollama::response& r) {
+            try {
+                if (r.has_error()) {
+                    std::cerr << "\n[ERROR DE OLLAMA]: " << r.get_error() << std::endl;
+                    emit chatMessageReceived("<br><font color='red'>Error de IA: " + QString::fromStdString(r.get_error()) + "</font><br>");
+                    return false; // Stop streaming
+                }
+                std::string token = r.as_simple_string();
+                std::cout << token << std::flush;
+                emit chatTokenReceived(QString::fromStdString(token));
+                respuestaTexto += token;
+            } catch (const std::exception& ex) {
+                std::cerr << "\n[Error in stream chunk]: " << ex.what() << std::endl;
+            }
+            return true; // Devolver true indica que queremos seguir recibiendo tokens
+        });
+        
+        std::cout << "\n\n" << std::endl;
+
+        // 2. Limpiamos la respuesta de etiquetas Markdown (```json ... ```) buscando las llaves
+        size_t primerLlave = respuestaTexto.find('{');
+        size_t ultimaLlave = respuestaTexto.rfind('}');
+        
+        if (primerLlave != std::string::npos && ultimaLlave != std::string::npos && ultimaLlave > primerLlave) {
+            respuestaTexto = respuestaTexto.substr(primerLlave, ultimaLlave - primerLlave + 1);
+        }
+
+        // 3. Convertimos el texto a un objeto JSON de Qt
+        QByteArray datosJson = QString::fromStdString(respuestaTexto).toUtf8();
+        QJsonDocument docRespuesta = QJsonDocument::fromJson(datosJson);
+
+        // 3. Comprobamos que la IA nos haya hecho caso y sea un JSON válido
+        if(!docRespuesta.isNull() && docRespuesta.isObject()) 
+        {
+            QJsonObject objRespuesta = docRespuesta.object();
+            
+            // 4. Extraemos el comando y el destino
+            QString comandoStr = objRespuesta["comando"].toString().toLower();
+            if(objRespuesta.contains("target_id") && 
+               (comandoStr.startsWith("go") || comandoStr.startsWith("mov") || comandoStr.contains("ir"))) 
+            {
+                QString target = objRespuesta["target_id"].toString().replace("_", " ").trimmed();
+                std::cout << "¡Orden aceptada! Mandando el robot a:" << target.toStdString() << std::endl;
+                
+                // 5. ¡Ejecutamos el movimiento real del robot!
+                auto obj_pos = navigator_proxy->gotoObject(target.toStdString());
+                target_object_pos = obj_pos;
+                target_object_name = target.toStdString();
+                current_mission_state = MissionState::NAVIGATING_TO_OBJECT;
+            }
+            else 
+            {
+                qWarning() << "El JSON es válido, pero no tiene el formato esperado.";
+            }
+        } 
+        else 
+        {
+            qWarning() << "Aviso: La IA no devolvió un JSON válido por formato, activando extractor de emergencia (RegEx).";
+            QRegularExpression regex(R"("target_id"\s*:\s*"([^"]+))");
+            QRegularExpressionMatch match = regex.match(QString::fromStdString(respuestaTexto));
+            
+            if (match.hasMatch()) {
+                QString target = match.captured(1).replace("_", " ").trimmed();
+                std::cout << "¡Orden recuperada por emergencia! Mandando el robot a:" << target.toStdString() << std::endl;
+                auto obj_pos = navigator_proxy->gotoObject(target.toStdString());
+                target_object_pos = obj_pos;
+                current_mission_state = MissionState::NAVIGATING_TO_OBJECT;
+            } else {
+                qWarning() << "Error total: No se pudo extraer un JSON ni un parámetro target de: " << QString::fromStdString(respuestaTexto);
+            }
+        }
+    }
+    catch (const std::exception& e) {
+        qCritical() << "Error en Ollama:" << e.what();
+    }
+}
 
 /**************************************/
 // From the RoboCompNavigator you can call this methods:
