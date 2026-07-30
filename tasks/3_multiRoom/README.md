@@ -6,7 +6,7 @@
 
 This component extends the navigation capabilities of the **OmniRobot** mobile platform in **Webots** to achieve autonomous door detection, visual patch alignment, and inter-room traversal. Developed as part of the *Robótica* course at the **Universidad de Extremadura** (taught by Prof. Pablo Bustos García).
 
-📹 **Video Demonstration:** [Watch Door Traversal Execution (Google Drive)](https://drive.google.com/file/d/10n_1iG7BUhLd8JUsoaLkpJoZF9h5ERZR/view?usp=sharing)
+🎥 **Video Demonstration:** [Local MP4 File](../../docs/multimedia/task3/multiroom_simulation.mp4) | [Google Drive Mirror](https://drive.google.com/file/d/10n_1iG7BUhLd8JUsoaLkpJoZF9h5ERZR/view?usp=sharing)
 
 ---
 

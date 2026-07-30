@@ -6,7 +6,7 @@
 
 This component implements a geometry-based 2D LiDAR localiser for the **OmniRobot** mobile platform in **Webots**. Developed as part of the *Robótica* course at the **Universidad de Extremadura** (taught by Prof. Pablo Bustos García), the system estimates and incrementally corrects the robot's pose $(x, y, \theta)$ within a known rectangular room, eliminating accumulated odometry drift.
 
-📹 **Video Demonstration:** [Watch Localiser in Action (Google Drive)](https://drive.google.com/file/d/1f_QV6La_op_kgW51XC4HKma_aQV0oxyi/view?usp=sharing)
+🎥 **Video Demonstration:** [Local MP4 File](../../docs/multimedia/task2/localiser_demo.mp4) | [Google Drive Mirror](https://drive.google.com/file/d/1f_QV6La_op_kgW51XC4HKma_aQV0oxyi/view?usp=sharing)
 
 ---
 

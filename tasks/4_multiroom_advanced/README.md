@@ -9,7 +9,7 @@ Activity 4 represents the culmination of the project, integrating global localiz
 
 Developed as part of the *Robótica Avanzada* course at the **Universidad de Extremadura** (taught by Prof. Pablo Bustos García).
 
-📹 **Video Demonstration:** [Watch Multi-Room Navigation & AI Execution (Google Drive)](https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing)
+🎥 **Video Demonstration:** [Local MP4 File](../../docs/multimedia/task4/multiroom_simulation.mp4) | [Google Drive Mirror](https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing)
 
 ---
 

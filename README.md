@@ -51,12 +51,12 @@ The software follows a modular **Component-Based Software Engineering (CBSE)** a
 
 ## 🚀 Projects & Activities Overview
 
-| Activity | Component | Description & Key Algorithms | Video Demo |
+| Activity | Component | Description & Key Algorithms | Video Demos |
 | :--- | :--- | :--- | :---: |
 | **Activity 1** | [`1_chocachoca`](tasks/1_chocachoca/README.md) | **Sweeping Robot:** Reactive floor coverage algorithm using a 4-state FSM (`SPIRAL`, `TURN`, `FORWARD`, `FOLLOW_WALL`) with 2-stage LiDAR filtering and linear braking laws. | - |
-| **Activity 2** | [`2_localiser`](tasks/2_localiser/README.md) | **Geometry-Based Localiser:** $SE(2)$ rigid pose correction in rectangular rooms using RANSAC line extraction, Hungarian corner association, and SVD linearized least-squares solving. | [📹 Demo](https://drive.google.com/file/d/1f_QV6La_op_kgW51XC4HKma_aQV0oxyi/view?usp=sharing) |
-| **Activity 3** | [`3_multiRoom`](tasks/3_multiRoom/README.md) | **Visually-Guided Door Traversal:** Autonomous door detection and multi-room crossing using dot-product orientation ambiguity resolution, sticky world targets, and a Gaussian-modulated motion controller. | [📹 Demo](https://drive.google.com/file/d/10n_1iG7BUhLd8JUsoaLkpJoZF9h5ERZR/view?usp=sharing) |
-| **Activity 4** | [`4_multiroom_advanced`](tasks/4_multiroom_advanced/README.md) | **Multi-Room Autonomous Navigation & AI:** Ultra-Localiser with 200-hypothesis grid search, real-time Topological Graph mapping, priority door selection, and PyTorch CNN MNIST room digit recognition. | [📹 Demo](https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing) |
+| **Activity 2** | [`2_localiser`](tasks/2_localiser/README.md) | **Geometry-Based Localiser:** $SE(2)$ rigid pose correction in rectangular rooms using RANSAC line extraction, Hungarian corner association, and SVD linearized least-squares solving. | [🎥 Video (Local)](docs/multimedia/task2/localiser_demo.mp4) \| [☁️ Drive](https://drive.google.com/file/d/1f_QV6La_op_kgW51XC4HKma_aQV0oxyi/view?usp=sharing) |
+| **Activity 3** | [`3_multiRoom`](tasks/3_multiRoom/README.md) | **Visually-Guided Door Traversal:** Autonomous door detection and multi-room crossing using dot-product orientation ambiguity resolution, sticky world targets, and a Gaussian-modulated motion controller. | [🎥 Video (Local)](docs/multimedia/task3/multiroom_simulation.mp4) \| [☁️ Drive](https://drive.google.com/file/d/10n_1iG7BUhLd8JUsoaLkpJoZF9h5ERZR/view?usp=sharing) |
+| **Activity 4** | [`4_multiroom_advanced`](tasks/4_multiroom_advanced/README.md) | **Multi-Room Autonomous Navigation & AI:** Ultra-Localiser with 200-hypothesis grid search, real-time Topological Graph mapping, priority door selection, and PyTorch CNN MNIST room digit recognition. | [🎥 Video (Local)](docs/multimedia/task4/multiroom_simulation.mp4) \| [☁️ Drive](https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing) |
 
 ---
 
@@ -67,7 +67,10 @@ ODFE_robotica/
 ├── docs/                        # Complete IEEE academic paper and media
 │   ├── main.pdf                 # Compiled IEEE conference paper
 │   ├── main.tex                 # LaTeX source file
-│   └── multimedia/              # Experimental plots, diagrams, and figures
+│   └── multimedia/              # Experimental plots, diagrams, and video files
+│       ├── task2/localiser_demo.mp4
+│       ├── task3/multiroom_simulation.mp4
+│       └── task4/multiroom_simulation.mp4
 │
 ├── tasks/                       # Core course activities
 │   ├── 0_pretasks/              # Initial RoboComp & Qt introductory exercises
