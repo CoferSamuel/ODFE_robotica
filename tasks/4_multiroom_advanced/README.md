@@ -1,175 +1,129 @@
-# Activity 4: Multi-Room Autonomous Navigation
+# Activity 4: Multi-Room Autonomous Navigation & AI Semantic Mapping
 
-Activity 4 represents the culmination of the project, successfully integrating advanced localization, navigation, and perception capabilities into a coherent autonomous system. The system employs an **Ultra-Localiser** to solve the global localization (kidnapped robot) problem through robust multi-hypothesis grid search initialization.
+[![RoboComp](https://img.shields.io/badge/Framework-RoboComp-blue)](https://github.com/robocomp/robocomp)
+[![Language](https://img.shields.io/badge/Language-C%2B%2B23%2FPython3-green)](https://isocpp.org/)
+[![PyTorch](https://img.shields.io/badge/AI-PyTorch-orange)](https://pytorch.org/)
+[![OpenCV](https://img.shields.io/badge/Vision-OpenCV4-red)](https://opencv.org/)
 
-## Features
-- **Global Localization**: Solves the "kidnapped robot" problem using a grid search initialization.
-- **Multi-Room Navigation**: Capable of detecting doors and navigating between distinct rooms (Room 1, Room 2, etc.).
-- **Perception Integration**: Combines LiDAR data for geometry-based localization with camera inputs for door and object detection (specifically MNIST digits).
-- **Autonomous Exploration**: Orchestrates complex behaviors to find and traverse exits autonomously.
+Activity 4 represents the culmination of the project, integrating global localization (**Ultra-Localiser**), persistent spatial memory (**Topological Graph Mapping**), intelligent door target selection, and deep learning-based semantic room identification (**MNIST PyTorch Detector**) for the **OmniRobot** mobile platform in **Webots**.
 
-## Dependencies
-The following dependencies are required to build and run this component:
+Developed as part of the *Robótica Avanzada* course at the **Universidad de Extremadura** (taught by Prof. Pablo Bustos García).
 
-- **RoboComp**: The core component-based robotics framework.
-- **Webots**: For simulating the robot and environment.
-- **OpenCV**: Computer vision library (for image processing).
-- **PyTorch** (optional): Used for the MNIST deep learning detector if enabled.
-- **DSR**: Deep State Representation (if using the graph-based features).
+📹 **Video Demonstration:** [Watch Multi-Room Navigation & AI Execution (Google Drive)](https://drive.google.com/file/d/1vdQ3AvWZ5x7y0ox2yeZf0NKtGY7jAHUi/view?usp=sharing)
 
-## Configuration parameters
-Like any other component, `multiroom` requires a configuration file to start. In `etc/config` or `etc/config.toml`, you can find an example of the configuration file with parameters for:
-- **Robot Connection**: `OmniRobotProxy`, `Lidar3DProxy`.
-- **Dimensions**: Room sizes and door locations.
-- **Control**: Speed limits and PID gains.
+---
 
-## Starting the component
-To avoid modifying the config file directly in the repository, you can copy it to the component's home directory. This prevents changes from being overridden by future `git pull` commands:
+## 🌟 Key Subsystems & Features
 
+```text
++-----------------------------------------------------------------------+
+|                    ULTRA-LOCALISER (BOOTSTRAP)                       |
+|   200-Hypothesis Grid Search  --->  SVD Continuous Fine Solver        |
++-----------------------------------+-----------------------------------+
+                                    |
+                                    v
++-----------------------------------+-----------------------------------+
+|                  TOPOLOGICAL GRAPH EXPLORATION                        |
+|   ROOM Nodes <--> DOOR Nodes (Learned Links)  | Priority Target Selector|
++-----------------------------------+-----------------------------------+
+                                    |
+                                    v
++-----------------------------------+-----------------------------------+
+|               AI SEMANTIC PERCEPTION (MNIST DETECTOR)                 |
+|   HSV Red Mask -> Bitwise Invert -> PyTorch CNN -> Digit (Room ID)    |
++-----------------------------------------------------------------------+
+```
+
+---
+
+## 🌐 1. Ultra-Localiser (Global Grid Search Bootstrap)
+
+Solves the **kidnapped robot problem** when starting from arbitrary unknown poses without prior position information:
+
+### Two-Phase Convergence Algorithm
+1. **Coarse Grid Search (Bootstrap):** Evaluates $25 \times 8 = 200$ candidate pose hypotheses:
+   - $5 \times 5$ spatial grid covering 80% of room dimensions.
+   - 8 angular orientations ($45^\circ$ step increments).
+   - Transforms room corners for each candidate pose, performs Hungarian matching against LiDAR detections, and selects the candidate pose minimizing maximum match error ($E_k < 3500\text{ mm}$, $\ge 3$ matched corners).
+2. **Fine Incremental Solver:** SVD linearized least-squares solver takes over, refining position accuracy from $\sim 300\text{--}500\text{ mm}$ down to $\sim 20\text{ mm}$.
+
+| Phase | Function | Accuracy Range |
+| :--- | :--- | :---: |
+| **Grid Search Bootstrap** | Global initial pose estimate | $\sim 300\text{--}500\text{ mm}$ |
+| **Incremental SVD** | Real-time continuous refinement | $\sim 20\text{ mm}$ |
+
+---
+
+## 🗺️ 2. Topological Graph Mapping & Exploration
+
+Replaces purely reactive behaviors with a persistent semantic graph representation of the environment.
+
+### Graph Data Structure
+- **`ROOM` Nodes:** Represent physical rooms. Store dimensions, reference heading, entry door ID, and room index.
+- **`DOOR` Nodes:** Represent physical connection thresholds. Store geometric endpoints $(p_1, p_2)$ and center coordinates.
+
+### Learned Bidirectional Links
+When moving from Room A to Room B, the graph automatically registers a persistent link connecting the exit door node of Room A to the entry door node of Room B:
+
+$$\text{Room A} \longleftrightarrow \text{Door Node A} \longleftrightarrow \text{Door Node B} \longleftrightarrow \text{Room B}$$
+
+### Priority Door Selection Algorithm
+The `select_door_from_graph()` function selects next navigation targets based on a 4-tier priority system:
+1. **Priority 1:** Unexplored, Non-Entry Doors (maximizes discovery of new rooms).
+2. **Priority 2:** Any Unexplored Door.
+3. **Priority 3 (Traversal Logic):** If all doors are explored:
+   - **Room 0:** Random selection among all doors to prevent deterministic deadlocks.
+   - **Room 1+:** Non-entry doors only (forces crossing the room).
+4. **Priority 4:** Backtrack through entry door as last resort.
+
+---
+
+## 🧠 3. AI Room Digit Recognition (`mnist_detector`)
+
+A dedicated Python PyTorch component (`mnist_detector`) provides semantic room identification by reading handwritten digits (0–9) posted on room walls.
+
+### Component Architecture & Ice Remote Interface
+- **Asynchronous Execution:** Runs in a separate Python process communicating via Ice interface `getNumber()`, preventing deep learning inference from blocking real-time control loops.
+- **Dynamic Period:** Runs at 5 Hz when actively queried by the controller, dropping to 0.5 Hz when idle.
+
+### Computer Vision & Neural Network Pipeline
+1. **Red Badge Masking:** Converts camera stream to HSV space and applies a red color mask to locate candidate number badges.
+2. **Preprocessing:** Crops ROI, converts to grayscale, resizes to $28 \times 28$ pixels, and applies **bitwise inversion** (matching white digits on black background expected by MNIST models).
+3. **PyTorch CNN Architecture:**
+   - Input: $28 \times 28 \times 1$ tensor.
+   - Conv2D Layer 1 ($32\text{ filters}, 3\times3$) + ReLU.
+   - Conv2D Layer 2 ($64\text{ filters}, 3\times3$) + ReLU + MaxPool2D.
+   - Fully Connected Layer ($128\text{ units}$) + Softmax Output ($10\text{ digit classes}$).
+
+---
+
+## 📐 4. Wall Projection Door Visualization
+
+Door endpoints $(p_1, p_2)$ detected by LiDAR are orthogonally projected onto the closest nominal wall line segment to prevent rendering artifacts caused by sensor noise:
+
+$$\text{proj}(\mathbf{p}) = \mathbf{w}_1 + \frac{(\mathbf{p} - \mathbf{w}_1) \cdot (\mathbf{w}_2 - \mathbf{w}_1)}{\|\mathbf{w}_2 - \mathbf{w}_1\|^2} (\mathbf{w}_2 - \mathbf{w}_1)$$
+
+Rendered in real-time in the Qt GUI as cyan lines with dark blue endpoint markers.
+
+---
+
+## 💻 Compilation and Execution
+
+### Build C++ Navigation Controller
 ```bash
 cd tasks/4_multiroom_advanced
-cp etc/config etc/myConfig
+
+# 1. Build C++ multiroom component
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+make -C build -j$(nproc)
+
+# 2. Run main navigation component
+./bin/multiroom etc/config
 ```
 
-After editing the new config file (if necessary), compile and run:
-
+### Launch Python Deep Learning Detector
+In a separate terminal:
 ```bash
-cmake -B build && make -C build -j$(nproc)
-bin/multiroom etc/myConfig
+cd tasks/4_multiroom_advanced
+python3 src/mnist_detector/src/specificworker.py src/mnist_detector/etc/config
 ```
-
-The AI component must also be executed:
-```bash
-python src/mnist_detector/src/specificworker.py src/mnist_detector/etc/myConfig
-```
-
------
-# Developer Notes
-This section explains how to work with the generated code of multiroom, including what can be modified and how to use key features.
-## Editable Files
-You can freely edit the following files:
-- etc/* – Configuration files
-- src/* – Component logic and implementation
-- README.md – Documentation
-
-The `generated` folder contains autogenerated files. **Do not edit these files directly**, as they will be overwritten every time the component is regenerated with RoboComp.
-
-## ConfigLoader
-The `ConfigLoader` simplifies fetching configuration parameters. Use the `get<>()` method to retrieve parameters from the configuration file.
-```C++
-// Syntax
-type variable = this->configLoader.get<type>("ParameterName");
-
-// Example
-int computePeriod = this->configLoader.get<int>("Period.Compute");
-```
-
-## StateMachine
-RoboComp components utilize a state machine to manage the main execution flow. The default states are:
-
-1. **Initialize**:
-    - Executes once after the constructor.
-    - May use for parameter initialization, opening devices, and calculating constants.
-2. **Compute**:
-    - Executes cyclically after Initialize.
-    - Place your functional logic here. If an emergency is detected, call goToEmergency() to transition to the Emergency state.
-3. **Emergency**:
-    - Executes cyclically during emergencies.
-    - Once resolved, call goToRestore() to transition to the Restore state.
-4. **Restore**:
-    - Executes once to restore the component after an emergency.
-    - Transitions automatically back to the Compute state.
-
-### Setting and Getting State Periods
-You can get the period of some state with de function `getPeriod` and set with `setPeriod`
-```C++
-int currentPeriod = getPeriod("Compute");   // Get the current Compute period
-setPeriod("Compute", currentPeriod * 0.5); // Set Compute period to half
-```
-
-### Creating Custom States
-To add a custom state, follow these steps in the constructor:
-1. **Define Your State** Use `GRAFCETStep` to create your state. If any function is not required, use `nullptr`.
-
-```C++
-states["CustomState"] = std::make_unique<GRAFCETStep>("CustomState", period, 
-                                                      std::bind(&SpecificWorker::customLoop, this),  // Cyclic function
-                                                      std::bind(&SpecificWorker::customEnter, this), // On-enter function
-                                                      std::bind(&SpecificWorker::customExit, this)); // On-exit function
-
-```
-2. **Define Transitions** Add transitions between states using `addTransition`. You can trigger transitions using Qt signals such as `entered()` and `exited()` or custom signals in .h.
-```C++
-// Syntax
-states[srcState]->addTransition(originOfSignal, signal, dstState)
-
-// Example
-states["CustomState"]->addTransition(states["CustomState"].get(), SIGNAL(entered()), states["OtherState"].get());
-states["Compute"]->addTransition(this, SIGNAL(customSignal()), states["CustomState"].get());
-
-```
-3. **Add State to the StateMachine** Include your state in the state machine:
-```C++
-statemachine.addState(states["CustomState"].get());
-
-```
-
-## Hibernation Flag
-The `#define HIBERNATION_ENABLED` flag in `specificworker.h` activates hibernation mode. When enabled, the component reduces its state execution frequency to 500ms if no method calls are received within 5 seconds. Once a method call is received, the period is restored to its original value.
-
-Default hibernation monitoring runs every 500ms.
-
-## Changes Introduced in the New Code Generator
-If you’re regenerating or adapting old components, here’s what has changed:
-
-- Deprecated classes removed: `CommonBehavior`, `InnerModel`, `AGM`, `Monitors`, and `src/config.h`.
-- Configuration parsing replaced with the new `ConfigLoader`, supporting both .`toml` and legacy configuration formats.
-- Skeleton code split: `generated` (non-editable) and `src` (editable).
-- Component period is now configurable in the configuration file.
-- State machine integrated with predefined states: `Initialize`, `Compute`, `Emergency`, and `Restore`.
-- With the `dsr` option, you generate `G` in the GenericWorker, making the viewer independent. If you want to use the `dsrviewer`, you will need the `Qt GUI (QMainWindow)` and the `dsr` option enabled in the **CDSL**.
-- Strings in the legacy config now need to be enclosed in quotes (`""`).
-
-## Adapting Old Components
-To adapt older components to the new structure:
-
-1. **Add** `Period.Compute` and `Period.Emergency` and swap Endpoints and Proxies with their names in the `etc/config` file.
-2. **Merge** the new `src/CMakeLists.txt` and the old `CMakeListsSpecific` files.
-3. **Modify** `specificworker.h`:
-    - Add the `HIBERNATION_ENABLED` flag.
-    - Update the constructor signature.
-    - Replace `setParams` with state definitions (`Initialize`, `Compute`, etc.).
-4. **Modify** `specificworker.cpp`:
-    - Refactor the constructor entirely.
-    - Move `setParams` logic to the `initialize` state using `ConfigLoader.get<>()`.
-    - Remove the old timer and period logic and replace it with `getPeriod()` and `setPeriod()`.
-    - Add the new function state `Emergency`, and `Restore`.
-    - Add the following code to the implements and publish functions:
-        ```C++
-        #ifdef HIBERNATION_ENABLED
-            hibernation = true;
-        #endif
-        ```
-5. **Update Configuration Strings**, ensure all strings in the `config` under legacy are enclosed in quotes (`""`), as required by the new structure.
-6. **Using DSR**, if you use the DSR option, note that `G` is generated in `GenericWorker`, making the viewer independent. However, to use the `dsrviewer`, you must integrate a `Qt GUI (QMainWindow)` and enable the `dsr` option in the **CDSL**. 
-7. **Installing toml++**, to use the new .toml configuration format, install the toml++ library:
-```bash
-mkdir ~/software 2> /dev/null; git clone https://github.com/marzer/tomlplusplus.git ~/software/tomlplusplus
-cd ~/software/tomlplusplus && cmake -B build && sudo make install -C build -j12 && cd -
-```
-8. **Installing qt6 Dependencies**
-```bash
-sudo apt install qt6-base-dev qt6-declarative-dev qt6-scxml-dev libqt6statemachineqml6 libqt6statemachine6
-
-mkdir ~/software 2> /dev/null; git clone https://github.com/GillesDebunne/libQGLViewer.git ~/software/libQGLViewer
-cd ~/software/libQGLViewer && qmake6 *.pro && make -j12 && sudo make install && sudo ldconfig && cd -
-```
-9. **Generated Code**, When the component is generated, a `generated` folder is created containing non-editable files. You can delete everything in the `src` directory except for:
-- `src/specificworker.h`
-- `src/specificworker.cpp`
-- `src/CMakeLists.txt`
-- `src/mainUI.ui`
-- `README.md`
-- `etc/config`
-- `etc/config.toml`
-- Your Clases...
