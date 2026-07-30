@@ -1,4 +1,4 @@
-# ODFE Robotics – Component-Based Autonomous Mobile Robotics
+# ODFE_robotics – Component-Based Autonomous Mobile Robotics
 
 [![RoboComp](https://img.shields.io/badge/Framework-RoboComp-blue)](https://github.com/robocomp/robocomp)
 [![Simulator](https://img.shields.io/badge/Simulator-Webots-red)](https://cyberbotics.com/)
@@ -63,7 +63,7 @@ The software follows a modular **Component-Based Software Engineering (CBSE)** a
 ## 📂 Repository Structure
 
 ```text
-ODFE_robotica/
+ODFE_robotics/
 ├── docs/                        # Complete IEEE academic paper and media
 │   ├── main.pdf                 # Compiled IEEE conference paper
 │   ├── main.tex                 # LaTeX source file
@@ -104,8 +104,8 @@ ODFE_robotica/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/CoferSamuel/ODFE_robotica.git
-   cd ODFE_robotica
+   git clone https://github.com/CoferSamuel/ODFE_robotics.git
+   cd ODFE_robotics
    ```
 
 2. **Build a specific activity (e.g., Activity 2 Localiser):**
@@ -119,19 +119,3 @@ ODFE_robotica/
    ```bash
    ./bin/localiser etc/config
    ```
-
----
-
-## 📜 Citation & Credits
-
-If you refer to this work or codebase, please cite the main technical report:
-
-```bibtex
-@techreport{ODFE2025Robotics,
-  title       = {Component-Based Reactive Navigation and Autonomous Multi-Room Exploration for the OmniRobot Platform},
-  author      = {González Loro, Ismael and Corrionero Fernández, Samuel and Pulido Delgado, José},
-  institution = {Universidad de Extremadura, Escuela Politécnica de Cáceres},
-  year        = {2025},
-  note        = {Supervised by Prof. Pablo Bustos García}
-}
-```
